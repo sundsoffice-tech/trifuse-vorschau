@@ -60,7 +60,9 @@ der Smoke-Test nicht abdeckt, ergänzt den Smoke-Test.
 ## Was nicht geht und warum
 
 - `git push` in ein Repo außerhalb der Session-Quellen und `git remote add` werden vom Sicherheitsfilter der
-  Cloud-Session blockiert. Das Ziel-Repo `sundsoffice-tech/trifuse-shop` muss vor der Session angelegt und
-  freigeschaltet sein, sonst bleibt nur das Bundle (`git bundle create`).
+  Cloud-Session blockiert. Deshalb liegt der Shop im Branch `claude/online-shop-product-listing-l9z787`
+  des Repos `trifuse-vorschau` (Fabrice, 29.10.2026). Dieser Branch hat eine eigene Historie und wird nie in
+  `main` von trifuse-vorschau gemergt: `main` dort ist ein GitHub-Pages-Deploy der Marketing-Vorschau.
+  Pushen mit der vollen URL: `git push https://github.com/sundsoffice-tech/trifuse-vorschau.git <branch>`.
 - Im Cloud-Container gibt es keinen Docker-Daemon. Der Docker-Build ist bis zu einem Lauf auf einem Server
   ungeprüft (Stand 29.10.2026).

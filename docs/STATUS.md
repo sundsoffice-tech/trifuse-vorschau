@@ -4,8 +4,11 @@ Stand: 29.10.2026 (Session 1, Fabrice)
 
 ## Live
 
-Nichts. Der Shop läuft nur lokal im Cloud-Container. Repo `sundsoffice-tech/trifuse-shop` existiert noch
-nicht; der Stand liegt als Bundle bei Fabrice und auf dem lokalen Branch `claude/online-shop-product-listing-l9z787`.
+Nichts. Der Code liegt auf Fabrices Anweisung (29.10.2026) als eigener Branch
+`claude/online-shop-product-listing-l9z787` im Repo `sundsoffice-tech/trifuse-vorschau`, mit eigener
+Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifuse-shop` kann später per
+`git push` dieses Branches entstehen; bis dahin niemals diesen Branch in `main` von trifuse-vorschau mergen
+(dort ist `main` ein GitHub-Pages-Deploy).
 
 ## Fertig und geprüft
 
@@ -15,7 +18,7 @@ nicht; der Stand liegt als Bundle bei Fabrice und auf dem lokalen Branch `claude
 
 ## Offen, nach Dringlichkeit
 
-1. Repo anlegen und pushen (nur Fabrice kann das Repo anlegen).
+1. Entscheiden, ob der Shop ein eigenes Repo bekommt (`trifuse-shop`) oder im Branch bleibt.
 2. Markenname festlegen (`NEXT_PUBLIC_BRAND_NAME`).
 3. Impressum, Datenschutz, AGB, Widerruf: Platzhalter füllen, juristisch prüfen.
 4. Stripe-Schlüssel und Webhook einrichten, einmal echten Testkauf im Stripe-Testmodus durchführen.
