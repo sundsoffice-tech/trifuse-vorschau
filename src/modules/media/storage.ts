@@ -16,6 +16,33 @@ const signatures: Array<{ mime: string; ext: string; test: (b: Buffer) => boolea
 
 export type StoredImage = { path: string; mime: string };
 
+/**
+ * Ablage-Schnittstelle. Heute lokal; ein S3-kompatibler Adapter bekommt dieselben drei Methoden
+ * (siehe docs/SKALIERUNG.md, Stufe 2). Aufrufer kennen nur `storeImage`, `removeImage`, `imageUrl`.
+ */
+export interface StorageAdapter {
+  put(relPath: string, data: Buffer, mime: string): Promise<void>;
+  remove(relPath: string): Promise<void>;
+  publicUrl(relPath: string): string;
+}
+
+const localAdapter: StorageAdapter = {
+  async put(relPath, data) {
+    await mkdir(path.dirname(path.join(UPLOAD_DIR, relPath)), { recursive: true });
+    await writeFile(path.join(UPLOAD_DIR, relPath), data);
+  },
+  async remove(relPath) {
+    const full = path.join(UPLOAD_DIR, relPath);
+    if (!full.startsWith(UPLOAD_DIR)) return;
+    await unlink(full).catch(() => undefined);
+  },
+  publicUrl(relPath) {
+    return `/api/media/${relPath}`;
+  },
+};
+
+const adapter: StorageAdapter = localAdapter;
+
 export function uploadDir() {
   return UPLOAD_DIR;
 }
@@ -27,21 +54,18 @@ export async function storeImage(file: File): Promise<StoredImage> {
   const sig = signatures.find((s) => s.test(buf));
   if (!sig) throw new Error("Nur JPG, PNG, WebP oder GIF.");
   const name = `${Date.now().toString(36)}-${randomBytes(6).toString("hex")}.${sig.ext}`;
-  const sub = name.slice(0, 2);
-  await mkdir(path.join(UPLOAD_DIR, sub), { recursive: true });
-  await writeFile(path.join(UPLOAD_DIR, sub, name), buf);
-  return { path: `${sub}/${name}`, mime: sig.mime };
+  const relPath = `${name.slice(0, 2)}/${name}`;
+  await adapter.put(relPath, buf, sig.mime);
+  return { path: relPath, mime: sig.mime };
 }
 
 export async function removeImage(relPath: string) {
-  const full = path.join(UPLOAD_DIR, relPath);
-  if (!full.startsWith(UPLOAD_DIR)) return;
-  await unlink(full).catch(() => undefined);
+  await adapter.remove(relPath);
 }
 
 /** Öffentliche URL eines gespeicherten Bildes (oder einer Demo-Datei unter /public). */
 export function imageUrl(relPath: string | null | undefined): string {
   if (!relPath) return "/demo/platzhalter.svg";
   if (relPath.startsWith("/")) return relPath;
-  return `/api/media/${relPath}`;
+  return adapter.publicUrl(relPath);
 }

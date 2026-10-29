@@ -5,7 +5,7 @@ services:
       - "3000:3000"
     env_file: .env
     environment:
-      DATABASE_URL: "file:../data/shop.db"
+      DATABASE_URL: "file:../data/shop.db?connection_limit=1&socket_timeout=30"
     volumes:
       - shop-data:/app/data
     restart: unless-stopped

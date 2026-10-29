@@ -1,0 +1,66 @@
+# trifuse-shop: Marktplatz für kleine Marken
+
+Diese Datei wird in jeder Session automatisch geladen. Sie enthält, was eine Session falsch macht, wenn sie es
+nicht liest. Fachliches steht in `README.md`, Entscheidungen mit Begründung in `docs/ENTSCHEIDUNGEN.md`,
+der Weg nach oben in `docs/SKALIERUNG.md`, der aktuelle Stand in `docs/STATUS.md`.
+
+## Feste Vorgaben von Fabrice (29.10.2026)
+
+1. **Eigenbau.** Kein Medusa, kein Shopify, kein Saleor, kein fremdes Commerce-Backend. Vorbild ist die
+   modulare Architektur von Medusa, der Code gehört komplett uns. Fremde Pakete nur für Infrastruktur
+   (Next.js, Prisma, Stripe-SDK, Zod), nie für Geschäftslogik.
+2. **Eigene Marke.** Der Marktplatz tritt nach außen nicht als trifuse auf. trifuse ist Betreiber im
+   Hintergrund (Kasse, Lager, Service). Markenname über `NEXT_PUBLIC_BRAND_NAME`; solange keiner feststeht,
+   steht dort der Arbeitstitel „Marktplatz“. Nirgends „trifuse“ als sichtbaren Markennamen verwenden.
+3. **Zentrale Kasse, getrennte Buchführung je Händler.** Ein Warenkorb über alle Händler, eine Zahlung an den
+   Marktplatz. Jede Bestellposition friert Händler, Preis, Provisionssatz, Provision und Händleranteil in Cent
+   ein, damit die Ausschüttung später ohne Nachrechnen stimmt. Diese Einfrierung darf nie durch eine Berechnung
+   zur Laufzeit ersetzt werden.
+4. **Produkte kommen von beiden Seiten.** Das Team pflegt Produkte für Händler ein, Händler pflegen selbst.
+   Händlerprodukte gehen über eine Freigabe, außer der Händler hat „darf selbst veröffentlichen“.
+5. **Vorausdenken, skalierbar bauen, jeden Schritt vorher durchdenken und danach validieren.** Konkret:
+   vor jeder Änderung die Frage „was passiert bei 50 Händlern, 5.000 Produkten, 2 Serverinstanzen?“ beantworten
+   (siehe `docs/SKALIERUNG.md`), und vor jedem Commit die Prüfkette unten komplett fahren.
+
+## Prüfkette vor jedem Commit (nicht verhandelbar)
+
+```bash
+npm run lint && npm run typecheck && npm test && npm run build
+npm start &            # oder laufender Server
+npm run test:smoke     # Playwright: Seiten hell/dunkel, Kauf, Portal, Freigabe, Auszahlung, API
+npm run test:parallel  # bei Änderungen an Kauf, Bestand oder Transaktionen: 20 und 30 gleichzeitige Käufer
+```
+
+Dazu die Hausregel HINSEHEN: Alles Sichtbare in den Screenshots unter `test/ergebnisse/` ansehen, beide
+Themes, schmal und breit. Ein grüner Test belegt nicht, dass es gut aussieht. Wer etwas Sichtbares ändert, das
+der Smoke-Test nicht abdeckt, ergänzt den Smoke-Test.
+
+## Architekturregeln
+
+- Geschäftslogik liegt in `src/modules/<bereich>/` (`service.ts` = reine Logik, `actions.ts` = Server Actions
+  mit Auth-Prüfung, `queries.ts` = Lesezugriffe). Seiten unter `src/app` enthalten keine Geschäftslogik.
+- Jede Server Action prüft zuerst die Rolle (`requireAdmin`, `requireVendorUser`) und bei Händlern die
+  Eigentümerschaft. Server Actions sind per POST von außen erreichbar.
+- Geld immer in Cent als `Int`, nie Float. Rundung nur in `splitLine()` (`src/lib/money.ts`).
+- Zahlung nur über die Provider-Schnittstelle `src/modules/payments/provider.ts`. Neue Anbieter als neuer
+  Provider, nie im Checkout verdrahten.
+- Bilder nur über den Storage-Adapter `src/modules/media/storage.ts`. Der lokale Adapter ist der Start; ein
+  S3-kompatibler Adapter kommt, sobald mehr als eine Instanz läuft.
+- Datenbank: Prisma, heute SQLite. Kein datenbankspezifisches SQL außer `SELECT 1` (Health) und dem
+  WAL-Pragma in `src/lib/db.ts`, das nur bei `file:`-URLs läuft. SQLite immer mit `connection_limit=1`
+  (gemessen, siehe `docs/STATUS.md`). Der Wechsel auf Postgres darf nur Provider und URL kosten.
+- Alles, was gleichzeitig passieren kann (Kauf, Bestand, Auszahlung), läuft in einer Transaktion mit
+  Wiederholung bei Kollision. Nach jeder Änderung daran `npm run test:parallel` mit 20 und 30 Käufern fahren.
+- Next.js 16: Cache Components sind bewusst aus (`cacheComponents: false`), weil der Shop durchgehend
+  nutzerabhängig rendert. Vor jeder Caching-Maßnahme `docs/SKALIERUNG.md` lesen.
+- Sprache: Deutsch mit echten Umlauten in allen sichtbaren Texten, Commits und Doku. Englisch nur in
+  Bezeichnern, Pfaden und Slugs.
+- Keine Secrets im Code. `.env.example` pflegen, `.env` nie committen.
+
+## Was nicht geht und warum
+
+- `git push` in ein Repo außerhalb der Session-Quellen und `git remote add` werden vom Sicherheitsfilter der
+  Cloud-Session blockiert. Das Ziel-Repo `sundsoffice-tech/trifuse-shop` muss vor der Session angelegt und
+  freigeschaltet sein, sonst bleibt nur das Bundle (`git bundle create`).
+- Im Cloud-Container gibt es keinen Docker-Daemon. Der Docker-Build ist bis zu einem Lauf auf einem Server
+  ungeprüft (Stand 29.10.2026).

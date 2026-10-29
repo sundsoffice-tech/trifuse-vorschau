@@ -45,7 +45,8 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
   await page.goto(base + "/haendler/wiesenkram");
-  const first = page.locator("article h3 a").first();
+  // Erstes Produkt, das nicht ausverkauft ist (Parallelproben kaufen Bestände leer).
+  const first = page.locator('article:not(:has-text("Ausverkauft")) h3 a').first();
   const title = (await first.textContent())?.trim();
   await first.click();
   await page.waitForURL(/\/produkt\//);

@@ -32,7 +32,10 @@ export async function checkoutAction(_prev: ActionState, formData: FormData): Pr
     );
     redirectUrl = (await provider.startCheckout(order)).redirectUrl;
   } catch (e) {
-    return { ok: false, message: e instanceof Error ? e.message : "Die Bestellung konnte nicht angelegt werden." };
+    // Technische Fehler (Prisma, Stripe) nie wortwörtlich an Kunden geben; fachliche Meldungen schon.
+    const technical = !(e instanceof Error) || e.name.startsWith("Prisma") || e.name.startsWith("Stripe");
+    if (technical) console.error("Checkout fehlgeschlagen:", e);
+    return { ok: false, message: technical ? "Die Bestellung konnte gerade nicht angelegt werden. Bitte in einem Moment noch einmal versuchen." : e.message };
   }
   redirect(redirectUrl);
 }

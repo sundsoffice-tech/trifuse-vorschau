@@ -57,8 +57,9 @@ npm run lint        # ESLint
 npm run typecheck   # TypeScript
 npm test            # Unit-Tests (Geld, Slugs, Statuslogik)
 npm run build       # Produktions-Build
-npm start           # dann in zweitem Terminal:
+npm start           # lokal; im Container läuft der Standalone-Build (node server.js). Dann in zweitem Terminal:
 npm run test:smoke  # Browser-Durchlauf: Seiten hell/dunkel, Kauf, Händlerportal, Admin-Freigabe, Auszahlung, API
+npm run test:parallel  # 12 gleichzeitige Käufer auf ein Produkt: kein Überverkauf
 ```
 
 Der Smoke-Test braucht Playwright (`npm i -D playwright && npx playwright install chromium` oder eine globale

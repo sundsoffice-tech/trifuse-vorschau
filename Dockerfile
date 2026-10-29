@@ -7,7 +7,7 @@ RUN npm ci
 
 FROM deps AS build
 COPY . .
-ENV DATABASE_URL="file:../data/shop.db"
+ENV DATABASE_URL="file:../data/shop.db?connection_limit=1&socket_timeout=30"
 RUN npm run build
 
 FROM node:22-bookworm-slim AS runtime

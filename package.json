@@ -13,7 +13,8 @@
     "db:seed": "node prisma/seed.mjs",
     "db:studio": "prisma studio",
     "test": "node --test test/*.test.mjs",
-    "test:smoke": "node test/smoke.mjs"
+    "test:smoke": "node test/smoke.mjs",
+    "test:parallel": "node test/parallel.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

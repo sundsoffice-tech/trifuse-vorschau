@@ -2,7 +2,7 @@ import "server-only";
 import { db } from "@/lib/db";
 import { splitLine } from "@/lib/money";
 import { getCartView } from "@/modules/cart/service";
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 export type CheckoutCustomer = {
   email: string;
@@ -28,9 +28,33 @@ async function nextOrderNumber(tx: Prisma.TransactionClient): Promise<string> {
  */
 export async function createOrderFromCart(customer: CheckoutCustomer, paymentProvider: string) {
   const cart = await getCartView();
-  if (cart.purchasable.length === 0) throw new Error("Der Warenkorb ist leer.");
+  if (cart.purchasable.length === 0) {
+    throw new Error(cart.items.length > 0 ? "Die Artikel in deinem Warenkorb sind inzwischen ausverkauft oder nicht mehr verfügbar." : "Der Warenkorb ist leer.");
+  }
   if (cart.hasProblems) throw new Error("Im Warenkorb gibt es Positionen, die nicht mehr verfügbar sind. Bitte prüfen.");
 
+  // Die Bestellnummer wird in der Transaktion ermittelt. Zwei gleichzeitige Käufe können dieselbe Nummer
+  // ziehen (unter Postgres realistisch); der Unique-Index meldet das, und wir versuchen es erneut.
+  // P2028: Transaktion abgelaufen, weil die Datenbank gesperrt war (gemessen bei 10 parallelen Käufern auf
+  // SQLite). Beides wird bis zu fünfmal wiederholt, danach bekommt der Kunde eine verständliche Meldung.
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await createOrderTransaction(cart, customer, paymentProvider);
+    } catch (e) {
+      const code = e instanceof Prisma.PrismaClientKnownRequestError ? e.code : null;
+      if (attempt < 5 && (code === "P2002" || code === "P2028")) {
+        await new Promise((r) => setTimeout(r, 100 * attempt + Math.floor(Math.random() * 100)));
+        continue;
+      }
+      if (code === "P2028") throw new Error("Gerade bestellen sehr viele Kunden gleichzeitig. Bitte in einem Moment noch einmal auf „Bestellen“ klicken.");
+      throw e;
+    }
+  }
+}
+
+const ORDER_TX_OPTIONS = { maxWait: 10_000, timeout: 20_000 };
+
+async function createOrderTransaction(cart: Awaited<ReturnType<typeof getCartView>>, customer: CheckoutCustomer, paymentProvider: string) {
   return db.$transaction(async (tx) => {
     const products = await tx.product.findMany({
       where: { id: { in: cart.purchasable.map((i) => i.productId) } },
@@ -76,7 +100,7 @@ export async function createOrderFromCart(customer: CheckoutCustomer, paymentPro
       },
       include: { items: true },
     });
-  });
+  }, ORDER_TX_OPTIONS);
 }
 
 export async function markOrderPaid(orderId: string, paymentRef: string | null) {
