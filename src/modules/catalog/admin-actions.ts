@@ -87,7 +87,15 @@ export async function adminCategoryAction(formData: FormData) {
     await db.category.create({ data: { name, slug: exists ? `${base}-${Date.now().toString(36)}` : base, sortOrder: (await db.category.count()) + 1 } });
   } else if (intent === "rename") {
     const name = field(formData, "name");
-    if (name.length >= 2) await db.category.update({ where: { id: field(formData, "id") }, data: { name, sortOrder: parseInt(field(formData, "sortOrder"), 10) || 0 } });
+    if (name.length >= 2) await db.category.update({ where: { id: field(formData, "id") }, data: { name } });
+  } else if (intent === "up" || intent === "down") {
+    const all = await db.category.findMany({ orderBy: [{ sortOrder: "asc" }, { name: "asc" }] });
+    const idx = all.findIndex((c) => c.id === field(formData, "id"));
+    const swap = intent === "up" ? idx - 1 : idx + 1;
+    if (idx >= 0 && swap >= 0 && swap < all.length) {
+      [all[idx], all[swap]] = [all[swap], all[idx]];
+      await db.$transaction(all.map((c, i) => db.category.update({ where: { id: c.id }, data: { sortOrder: i + 1 } })));
+    }
   } else if (intent === "delete") {
     const id = field(formData, "id");
     await db.product.updateMany({ where: { categoryId: id }, data: { categoryId: null } });

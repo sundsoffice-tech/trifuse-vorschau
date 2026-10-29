@@ -5,6 +5,7 @@ import { field, isValidEmail, type ActionState } from "@/lib/form";
 import { createOrderFromCart, markOrderPaid, cancelPendingOrder } from "./service";
 import { getPaymentProvider, paymentsMode } from "@/modules/payments";
 import { db } from "@/lib/db";
+import { clearCart } from "@/modules/cart/service";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/modules/auth/session";
 
@@ -20,7 +21,6 @@ export async function checkoutAction(_prev: ActionState, formData: FormData): Pr
   if (addressLine.length < 3) errors.addressLine = "Bitte Straße und Hausnummer angeben.";
   if (!/^\d{4,5}$/.test(postalCode)) errors.postalCode = "Bitte eine Postleitzahl angeben.";
   if (city.length < 2) errors.city = "Bitte den Ort angeben.";
-  if (field(formData, "agb") !== "1") errors.agb = "Bitte die AGB und die Widerrufsbelehrung bestätigen.";
   if (Object.keys(errors).length) return { ok: false, fieldErrors: errors, message: "Bitte die markierten Felder prüfen." };
 
   const provider = getPaymentProvider(paymentsMode());
@@ -47,6 +47,8 @@ export async function simulatePaymentAction(formData: FormData) {
   const result = field(formData, "result");
   if (result === "paid") {
     await markOrderPaid(orderId, `test_${Date.now().toString(36)}`);
+    await clearCart();
+    revalidatePath("/", "layout"); // sonst zeigt die Kopfzeile aus dem Router-Cache noch den alten Zähler
     redirect(`/bestellung/${orderId}`);
   }
   await cancelPendingOrder(orderId);

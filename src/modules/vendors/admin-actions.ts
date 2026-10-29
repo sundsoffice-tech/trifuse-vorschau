@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { field, floatField, isValidEmail, type ActionState } from "@/lib/form";
 import { requireAdmin } from "@/modules/auth/session";
-import { createVendorWithUser } from "./service";
+import { createVendorWithUser, ensureVendorUser } from "./service";
 import { hashPassword, generatePassword } from "@/lib/password";
 import type { VendorStatus } from "@prisma/client";
 
@@ -43,6 +43,8 @@ export async function adminUpdateVendorAction(_prev: ActionState, formData: Form
       status,
       commissionPercent,
       autoApprove: field(formData, "autoApprove") === "1",
+      city: field(formData, "city"),
+      website: field(formData, "website").slice(0, 300),
       description: field(formData, "description").slice(0, 3000),
       email: field(formData, "email").toLowerCase() || undefined,
       phone: field(formData, "phone"),
@@ -82,4 +84,15 @@ export async function adminDeleteVendorAction(formData: FormData) {
   ]);
   revalidatePath("/admin/haendler");
   redirect("/admin/haendler");
+}
+
+export async function adminCreateAccessAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdmin();
+  try {
+    const password = await ensureVendorUser(field(formData, "vendorId"));
+    revalidatePath(`/admin/haendler/${field(formData, "vendorId")}`);
+    return password ? { ok: true, message: `Zugang angelegt. Startpasswort, nur jetzt sichtbar: ${password}` } : { ok: true, message: "Es gibt schon einen Zugang." };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "Zugang konnte nicht angelegt werden." };
+  }
 }

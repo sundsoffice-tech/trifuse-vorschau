@@ -27,7 +27,7 @@ export const stripeProvider: PaymentProvider = {
           ? [{ quantity: 1, price_data: { currency: order.currency.toLowerCase(), unit_amount: order.shippingCents, product_data: { name: "Versand" } } }]
           : []),
       ],
-      success_url: appUrl(`/bestellung/${order.id}?session_id={CHECKOUT_SESSION_ID}`),
+      success_url: appUrl(`/bestellung/${order.id}/rueckkehr?session_id={CHECKOUT_SESSION_ID}`),
       cancel_url: appUrl(`/kasse?abgebrochen=${order.id}`),
     });
     if (!session.url) throw new Error("Stripe hat keine Checkout-URL geliefert.");

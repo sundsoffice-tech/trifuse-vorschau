@@ -34,8 +34,7 @@ const results = await Promise.all(Array.from({ length: n }, async (_, i) => {
     await page.fill("#addressLine", "Teststr. 1");
     await page.fill("#postalCode", "41189");
     await page.fill("#city", "Mönchengladbach");
-    await page.check("input[name=agb]");
-    await page.getByRole("button", { name: /Kostenpflichtig bestellen/ }).click();
+    await page.getByRole("button", { name: /Zahlungspflichtig bestellen/ }).click();
     // Entweder Weiterleitung zur Testkasse oder eine Fehlermeldung auf der Kassenseite.
     await Promise.race([
       page.waitForURL(/\/kasse\/test-zahlung\//, { timeout: 30000 }),

@@ -13,12 +13,12 @@ export function VendorApplyForm() {
   return (
     <form action={action} className="space-y-4" noValidate>
       {state && !state.ok && state.message ? <Alert tone="bad">{state.message}</Alert> : null}
-      <Field label="Name der Marke oder Firma" name="name" error={err.name}><input id="name" name="name" required className="input" /></Field>
-      <Field label="Ansprechpartner" name="contactName" error={err.contactName}><input id="contactName" name="contactName" required className="input" /></Field>
+      <Field label="Name deiner Marke oder Werkstatt" name="name" error={err.name}><input id="name" name="name" required className="input" /></Field>
+      <Field label="Dein Name" name="contactName" error={err.contactName}><input id="contactName" name="contactName" required className="input" /></Field>
       <Field label="E-Mail" name="email" error={err.email}><input id="email" name="email" type="email" required className="input" /></Field>
-      <Field label="Telefon (optional)" name="phone"><input id="phone" name="phone" type="tel" className="input" /></Field>
-      <Field label="Was stellst du her?" name="description" error={err.description}><textarea id="description" name="description" className="textarea" maxLength={1500} /></Field>
-      <Field label="Passwort für deinen Zugang" name="password" error={err.password} hint="Mindestens 10 Zeichen."><input id="password" name="password" type="password" autoComplete="new-password" required className="input" /></Field>
+      <Field label="Ort" name="city" error={err.city} hint="Steht später bei deinen Produkten, zum Beispiel „aus Viersen“."><input id="city" name="city" className="input" /></Field>
+      <Field label="Wo können wir deine Arbeit sehen? (optional)" name="website" hint="Website, Instagram oder ein anderer Link."><input id="website" name="website" type="url" className="input" placeholder="https://" /></Field>
+      <Field label="Was machst du?" name="description" error={err.description}><textarea id="description" name="description" className="textarea" maxLength={1500} /></Field>
       <SubmitButton className="btn btn-primary w-full" pendingText="Wird gesendet …">Bewerbung absenden</SubmitButton>
     </form>
   );

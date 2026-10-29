@@ -28,7 +28,7 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
   const page = await ctx.newPage();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  for (const path of ["/", "/produkte", "/produkte?kategorie=kueche", "/haendler", "/verkaufen", "/login", "/impressum"]) {
+  for (const path of ["/", "/produkte", "/produkte?kategorie=kueche", "/macher", "/macher/wiesenkram", "/verkaufen", "/login", "/impressum"]) {
     const res = await page.goto(base + path);
     check(res?.ok(), `${theme} ${width}px GET ${path} -> ${res?.status()}`);
   }
@@ -44,12 +44,13 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
-  await page.goto(base + "/haendler/wiesenkram");
+  await page.goto(base + "/macher/wiesenkram");
   // Erstes Produkt, das nicht ausverkauft ist (Parallelproben kaufen Bestände leer).
   const first = page.locator('article:not(:has-text("Ausverkauft")) h3 a').first();
   const title = (await first.textContent())?.trim();
   await first.click();
   await page.waitForURL(/\/produkt\//);
+  check((await page.textContent("body"))?.includes("gehen") ?? false, "Produktseite zeigt den Anteil für den Macher");
   await shoot(page, "produkt");
   await page.getByRole("button", { name: "In den Warenkorb" }).click();
   await page.getByText("Liegt im Warenkorb").waitFor();
@@ -62,14 +63,14 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
   await page.fill("#addressLine", "Nobelstr. 3");
   await page.fill("#postalCode", "41189");
   await page.fill("#city", "Mönchengladbach");
-  await page.check("input[name=agb]");
   await shoot(page, "kasse");
-  await page.getByRole("button", { name: /Kostenpflichtig bestellen/ }).click();
+  await page.getByRole("button", { name: /Zahlungspflichtig bestellen/ }).click();
   await page.waitForURL(/\/kasse\/test-zahlung\//);
   await page.getByRole("button", { name: "Zahlung erfolgreich" }).click();
   await page.waitForURL(/\/bestellung\//);
   const body = await page.textContent("body");
-  check(body?.includes("Deine Bestellung ist eingegangen") ?? false, "Bestellbestätigung nach Testzahlung");
+  check(body?.includes("Danke, deine Bestellung ist da") ?? false, "Bestellbestätigung nach Testzahlung");
+  check(!/Warenkorb\s*\d/.test(body ?? ""), "Warenkorb-Zähler nach dem Kauf leer");
   const number = body?.match(/M-\d{4}-\d{6}/)?.[0];
   check(Boolean(number), `Bestellnummer vergeben: ${number}`);
   await shoot(page, "bestellung");
@@ -94,7 +95,7 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   await page.fill("#description", "Automatisch angelegtes Testprodukt.");
   await page.fill("#price", "7,50");
   await page.fill("#stock", "5");
-  await page.getByRole("button", { name: /zur Freigabe einreichen/ }).click();
+  await page.getByRole("button", { name: /zur Freigabe schicken/ }).click();
   await page.waitForURL(/\/portal\/produkte\/(?!neu)[a-z0-9]+/);
   check((await page.textContent("body"))?.includes("Wartet auf Freigabe") ?? false, "Händlerprodukt wartet auf Freigabe");
   await shoot(page, "portal-produkt");
@@ -131,7 +132,7 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   await page.fill("input[name=reference]", "SMOKE-UEBERWEISUNG");
   await page.getByRole("button", { name: "Als überwiesen markieren" }).click();
   await page.waitForLoadState("networkidle");
-  check((await page.textContent("body"))?.includes("Diese Auszahlung ist abgeschlossen") ?? false, "Auszahlung als bezahlt markiert");
+  check((await page.textContent("body"))?.includes("Diese Auszahlung ist überwiesen") ?? false, "Auszahlung als überwiesen markiert");
   await page.goto(base + "/admin/bestellungen");
   await shoot(page, "admin-bestellungen");
   await ctx.close();

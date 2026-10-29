@@ -95,6 +95,8 @@ model Vendor {
   addressLine       String       @default("")
   postalCode        String       @default("")
   city              String       @default("")
+  // Wo das Team die Arbeit ansehen kann (Website, Instagram); kommt aus der Bewerbung.
+  website           String       @default("")
   users             User[]
   products          Product[]
   orderItems        OrderItem[]

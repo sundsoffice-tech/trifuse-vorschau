@@ -7,30 +7,30 @@ export const metadata: Metadata = { title: "Selbst verkaufen" };
 
 export default async function SellPage() {
   const commission = await getSettingNumber("commission_percent");
+  const makerPercent = Math.round(100 - commission);
   return (
     <div className="container-x py-10">
       <div className="grid lg:grid-cols-[1fr_440px] gap-10">
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Für Hersteller</p>
-          <h1 className="font-display text-4xl md:text-5xl font-semibold mt-2 leading-tight">Deine Produkte. Unser Marktplatz.</h1>
-          <p className="text-ink-2 text-lg mt-4 max-w-xl">Du stellst deine Produkte ein, wir übernehmen Kasse, Versand und Kundenservice. Du siehst jede verkaufte Position und bekommst deinen Anteil ausgezahlt.</p>
-          <ol className="mt-8 space-y-4">
+          <h1 className="font-display text-4xl md:text-5xl font-semibold leading-tight">Du machst es. Wir verkaufen es mit dir.</h1>
+          <p className="text-ink-2 text-lg mt-4 max-w-[60ch]">Du stellst deine Produkte ein, wir übernehmen Kasse, Verpackung, Versand und Kundendienst. Du siehst jeden Verkauf mit deinem Anteil in Euro und bekommst ihn gesammelt überwiesen.</p>
+          <ol className="mt-8 space-y-5">
             {[
-              ["Bewerben", "Kurzes Formular, wir melden uns innerhalb weniger Tage."],
-              ["Produkte einstellen", "Im Händlerbereich legst du Produkte mit Fotos, Preis und Bestand an. Wir prüfen und schalten frei."],
-              ["Verkaufen und auszahlen lassen", `Von jedem Verkauf behalten wir ${commission} % Provision. Der Rest wird dir gesammelt überwiesen, jede Position einzeln aufgeführt.`],
-            ].map(([t, d], i) => (
+              ["Bewerben", `Kurzes Formular. Wir antworten innerhalb von ${BRAND.applyResponseDays} Werktagen und schicken dir dann deinen Zugang.`],
+              ["Produkte einstellen", "In deinem Bereich legst du Produkte mit Fotos, Preis und Bestand an. Wir schauen kurz drüber und schalten frei."],
+              ["Verkaufen und Geld bekommen", `${makerPercent} % jedes Verkaufspreises gehen an dich, ${commission} % decken Verpackung, Versand, Zahlung und Kundendienst. Die Auszahlung kommt gesammelt, jeder Verkauf einzeln aufgeführt.`],
+            ].map(([t, d]) => (
               <li key={t} className="flex gap-4">
-                <span className="w-9 h-9 rounded-full bg-accent-soft text-accent font-semibold flex items-center justify-center shrink-0">{i + 1}</span>
+                <span className="marker mt-2 shrink-0" aria-hidden="true" />
                 <div><p className="font-semibold">{t}</p><p className="text-ink-2">{d}</p></div>
               </li>
             ))}
           </ol>
-          <p className="text-sm text-ink-3 mt-8">{BRAND.name} wird von {BRAND.operator} betrieben. Lagerung und Versand laufen über das Lager von {BRAND.operator}; auf Wunsch versendest du selbst.</p>
+          <p className="text-sm text-ink-2 mt-8 max-w-[60ch]">Deine Produkte lagern bei uns in Mönchengladbach und gehen mit anderen Bestellungen in einem Paket raus. Auf Wunsch verschickst du selbst.</p>
         </div>
         <div className="card p-6 md:p-7 h-fit">
-          <h2 className="font-semibold text-lg">Als Händler bewerben</h2>
-          <p className="text-sm text-ink-2 mt-1 mb-5">Nach der Freischaltung kannst du dich mit diesen Zugangsdaten anmelden.</p>
+          <h2 className="font-semibold text-lg">Bewerben</h2>
+          <p className="text-sm text-ink-2 mt-1 mb-5">Kein Passwort nötig. Deinen Zugang bekommst du mit der Zusage per E-Mail.</p>
           <VendorApplyForm />
         </div>
       </div>

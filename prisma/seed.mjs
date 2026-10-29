@@ -36,19 +36,19 @@ async function main() {
 
   const demoPassword = "haendler-demo-2026";
   const vendors = [
-    { slug: "lichtwerk-mg", name: "Lichtwerk MG", email: "lichtwerk@example.com", description: "Handgegossene Kerzen aus Rapswachs, gefertigt in Mönchengladbach.", contact: "Lea Brandt" },
-    { slug: "ton-und-tisch", name: "Ton & Tisch", email: "tonundtisch@example.com", description: "Steinzeug-Keramik für den Alltag, jedes Stück von Hand gedreht.", contact: "Milan Oster" },
-    { slug: "wiesenkram", name: "Wiesenkram", email: "wiesenkram@example.com", description: "Honig, Tee und Seife vom eigenen Hof am Niederrhein.", contact: "Hanna Vogt" },
+    { slug: "lichtwerk-mg", name: "Lichtwerk MG", email: "lichtwerk@example.com", city: "Mönchengladbach", description: "Lea gießt Kerzen aus Rapswachs in ihrer Werkstatt in Rheydt. Jede Kerze wird von Hand gegossen, geduldig abgekühlt und einzeln geprüft.", contact: "Lea Brandt", iban: "DE02120300000000202051" },
+    { slug: "ton-und-tisch", name: "Ton & Tisch", email: "tonundtisch@example.com", city: "Viersen", description: "Milan dreht Steinzeug für den Alltag: Schalen, Becher, Bretter. Alles entsteht an der Scheibe in Viersen und wird zweimal gebrannt.", contact: "Milan Oster", iban: "" },
+    { slug: "wiesenkram", name: "Wiesenkram", email: "wiesenkram@example.com", city: "Niederrhein", description: "Hanna führt einen kleinen Hof am Niederrhein: Bienen, Kräuterbeete, eine Seifenküche. Was sie dort macht, verkauft sie hier.", contact: "Hanna Vogt", iban: "DE75512108001245126199" },
   ];
   const created = {};
   for (const v of vendors) {
     created[v.slug] = await db.vendor.create({
-      data: { slug: v.slug, name: v.name, email: v.email, description: v.description, status: "ACTIVE", commissionPercent: 15, autoApprove: false, users: { create: { email: v.email, name: v.contact, role: "VENDOR", passwordHash: hashPassword(demoPassword) } } },
+      data: { slug: v.slug, name: v.name, email: v.email, city: v.city, description: v.description, status: "ACTIVE", commissionPercent: 15, autoApprove: false, payoutHolder: v.contact, payoutIban: v.iban, users: { create: { email: v.email, name: v.contact, role: "VENDOR", passwordHash: hashPassword(demoPassword) } } },
     });
   }
   const cat = async (slug) => (await db.category.findUnique({ where: { slug } }))?.id ?? null;
   const products = [
-    ["lichtwerk-mg", "Rapswachskerze Terrakotta", 1890, 2290, 24, "wohnen", "kerze", "Handgegossen in Terrakotta-Becher, Brenndauer rund 40 Stunden. Duftfrei."],
+    ["lichtwerk-mg", "Rapswachskerze Terrakotta", 1890, 2290, 24, "wohnen", "kerze", "Handgegossen in einen Terrakotta-Becher, Brenndauer rund 40 Stunden. Duftfrei, rußarm, der Becher lässt sich nachfüllen."],
     ["lichtwerk-mg", "Stabkerzen Set Sand", 1450, null, 40, "wohnen", "kerze", "Sechs Stabkerzen aus Rapswachs, 25 cm, gedeckter Sandton."],
     ["ton-und-tisch", "Müsli-Schale Salbei", 2400, null, 12, "kueche", "schale", "Steinzeug, 14 cm Durchmesser, spülmaschinenfest. Glasur Salbeigrün."],
     ["ton-und-tisch", "Servierbrett Eiche", 3900, 4500, 6, "kueche", "brett", "Geöltes Eichenholz mit Lederschlaufe, 40 x 18 cm."],

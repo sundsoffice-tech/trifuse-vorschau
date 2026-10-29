@@ -1,6 +1,6 @@
 # Stand
 
-Stand: 29.10.2026 (Session 1, Fabrice)
+Stand: 29.10.2026, abends (Session 1, Fabrice)
 
 ## Live
 
@@ -12,6 +12,13 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
 
 ## Fertig und geprüft
 
+- **Marke und Gestaltung (29.10.2026, abends):** trifuse.store, Standardweg in voller Qualität nach `DESIGN.md`.
+  Alle 58 Künstler-Funde (`docs/KUENSTLER-2026-10-29.md`) eingearbeitet: Macheranteil an jedem Produkt,
+  Warenkorb nach Kauf leer, Versandkosten am Produkt, Suche am Handy, Plus/Minus im Warenkorb, Kasse ohne
+  Haken, Bewerbung ohne Passwort, Auszahlung ohne IBAN gesperrt, Auszahlungstermin sichtbar, deutsche
+  Foto-Auswahl, ein Wort „Macher“, Umbrüche und Kontraste, Seitenleiste durchgehend, Grammatik in Zahlen.
+  Nicht lösbar ohne Fabrice: echte Produktfotos (Platzhalter sagen jetzt „Foto folgt“).
+
 - Shop, Händlerportal, Verwaltung, Kasse (Stripe oder Testkasse), Auszahlungen je Händler, Headless-API,
   Seed mit Demo-Daten, Dockerfile und Compose.
 - Prüfkette grün: Lint, TypeScript, 4 Unit-Tests, Build, Smoke-Test mit 27 Prüfungen, Screenshots angesehen.
@@ -19,8 +26,9 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
 ## Offen, nach Dringlichkeit
 
 1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.
-2. Entscheiden, ob der Shop ein eigenes Repo bekommt (`trifuse-shop`) oder im Branch bleibt.
-2. Markenname festlegen (`NEXT_PUBLIC_BRAND_NAME`).
+2. Echte Fotos von Machern und Produkten; bis dahin Platzhalter „Foto folgt“.
+3. Kundendienst-Adresse service@trifuse.store einrichten (steht auf Bestellbestätigung und in der Fußzeile).
+4. Entscheiden, ob der Shop ein eigenes Repo bekommt (`trifuse-shop`) oder im Branch bleibt.
 3. Impressum, Datenschutz, AGB, Widerruf: Platzhalter füllen, juristisch prüfen.
 4. Stripe-Schlüssel und Webhook einrichten, einmal echten Testkauf im Stripe-Testmodus durchführen.
 5. Bestellbestätigung und Händler-Benachrichtigung per Mail (Versandweg des Hauses, kein eigener SMTP).

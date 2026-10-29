@@ -43,7 +43,7 @@ export function LegalPage({ slug, title }: { slug: string; title: string }) {
   return (
     <div className="container-x py-10 max-w-3xl">
       <h1 className="font-display text-3xl md:text-4xl font-semibold">{title}</h1>
-      <div className="mt-4"><Alert tone="warn">Platzhaltertext. Felder in eckigen Klammern mit den Daten von {BRAND.name} füllen und vor dem Start juristisch prüfen lassen.</Alert></div>
+      <div className="mt-4"><Alert tone="warn">Platzhaltertext. Felder in eckigen Klammern mit den Daten des Betreibers von {BRAND.name} füllen und vor dem Start juristisch prüfen lassen.</Alert></div>
       <div className="prose mt-6 text-ink-2">{paragraphs.map((p, i) => <p key={i}>{p}</p>)}</div>
     </div>
   );

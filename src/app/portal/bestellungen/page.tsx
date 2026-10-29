@@ -2,7 +2,7 @@ import { requireVendorUser } from "@/modules/auth/session";
 import { db } from "@/lib/db";
 import { vendorSetFulfillmentAction } from "@/modules/catalog/vendor-actions";
 import { formatCents } from "@/lib/money";
-import { StatusBadge } from "@/components/ui/status-badge";
+import { fulfillmentText } from "@/modules/orders/texts";
 import { Empty } from "@/components/ui/empty";
 
 export default async function PortalSales() {
@@ -14,34 +14,31 @@ export default async function PortalSales() {
   });
   return (
     <div className="space-y-6">
-      <div><h1 className="font-display text-3xl font-semibold">Verkäufe</h1><p className="text-ink-2">Jede bezahlte Position einzeln, mit deinem Anteil nach Provision.</p></div>
-      {items.length === 0 ? <Empty title="Noch keine Verkäufe" text="Sobald ein Kunde eines deiner Produkte bezahlt hat, steht es hier." /> : (
+      <div><h1 className="font-display text-3xl font-semibold">Verkäufe</h1><p className="text-ink-2">Jeder bezahlte Verkauf einzeln, mit dem Betrag, der zu dir kommt.</p></div>
+      {items.length === 0 ? <Empty title="Noch keine Verkäufe" text="Sobald jemand eines deiner Produkte bezahlt hat, steht es hier." /> : (
         <div className="card table-wrap">
           <table className="table">
-            <thead><tr><th>Datum</th><th>Bestellung</th><th>Produkt</th><th>Menge</th><th>Brutto</th><th>Provision</th><th>Dein Anteil</th><th>Versand</th><th>Auszahlung</th></tr></thead>
+            <thead><tr><th className="nowrap">Bezahlt am</th><th className="nowrap">Bestellung</th><th>Produkt</th><th>Stück</th><th className="nowrap">Verkaufspreis</th><th className="nowrap">Kommt zu dir</th><th>Versand</th><th>Auszahlung</th></tr></thead>
             <tbody>
               {items.map((i) => (
                 <tr key={i.id}>
-                  <td className="whitespace-nowrap">{i.order.paidAt?.toLocaleDateString("de-DE") ?? "–"}</td>
-                  <td>{i.order.number}</td>
-                  <td>{i.title}{i.sku ? <span className="block text-xs text-ink-3">{i.sku}</span> : null}</td>
+                  <td className="nowrap">{i.order.paidAt?.toLocaleDateString("de-DE") ?? "–"}</td>
+                  <td className="nowrap">{i.order.number}</td>
+                  <td>{i.title}</td>
                   <td>{i.quantity}</td>
-                  <td>{formatCents(i.lineTotalCents)}</td>
-                  <td className="text-ink-3">{i.commissionPercent} % · {formatCents(i.commissionCents)}</td>
-                  <td className="font-semibold">{formatCents(i.vendorNetCents)}</td>
-                  <td>
-                    {i.shippingBy === "VENDOR" ? (
-                      <form action={vendorSetFulfillmentAction} className="flex items-center gap-1">
+                  <td className="nowrap">{formatCents(i.lineTotalCents)}</td>
+                  <td className="nowrap font-semibold">{formatCents(i.vendorNetCents)}<span className="block text-xs text-ink-2 font-normal">nach {i.commissionPercent} % für Versand und Service</span></td>
+                  <td className="min-w-[220px]">
+                    {i.shippingBy === "VENDOR" && (i.fulfillment === "NEW" || i.fulfillment === "PACKED") ? (
+                      <form action={vendorSetFulfillmentAction} className="space-y-2">
                         <input type="hidden" name="itemId" value={i.id} />
-                        <select name="fulfillment" defaultValue={i.fulfillment} className="select !min-h-[36px] !py-1 !w-auto text-sm">
-                          <option value="NEW">Neu</option><option value="PACKED">Gepackt</option><option value="SHIPPED">Versendet</option><option value="DELIVERED">Zugestellt</option>
-                        </select>
-                        <button className="btn btn-ghost btn-sm" type="submit">OK</button>
-                        <details className="text-xs"><summary className="cursor-pointer text-ink-3">Adresse</summary><p>{i.order.name}<br />{i.order.addressLine}<br />{i.order.postalCode} {i.order.city}</p></details>
+                        <input type="hidden" name="fulfillment" value="SHIPPED" />
+                        <p className="text-sm">Bitte an {i.order.name}, {i.order.addressLine}, {i.order.postalCode} {i.order.city} schicken.</p>
+                        <button className="btn btn-primary btn-sm" type="submit">Als verschickt markieren</button>
                       </form>
-                    ) : <span className="flex items-center gap-2"><StatusBadge status={i.fulfillment} /><span className="text-xs text-ink-3">Lager</span></span>}
+                    ) : <span className="text-sm">{fulfillmentText(i.fulfillment, i.shippingBy)}</span>}
                   </td>
-                  <td>{i.payoutId ? <span className="badge badge-ok">in Auszahlung</span> : <span className="badge badge-muted">offen</span>}</td>
+                  <td>{i.payoutId ? <span className="badge badge-ok">in Auszahlung</span> : <span className="badge badge-muted">noch offen</span>}</td>
                 </tr>
               ))}
             </tbody>

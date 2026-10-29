@@ -48,7 +48,7 @@ if ! grep -qs '^DATABASE_URL=' "$ORDNER/.env"; then
   cat >> "$ORDNER/.env" <<ENV
 DATABASE_URL="file:$ORDNER/daten/shop.db?connection_limit=1&socket_timeout=30"
 APP_URL="https://$DOMAIN"
-NEXT_PUBLIC_BRAND_NAME="Marktplatz"
+NEXT_PUBLIC_BRAND_NAME="trifuse.store"
 ADMIN_EMAIL="admin@sundsconnect.de"
 ADMIN_PASSWORD="$ADMIN_PASSWORD"
 PAYMENTS_MODE="test"

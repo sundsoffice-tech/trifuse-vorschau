@@ -7,7 +7,7 @@ export default async function PortalLayout({ children }: { children: React.React
   const vendor = await db.vendor.findUnique({ where: { id: user.vendorId }, select: { name: true } });
   return (
     <BackofficeShell
-      title="Händlerbereich"
+      title="Macherbereich"
       subtitle={vendor?.name ?? user.email}
       links={[
         { href: "/portal", label: "Übersicht", exact: true },

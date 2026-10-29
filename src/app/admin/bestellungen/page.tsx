@@ -13,21 +13,21 @@ export default async function AdminOrders({ searchParams }: { searchParams: Prom
   return (
     <div className="space-y-6">
       <h1 className="font-display text-3xl font-semibold">Bestellungen</h1>
-      <div className="flex flex-wrap gap-2">{tabs.map((t) => <Link key={t.value} href={`/admin/bestellungen?status=${t.value}`} className={`badge !py-1.5 !px-3 ${status === t.value ? "badge-accent" : "badge-muted"}`}>{t.label}</Link>)}</div>
+      <div className="flex flex-wrap gap-2">{tabs.map((t) => <Link key={t.value} href={`/admin/bestellungen?status=${t.value}`} className="chip !min-h-[40px]" aria-current={status === t.value ? "true" : undefined}>{t.label}</Link>)}</div>
       <div className="card table-wrap"><table className="table">
-        <thead><tr><th>Nummer</th><th>Datum</th><th>Kunde</th><th>Händler</th><th>Versand</th><th>Summe</th><th>Status</th></tr></thead>
+        <thead><tr><th>Nummer</th><th>Datum</th><th>Kunde</th><th>Macher</th><th>Versand</th><th>Summe</th><th>Stand</th></tr></thead>
         <tbody>
           {orders.map((o) => {
             const vendors = [...new Set(o.items.map((i) => i.vendor.name))];
             const shipped = o.items.filter((i) => i.fulfillment === "SHIPPED" || i.fulfillment === "DELIVERED").length;
             return (
               <tr key={o.id}>
-                <td><Link href={`/admin/bestellungen/${o.id}`} className="text-accent font-semibold">{o.number}</Link></td>
-                <td className="whitespace-nowrap">{o.createdAt.toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" })}</td>
-                <td>{o.name}<span className="block text-xs text-ink-3">{o.postalCode} {o.city}</span></td>
-                <td className="text-xs">{vendors.join(", ")}</td>
-                <td>{o.status === "PAID" ? <span className={`badge ${shipped === o.items.length ? "badge-ok" : "badge-warn"}`}>{shipped}/{o.items.length} versendet</span> : "–"}</td>
-                <td>{formatCents(o.totalCents)}</td>
+                <td className="nowrap"><Link href={`/admin/bestellungen/${o.id}`} className="text-accent-text font-semibold">{o.number}</Link></td>
+                <td className="nowrap">{o.createdAt.toLocaleString("de-DE", { dateStyle: "short", timeStyle: "short" })}</td>
+                <td>{o.name}<span className="block text-xs text-ink-2">{o.postalCode} {o.city}</span></td>
+                <td>{vendors.join(", ")}</td>
+                <td className="nowrap">{o.status === "PAID" ? <span className={`badge ${shipped === o.items.length ? "badge-ok" : "badge-warn"}`}>{shipped} von {o.items.length} verschickt</span> : "–"}</td>
+                <td className="nowrap">{formatCents(o.totalCents)}</td>
                 <td><StatusBadge status={o.status} kind="order" /></td>
               </tr>
             );

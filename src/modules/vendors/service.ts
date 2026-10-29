@@ -60,3 +60,34 @@ export async function getVendorForAdmin(id: string) {
     include: { users: { select: { id: true, email: true, name: true } }, _count: { select: { products: true } } },
   });
 }
+
+/** Bewerbung ohne Zugang: Der Benutzer entsteht erst bei der Freischaltung durch das Team (Künstler-Fund 36). */
+export async function createVendorApplication(input: { name: string; contactName: string; email: string; description: string; city: string; website: string; phone: string }) {
+  const email = input.email.toLowerCase();
+  if (await db.vendor.findFirst({ where: { email } })) throw new Error("Mit dieser E-Mail gibt es schon eine Bewerbung oder einen Zugang.");
+  const commissionPercent = await getSettingNumber("commission_percent");
+  return db.vendor.create({
+    data: {
+      name: input.name,
+      slug: await uniqueVendorSlug(input.name),
+      email,
+      phone: input.phone,
+      description: input.description,
+      city: input.city,
+      website: input.website,
+      payoutHolder: input.contactName,
+      status: "PENDING",
+      commissionPercent,
+    },
+  });
+}
+
+/** Freischaltung: legt den ersten Zugang an, wenn es noch keinen gibt. Liefert das Startpasswort. */
+export async function ensureVendorUser(vendorId: string) {
+  const vendor = await db.vendor.findUniqueOrThrow({ where: { id: vendorId }, include: { users: true } });
+  if (vendor.users.length > 0) return null;
+  if (await db.user.findUnique({ where: { email: vendor.email } })) throw new Error("Für diese E-Mail gibt es schon einen Zugang.");
+  const password = generatePassword();
+  await db.user.create({ data: { email: vendor.email, passwordHash: await hashPassword(password), name: vendor.payoutHolder || vendor.name, role: "VENDOR", vendorId } });
+  return password;
+}

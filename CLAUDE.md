@@ -9,9 +9,11 @@ der Weg nach oben in `docs/SKALIERUNG.md`, der aktuelle Stand in `docs/STATUS.md
 1. **Eigenbau.** Kein Medusa, kein Shopify, kein Saleor, kein fremdes Commerce-Backend. Vorbild ist die
    modulare Architektur von Medusa, der Code gehört komplett uns. Fremde Pakete nur für Infrastruktur
    (Next.js, Prisma, Stripe-SDK, Zod), nie für Geschäftslogik.
-2. **Eigene Marke.** Der Marktplatz tritt nach außen nicht als trifuse auf. trifuse ist Betreiber im
-   Hintergrund (Kasse, Lager, Service). Markenname über `NEXT_PUBLIC_BRAND_NAME`; solange keiner feststeht,
-   steht dort der Arbeitstitel „Marktplatz“. Nirgends „trifuse“ als sichtbaren Markennamen verwenden.
+2. **Marke: trifuse.store** (Domain gekauft, Fabrice 29.10.2026). Die Endkunden-Marke von trifuse, erkennbar
+   verwandt (Marine, Orange, Taschen-Symbol), mit eigenem Auftritt für Käufer. Das Versprechen „Direkt vom
+   Macher, fair ausgezahlt“ steht als Zeile mit Betrag an jedem Produkt. Gestaltung: `DESIGN.md`
+   (Standardweg in voller Qualität, Maßstab Manufactum und Etsy, Fabrices Wahl am 29.10.2026), Produktwahrheit:
+   `PRODUCT.md`. Wortwahl: Macher, Verkauf, Art, „kommt zu dir“; nie Händler, Position, Netto im Kundentext.
 3. **Zentrale Kasse, getrennte Buchführung je Händler.** Ein Warenkorb über alle Händler, eine Zahlung an den
    Marktplatz. Jede Bestellposition friert Händler, Preis, Provisionssatz, Provision und Händleranteil in Cent
    ein, damit die Ausschüttung später ohne Nachrechnen stimmt. Diese Einfrierung darf nie durch eine Berechnung
@@ -33,7 +35,9 @@ npm run test:parallel  # bei Änderungen an Kauf, Bestand oder Transaktionen: 20
 
 Dazu die Hausregel HINSEHEN: Alles Sichtbare in den Screenshots unter `test/ergebnisse/` ansehen, beide
 Themes, schmal und breit. Ein grüner Test belegt nicht, dass es gut aussieht. Wer etwas Sichtbares ändert, das
-der Smoke-Test nicht abdeckt, ergänzt den Smoke-Test.
+der Smoke-Test nicht abdeckt, ergänzt den Smoke-Test. Vor jeder sichtbaren Änderung `DESIGN.md` und die
+Verbotsliste im Skill `dossier` lesen; nach größeren Änderungen den Künstler-Agenten über
+`node test/vorschau.mjs` laufen lassen (Vorbild: `docs/KUENSTLER-2026-10-29.md`).
 
 ## Architekturregeln
 

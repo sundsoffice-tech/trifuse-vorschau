@@ -10,9 +10,9 @@ export default async function NewVendorProduct() {
   const [vendor, categories] = await Promise.all([db.vendor.findUniqueOrThrow({ where: { id: user.vendorId } }), listCategories()]);
   return (
     <div className="space-y-6 max-w-3xl">
-      <div><h1 className="font-display text-3xl font-semibold">Neues Produkt</h1><p className="text-ink-2">{vendor.autoApprove ? "Du kannst direkt veröffentlichen." : "Nach dem Einreichen prüft das Marktplatz-Team dein Produkt, meist innerhalb von zwei Werktagen."}</p></div>
-      {vendor.status !== "ACTIVE" ? <Alert tone="warn">Dein Konto ist noch nicht freigeschaltet. Speichern ist erst danach möglich.</Alert> : null}
-      <ProductForm action={saveVendorProductAction} categories={categories} mode="vendor" canPublishDirectly={vendor.autoApprove} />
+      <div><h1 className="font-display text-3xl font-semibold">Neues Produkt</h1><p className="text-ink-2">{vendor.autoApprove ? "Du kannst es direkt in den Shop stellen." : "Nach dem Abschicken schauen wir kurz drüber, meist innerhalb von zwei Werktagen, und schalten frei."}</p></div>
+      {vendor.status !== "ACTIVE" ? <Alert tone="warn">Dein Konto ist noch nicht freigeschaltet. Speichern geht erst danach.</Alert> : null}
+      <ProductForm action={saveVendorProductAction} categories={categories} mode="vendor" canPublishDirectly={vendor.autoApprove} commissionPercent={vendor.commissionPercent} />
     </div>
   );
 }

@@ -1,7 +1,8 @@
 "use server";
 
 import { field, isValidEmail, type ActionState } from "@/lib/form";
-import { createVendorWithUser } from "./service";
+import { createVendorApplication } from "./service";
+import { BRAND } from "@/lib/brand";
 import { requireVendorUser } from "@/modules/auth/session";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
@@ -13,27 +14,29 @@ export async function applyAsVendorAction(_prev: ActionState, formData: FormData
   const name = field(formData, "name");
   const contactName = field(formData, "contactName");
   const email = field(formData, "email").toLowerCase();
-  const password = field(formData, "password");
   const description = field(formData, "description");
+  const city = field(formData, "city");
+  const website = field(formData, "website").slice(0, 300);
   if (name.length < 2) errors.name = "Bitte den Namen angeben.";
-  if (contactName.length < 2) errors.contactName = "Bitte einen Ansprechpartner angeben.";
+  if (contactName.length < 2) errors.contactName = "Bitte deinen Namen angeben.";
   if (!isValidEmail(email)) errors.email = "Bitte eine gültige E-Mail-Adresse angeben.";
-  if (password.length < 10) errors.password = "Mindestens 10 Zeichen.";
   if (description.length < 10) errors.description = "Ein, zwei Sätze helfen uns bei der Einschätzung.";
   if (Object.keys(errors).length) return { ok: false, fieldErrors: errors, message: "Bitte die markierten Felder prüfen." };
   try {
-    await createVendorWithUser({ name, contactName, email, password, description, phone: field(formData, "phone"), status: "PENDING" });
+    await createVendorApplication({ name, contactName, email, description, city, website, phone: field(formData, "phone") });
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Bewerbung konnte nicht gespeichert werden." };
   }
   revalidatePath("/admin/haendler");
-  return { ok: true, message: "Danke, deine Bewerbung ist angekommen. Wir prüfen sie und melden uns per E-Mail. Danach kannst du dich anmelden." };
+  return { ok: true, message: `Danke, deine Bewerbung ist angekommen. Wir melden uns innerhalb von ${BRAND.applyResponseDays} Werktagen per E-Mail und schicken dir dann deinen Zugang.` };
 }
 
 export async function updateVendorProfileAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const user = await requireVendorUser();
   const name = field(formData, "name");
   if (name.length < 2) return { ok: false, fieldErrors: { name: "Bitte den Namen angeben." } };
+  const iban = field(formData, "payoutIban").replace(/\s+/g, "").toUpperCase();
+  if (iban && !/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban)) return { ok: false, fieldErrors: { payoutIban: "Das sieht nicht nach einer IBAN aus (Länderkennung, zwei Ziffern, dann 11 bis 30 Zeichen)." } };
   const logo = formData.get("logo");
   let logoPath: string | undefined;
   if (logo instanceof File && logo.size > 0) {
@@ -54,8 +57,9 @@ export async function updateVendorProfileAction(_prev: ActionState, formData: Fo
       addressLine: field(formData, "addressLine"),
       postalCode: field(formData, "postalCode"),
       city: field(formData, "city"),
+      website: field(formData, "website").slice(0, 300),
       payoutHolder: field(formData, "payoutHolder"),
-      payoutIban: field(formData, "payoutIban").replace(/\s+/g, "").toUpperCase(),
+      payoutIban: iban,
       ...(logoPath ? { logoPath } : {}),
     },
   });

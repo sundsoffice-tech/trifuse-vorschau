@@ -27,23 +27,34 @@ async function login(page, who) {
   await page.getByRole("button", { name: "In den Warenkorb" }).click(); await page.getByText("Liegt im Warenkorb").waitFor();
   await page.goto(base + "/produkt/muesli-schale-salbei"); await page.selectOption("#quantity", "2");
   await page.getByRole("button", { name: "In den Warenkorb" }).click(); await page.getByText("Liegt im Warenkorb").waitFor();
-  await page.goto(base + "/haendler"); await shoot(page, "shop-marken");
+  await page.goto(base + "/macher"); await shoot(page, "shop-macher");
   await page.goto(base + "/warenkorb"); await shoot(page, "shop-warenkorb");
   await page.goto(base + "/kasse");
   await page.fill("#email", "anna.beispiel@example.com"); await page.fill("#name", "Anna Beispiel"); await page.fill("#addressLine", "Lindenstraße 12");
-  await page.fill("#postalCode", "41061"); await page.fill("#city", "Mönchengladbach"); await page.check("input[name=agb]");
+  await page.fill("#postalCode", "41061"); await page.fill("#city", "Mönchengladbach"); await page.fill("#note", "Alles Gute zum Geburtstag, Mama!");
   await shoot(page, "shop-kasse");
-  await page.getByRole("button", { name: /Kostenpflichtig bestellen/ }).click(); await page.waitForURL(/test-zahlung/);
+  await page.getByRole("button", { name: /Zahlungspflichtig bestellen/ }).click(); await page.waitForURL(/test-zahlung/);
   await shoot(page, "shop-testkasse");
   await page.getByRole("button", { name: "Zahlung erfolgreich" }).click(); await page.waitForURL(/\/bestellung\//);
   await shoot(page, "shop-bestellung");
   await page.goto(base + "/verkaufen"); await shoot(page, "shop-verkaufen");
   await ctx.close();
 }
+// Hell am Handy, dunkel am Rechner (Künstler: nicht angesehen)
+{
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 }); const page = await ctx.newPage();
+  await page.goto(base + "/produkt/muesli-schale-salbei"); await shoot(page, "mobil-produkt-hell", false);
+  await page.goto(base + "/kasse"); await shoot(page, "mobil-kasse-hell", false);
+  await ctx.close();
+  const ctx2 = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: "dark" }); const page2 = await ctx2.newPage();
+  await page2.goto(base + "/produkte"); await shoot(page2, "desktop-produkte-dunkel", false);
+  await ctx2.close();
+}
 // Mobil und dunkel
 {
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: "dark", deviceScaleFactor: 2 }); const page = await ctx.newPage();
   await page.goto(base + "/"); await shoot(page, "mobil-start-dunkel", false);
+  await page.goto(base + "/warenkorb"); await shoot(page, "mobil-warenkorb-dunkel", false);
   await page.goto(base + "/produkt/rapswachskerze-terrakotta"); await shoot(page, "mobil-produkt-dunkel", false);
   await page.goto(base + "/produkte?kategorie=kueche"); await shoot(page, "mobil-kategorie-dunkel", false);
   await ctx.close();

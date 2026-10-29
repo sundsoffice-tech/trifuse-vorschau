@@ -43,6 +43,8 @@ export async function openPayoutsOverview() {
 
 /** Fasst alle offenen Positionen eines Händlers zu einem Auszahlungsentwurf zusammen. */
 export async function createPayoutDraft(vendorId: string, note = "") {
+  const vendor = await db.vendor.findUniqueOrThrow({ where: { id: vendorId }, select: { payoutIban: true, name: true } });
+  if (!vendor.payoutIban) throw new Error(`Für ${vendor.name} fehlt die Bankverbindung. Erst eintragen, dann auszahlen.`);
   return db.$transaction(async (tx) => {
     const items = await tx.orderItem.findMany({ where: { vendorId, payoutId: null, order: { status: "PAID" } }, select: { id: true, vendorNetCents: true } });
     if (items.length === 0) throw new Error("Keine offenen Positionen für diesen Händler.");
@@ -55,6 +57,8 @@ export async function createPayoutDraft(vendorId: string, note = "") {
 }
 
 export async function markPayoutPaid(payoutId: string, reference: string) {
+  const payout = await db.payout.findUniqueOrThrow({ where: { id: payoutId }, include: { vendor: { select: { payoutIban: true, name: true } } } });
+  if (!payout.vendor.payoutIban) throw new Error(`Für ${payout.vendor.name} fehlt die Bankverbindung. Ohne sie kann nichts überwiesen worden sein.`);
   return db.payout.update({ where: { id: payoutId }, data: { status: "PAID", paidAt: new Date(), reference } });
 }
 

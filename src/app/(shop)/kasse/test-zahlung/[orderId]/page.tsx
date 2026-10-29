@@ -13,10 +13,9 @@ export default async function TestPaymentPage({ params }: { params: Promise<{ or
   return (
     <div className="container-x py-12 max-w-lg">
       <div className="card p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.15em] text-warn font-semibold">Testkasse</p>
-        <h1 className="font-display text-3xl font-semibold mt-1">Zahlung simulieren</h1>
-        <div className="mt-4"><Alert tone="warn">Es fliesst kein Geld. Dieser Schritt ersetzt die echte Kasse, solange der Shop im Testmodus läuft.</Alert></div>
-        <dl className="mt-5 text-sm space-y-1">
+        <h1 className="font-display text-3xl font-semibold">Testkasse</h1>
+        <div className="mt-4"><Alert tone="warn">Testbetrieb: Hier fließt kein Geld. Dieser Schritt steht an der Stelle der echten Zahlung, bis der Shop live geht.</Alert></div>
+        <dl className="mt-5 text-sm space-y-1 num">
           <div className="flex justify-between"><dt className="text-ink-2">Bestellung</dt><dd>{order.number}</dd></div>
           <div className="flex justify-between font-semibold"><dt>Betrag</dt><dd>{formatCents(order.totalCents)}</dd></div>
         </dl>

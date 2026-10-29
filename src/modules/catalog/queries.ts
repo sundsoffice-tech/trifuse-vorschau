@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 
 export const productCardInclude = {
   images: { orderBy: { sortOrder: "asc" as const }, take: 1 },
-  vendor: { select: { id: true, name: true, slug: true } },
+  vendor: { select: { id: true, name: true, slug: true, city: true, commissionPercent: true } },
   category: { select: { id: true, name: true, slug: true } },
 } satisfies Prisma.ProductInclude;
 
@@ -40,10 +40,12 @@ export async function listActiveProducts(filter: CatalogFilter = {}) {
   const orderBy: Prisma.ProductOrderByWithRelationInput =
     filter.sort === "preis-auf" ? { priceCents: "asc" } : filter.sort === "preis-ab" ? { priceCents: "desc" } : { createdAt: "desc" };
 
-  const [items, total] = await Promise.all([
+  const [fetched, total] = await Promise.all([
     db.product.findMany({ where, include: productCardInclude, orderBy, skip: (page - 1) * perPage, take: perPage }),
     db.product.count({ where }),
   ]);
+  // Ausverkauftes ans Ende der Seite (Künstler-Fund 13), Reihenfolge sonst unverändert.
+  const items = [...fetched.filter((p) => p.stock > 0), ...fetched.filter((p) => p.stock <= 0)];
   return { items, total, page, perPage, pages: Math.max(1, Math.ceil(total / perPage)) };
 }
 
@@ -52,7 +54,7 @@ export async function getActiveProductBySlug(slug: string) {
     where: { slug, status: "ACTIVE", vendor: { status: "ACTIVE" } },
     include: {
       images: { orderBy: { sortOrder: "asc" } },
-      vendor: { select: { id: true, name: true, slug: true, description: true, logoPath: true } },
+      vendor: { select: { id: true, name: true, slug: true, description: true, logoPath: true, city: true, commissionPercent: true } },
       category: true,
     },
   });

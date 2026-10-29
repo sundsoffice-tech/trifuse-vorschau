@@ -3,12 +3,14 @@ import { db } from "@/lib/db";
 export type SettingKey =
   | "commission_percent"
   | "shipping_flat_cents"
-  | "free_shipping_from_cents";
+  | "free_shipping_from_cents"
+  | "payout_schedule";
 
 const defaults: Record<SettingKey, string> = {
   commission_percent: process.env.DEFAULT_COMMISSION_PERCENT ?? "15",
   shipping_flat_cents: process.env.SHIPPING_FLAT_CENTS ?? "490",
   free_shipping_from_cents: process.env.FREE_SHIPPING_FROM_CENTS ?? "7500",
+  payout_schedule: "jeweils zum 15. des Folgemonats",
 };
 
 export async function getSetting(key: SettingKey): Promise<string> {
@@ -30,5 +32,6 @@ export async function getAllSettings() {
     commissionPercent: await getSettingNumber("commission_percent"),
     shippingFlatCents: await getSettingNumber("shipping_flat_cents"),
     freeShippingFromCents: await getSettingNumber("free_shipping_from_cents"),
+    payoutSchedule: await getSetting("payout_schedule"),
   };
 }

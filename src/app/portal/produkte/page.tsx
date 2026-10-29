@@ -16,7 +16,7 @@ export default async function PortalProducts() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div><h1 className="font-display text-3xl font-semibold">Produkte</h1><p className="text-ink-2">{products.length} Produkte</p></div>
+        <div><h1 className="font-display text-3xl font-semibold">Produkte</h1><p className="text-ink-2 num">{products.length} {products.length === 1 ? "Produkt" : "Produkte"}</p></div>
         <Link href="/portal/produkte/neu" className="btn btn-primary">Neues Produkt</Link>
       </div>
       {products.length === 0 ? (
@@ -26,16 +26,16 @@ export default async function PortalProducts() {
           {products.map((p) => (
             <li key={p.id}>
               <Link href={`/portal/produkte/${p.id}`} className="flex items-center gap-4 p-3 hover:bg-surface-2">
-                <div className="w-14 h-14 rounded-lg bg-surface-2 overflow-hidden shrink-0">
+                <div className="w-14 h-14 rounded-md border border-line bg-surface-2 overflow-hidden shrink-0 img-surface">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={imageUrl(p.images[0]?.path)} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold truncate">{p.title}</p>
-                  <p className="text-xs text-ink-3">{p.category?.name ?? "Ohne Kategorie"} · Bestand {p.stock}</p>
+                  <p className="text-xs text-ink-2 num">{p.category?.name ?? "Ohne Zuordnung"} · Bestand {p.stock}{p.stock === 0 ? " · ausverkauft" : ""}</p>
                   {p.status === "REJECTED" && p.rejectReason ? <p className="text-xs text-bad mt-1">Grund: {p.rejectReason}</p> : null}
                 </div>
-                <span className="text-sm">{formatCents(p.priceCents)}</span>
+                <span className="text-sm num">{formatCents(p.priceCents)}</span>
                 <StatusBadge status={p.status} />
               </Link>
             </li>

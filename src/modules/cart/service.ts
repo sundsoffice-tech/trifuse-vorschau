@@ -29,7 +29,7 @@ export async function getCartView() {
         where: { token },
         include: {
           items: {
-            include: { product: { include: { images: { orderBy: { sortOrder: "asc" }, take: 1 }, vendor: { select: { id: true, name: true, slug: true, status: true } } } } },
+            include: { product: { include: { images: { orderBy: { sortOrder: "asc" }, take: 1 }, vendor: { select: { id: true, name: true, slug: true, status: true, commissionPercent: true } } } } },
             orderBy: { id: "asc" },
           },
         },
@@ -99,6 +99,20 @@ export async function setCartQuantity(itemId: string, quantity: number) {
     return;
   }
   await db.cartItem.update({ where: { id: item.id }, data: { quantity: Math.min(quantity, Math.max(1, item.product.stock)) } });
+}
+
+/** Plus/Minus im Warenkorb: wirkt sofort, bleibt innerhalb von 1 und Bestand. */
+export async function changeCartQuantity(itemId: string, delta: number) {
+  const token = await cartToken(false);
+  if (!token || !delta) return;
+  const item = await db.cartItem.findFirst({ where: { id: itemId, cart: { token } }, include: { product: true } });
+  if (!item) return;
+  const next = item.quantity + delta;
+  if (next <= 0) {
+    await db.cartItem.delete({ where: { id: item.id } });
+    return;
+  }
+  await db.cartItem.update({ where: { id: item.id }, data: { quantity: Math.min(next, Math.max(1, item.product.stock)) } });
 }
 
 export async function clearCart() {

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { listActiveProducts, listCategoriesWithCounts } from "@/modules/catalog/queries";
 import { ProductCard } from "@/components/shop/product-card";
+import { SortSelect } from "@/components/shop/sort-select";
 import { Pagination } from "@/components/ui/pagination";
 import { Empty } from "@/components/ui/empty";
 
@@ -17,6 +19,8 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     listActiveProducts({ q: sp.q?.trim() || undefined, category: sp.kategorie || undefined, sort, page }),
     listCategoriesWithCounts(),
   ]);
+  const activeCategory = categories.find((c) => c.slug === sp.kategorie);
+  const title = sp.q ? `Suche nach „${sp.q}“` : activeCategory ? activeCategory.name : "Alle Produkte";
   const makeHref = (p: number) => {
     const u = new URLSearchParams();
     if (sp.q) u.set("q", sp.q);
@@ -31,35 +35,23 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
     <div className="container-x py-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-3xl md:text-4xl font-semibold">{sp.q ? `Suche: „${sp.q}“` : "Alle Produkte"}</h1>
-          <p className="text-ink-2 mt-1">{result.total} {result.total === 1 ? "Produkt" : "Produkte"}</p>
+          <h1 className="font-display text-3xl md:text-4xl font-semibold">{title}</h1>
+          <p className="text-ink-2 mt-1 num">{result.total} {result.total === 1 ? "Produkt" : "Produkte"}{activeCategory && sp.q ? ` in ${activeCategory.name}` : ""}</p>
         </div>
-        <form className="flex items-center gap-2" action="/produkte">
-          {sp.q ? <input type="hidden" name="q" value={sp.q} /> : null}
-          {sp.kategorie ? <input type="hidden" name="kategorie" value={sp.kategorie} /> : null}
-          <label htmlFor="sortierung" className="text-sm text-ink-2">Sortieren</label>
-          <select id="sortierung" name="sortierung" defaultValue={sort} className="select !w-auto">
-            <option value="neu">Neueste zuerst</option>
-            <option value="preis-auf">Preis aufsteigend</option>
-            <option value="preis-ab">Preis absteigend</option>
-          </select>
-          <button className="btn btn-secondary btn-sm" type="submit">Anwenden</button>
-        </form>
+        <Suspense fallback={null}><SortSelect value={sort} /></Suspense>
       </div>
 
-      <div className="flex gap-2 flex-wrap mt-6">
-        <Link href={sp.q ? `/produkte?q=${encodeURIComponent(sp.q)}` : "/produkte"} className={`badge !py-1.5 !px-3 ${!sp.kategorie ? "badge-accent" : "badge-muted"}`}>Alle</Link>
+      <ul className="flex gap-2 flex-wrap mt-6" aria-label="Kategorien">
+        <li><Link href={sp.q ? `/produkte?q=${encodeURIComponent(sp.q)}` : "/produkte"} className="chip" aria-current={!sp.kategorie ? "true" : undefined}>Alle</Link></li>
         {categories.map((c) => (
-          <Link key={c.id} href={`/produkte?kategorie=${c.slug}${sp.q ? `&q=${encodeURIComponent(sp.q)}` : ""}`} className={`badge !py-1.5 !px-3 ${sp.kategorie === c.slug ? "badge-accent" : "badge-muted"}`}>
-            {c.name} <span className="opacity-60 ml-1">{c._count.products}</span>
-          </Link>
+          <li key={c.id}><Link href={`/produkte?kategorie=${c.slug}${sp.q ? `&q=${encodeURIComponent(sp.q)}` : ""}`} className="chip" aria-current={sp.kategorie === c.slug ? "true" : undefined}>{c.name}</Link></li>
         ))}
-      </div>
+      </ul>
 
       {result.items.length ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mt-8">{result.items.map((p) => <ProductCard key={p.id} product={p} />)}</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7 md:gap-x-6 mt-8">{result.items.map((p) => <ProductCard key={p.id} product={p} />)}</div>
       ) : (
-        <div className="mt-8"><Empty title="Nichts gefunden" text="Probiere einen anderen Suchbegriff oder eine andere Kategorie." action={<Link href="/produkte" className="btn btn-secondary">Alle Produkte</Link>} /></div>
+        <div className="mt-8"><Empty title="Nichts gefunden" text="Probiere einen anderen Begriff oder eine andere Art." action={<Link href="/produkte" className="btn btn-secondary">Alle Produkte</Link>} /></div>
       )}
       <Pagination page={result.page} pages={result.pages} makeHref={makeHref} />
     </div>

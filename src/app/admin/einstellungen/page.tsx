@@ -9,7 +9,7 @@ export default async function AdminSettings() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div><h1 className="font-display text-3xl font-semibold">Einstellungen</h1></div>
-      <Alert tone={mode === "stripe" ? "ok" : "warn"}>Zahlung: {mode === "stripe" ? "Stripe (echt)" : "Testmodus ohne Geldfluss"}. Umschalten über die Umgebungsvariablen PAYMENTS_MODE, STRIPE_SECRET_KEY und STRIPE_WEBHOOK_SECRET.</Alert>
+      <Alert tone={mode === "stripe" ? "ok" : "warn"}>{mode === "stripe" ? "Echte Zahlungen über Stripe sind eingeschaltet." : "Echte Zahlungen sind noch aus. Kunden sehen eine Testkasse ohne Geldfluss. Zum Einschalten bitte an die Technik wenden (Stripe-Zugang hinterlegen)."}</Alert>
       <SettingsForm settings={s} />
     </div>
   );
