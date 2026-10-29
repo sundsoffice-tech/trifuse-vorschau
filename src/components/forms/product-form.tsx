@@ -83,11 +83,13 @@ export function ProductForm({
         </div>
       </div>
 
-      <div className="card p-5 md:p-6 space-y-3">
-        <h2 className="font-semibold text-lg">{product ? "Weitere Bilder hinzufügen" : "Bilder"}</h2>
-        <input id="images" name="images" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple className="block w-full text-sm file:btn file:btn-secondary file:btn-sm file:mr-3" />
-        <p className="hint">JPG, PNG oder WebP, je bis 5 MB, höchstens 8 Bilder. Das erste Bild ist das Hauptbild.</p>
-      </div>
+      {!product ? (
+        <div className="card p-5 md:p-6 space-y-3">
+          <h2 className="font-semibold text-lg">Bilder</h2>
+          <input id="images" name="images" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple className="block w-full text-sm file:btn file:btn-secondary file:btn-sm file:mr-3" />
+          <p className="hint">JPG, PNG oder WebP, je bis 5 MB, höchstens 8 Bilder. Das erste Bild ist das Hauptbild. Weitere Bilder kannst du nach dem Speichern verwalten.</p>
+        </div>
+      ) : null}
 
       <div className="flex flex-wrap gap-3">
         <SubmitButton className="btn btn-secondary" name="intent" value="draft" pendingText="Speichert …">Als Entwurf speichern</SubmitButton>
