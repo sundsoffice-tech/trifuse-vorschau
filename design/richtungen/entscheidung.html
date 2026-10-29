@@ -1,0 +1,121 @@
+<title>trifuse.store Richtung</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap">
+<style>
+/* Layout: Entscheidungsseite. Drei gleichwertige Karten, darunter der Standardweg und die verworfenen Kandidaten. */
+:root{--bg:#f3f4f6;--fg:#15181c;--fg2:#4b535c;--line:#d9dde3;--card:#ffffff;--accent:#ff741f;--navy:#14232b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121518;--fg:#eef1f4;--fg2:#aab3bc;--line:#2a3037;--card:#1b2026;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121518;--fg:#eef1f4;--fg2:#aab3bc;--line:#2a3037;--card:#1b2026;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 "Public Sans",system-ui,sans-serif;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 56px}
+.wrap{max-width:1180px;margin-inline:auto}
+header{padding-block:36px 20px}
+h1{font-size:clamp(28px,4.5vw,42px);line-height:1.08;margin:0 0 10px;letter-spacing:-.01em;text-wrap:balance}
+.lead{color:var(--fg2);max-width:72ch;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--fg2);margin-top:12px}.facts b{color:var(--fg)}
+h2{font-size:22px;margin:34px 0 12px}
+.cards{display:grid;gap:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.card .head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px;padding:18px 20px 6px}
+.card .head .k{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.card h3{font-size:24px;margin:0}
+.card .body{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px;padding:12px 20px 20px}
+.shots{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr);gap:12px;align-items:start;min-width:0}
+.frame{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+.frame.desk{max-height:520px;overflow:auto}
+.frame img{display:block;width:100%;height:auto;max-width:100%}
+.phone{border:1px solid var(--line);border-radius:22px;padding:8px;background:var(--bg)}.phone .s{border-radius:16px;overflow:hidden}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;align-content:start}
+dt{font-weight:700;color:var(--fg2);white-space:nowrap}dd{margin:0;min-width:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:2px 8px 2px 4px;font-size:12px}.chip i{width:14px;height:14px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.15)}
+.risk{color:#a4321e}@media (prefers-color-scheme:dark){.risk{color:#f08b70}}
+.canon{border-style:dashed}
+.demoted{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.demoted div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--fg2);background:transparent}.demoted b{color:var(--fg)}
+.note{margin-top:28px;border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:14px;color:var(--fg2);background:var(--card)}
+@media (max-width:820px){.card .body{grid-template-columns:1fr}.shots{grid-template-columns:1fr}.phone{max-width:300px}}
+</style>
+<div class="wrap">
+<header>
+<h1>trifuse.store: drei Richtungen für die Marke</h1>
+<p class="lead">Grundlage: Privatkunden, die abends am Handy ein Geschenk suchen; das Versprechen „Direkt vom Macher, fair ausgezahlt“; die Domain trifuse.store als Marke mit erkennbarer Verwandtschaft zu trifuse (Marine, Orange, das Taschen-Symbol). Jede Richtung ist mit echten Inhalten als Startseite gebaut, Desktop und Handy. Produktbilder sind Platzhalter.</p>
+<div class="facts"><span><b>Mechanik</b> jede Position zeigt, was beim Macher ankommt</span><span><b>Szene</b> abends, Sofa, Handy, Geschenk</span><span><b>Nicht gebaut</b> Creme plus Serif plus Terrakotta (das war der erste Entwurf und ist das Kategorie-Klischee)</span></div>
+</header>
+
+<h2>Die drei Richtungen</h2>
+<div class="cards">
+
+<article class="card" id="a">
+<div class="head"><span class="k">Richtung A</span><h3>Kassenbon</h3></div>
+<div class="body">
+<div class="shots"><div class="frame desk"><img src="bilder/a-kassenbon-desktop.png" alt="Richtung A am Desktop"></div><div class="phone"><div class="s"><img src="bilder/a-kassenbon-mobil.png" alt="Richtung A am Handy"></div></div></div>
+<dl>
+<dt>These</dt><dd>Der Bon ist das Markenzeichen. Jeder Kauf endet mit einer Quittung, auf der steht, wie viel an welchen Macher geht. Die Aufteilung ist kein Fußnotentext, sondern das Bild der Marke.</dd>
+<dt>Welt</dt><dd>Thermopapier, gelochte Kante, Stempel „Fair ausgezahlt“, Preisetikett mit Pfeil zum Macher.</dd>
+<dt>Farbe</dt><dd><div class="chips"><span class="chip"><i style="background:#0f3d2e"></i>Flaschengrün, trägt die Seite</span><span class="chip"><i style="background:#f4c84a"></i>Stroh für Aktionen</span><span class="chip"><i style="background:#fbf6e6"></i>Bonpapier</span><span class="chip"><i style="background:#b5471f"></i>Stempelrot</span></div></dd>
+<dt>Schrift</dt><dd>Familjen Grotesk für Titel, Public Sans für Text, Courier Prime nur auf dem Bon und den Preisschildern.</dd>
+<dt>Erster Blick</dt><dd>Versprechen links, Bon rechts (am Handy darunter), dann Kennzahlenzeile, dann Produkte mit Preisschild.</dd>
+<dt>Signatur</dt><dd>Beim Kauf druckt sich der Bon Zeile für Zeile; die Kasse ist buchstäblich ein Bon.</dd>
+<dt>Bezug zu trifuse</dt><dd>Taschen-Symbol und Wortmarke bleiben; die Farben sind neu. Am schwächsten verwandt.</dd>
+<dt class="risk">Risiko</dt><dd class="risk">Dunkelgrün plus Gelb kann nach Bio-Markt aussehen; Courier auf kleinen Preisschildern braucht Disziplin bei der Größe.</dd>
+</dl>
+</div>
+</article>
+
+<article class="card" id="b">
+<div class="head"><span class="k">Richtung B</span><h3>Packband</h3></div>
+<div class="body">
+<div class="shots"><div class="frame desk"><img src="bilder/b-packband-desktop.png" alt="Richtung B am Desktop"></div><div class="phone"><div class="s"><img src="bilder/b-packband-mobil.png" alt="Richtung B am Handy"></div></div></div>
+<dl>
+<dt>These</dt><dd>Das eine Paket ist die Marke. Orange Packband mit dem Versprechen läuft als Band durch die Seite; der Versandaufkleber zeigt, wer was bekommt. Lager und Versand von trifuse werden sichtbar statt versteckt.</dd>
+<dt>Welt</dt><dd>Karton, Packband, Versandetikett, Aufkleber „Direkt vom Macher“.</dd>
+<dt>Farbe</dt><dd><div class="chips"><span class="chip"><i style="background:#14232b"></i>trifuse-Marine als Grund</span><span class="chip"><i style="background:#ff741f"></i>trifuse-Orange als Band</span><span class="chip"><i style="background:#d8b985"></i>Karton für Produkte</span><span class="chip"><i style="background:#4bd601"></i>trifuse-Grün für den Anteil</span></div></dd>
+<dt>Schrift</dt><dd>Barlow Condensed für Titel (Versandaufdruck), Barlow für Text, Azeret Mono für Etikettenfelder.</dd>
+<dt>Erster Blick</dt><dd>Band über dem Titel, großer Titel, Aufkleber mit Aufteilung, drei Zusagen, Produkte als Kartons.</dd>
+<dt>Signatur</dt><dd>Beim Hinzufügen in den Korb „klebt“ ein Aufkleber auf das Produkt; der Korb heißt Paket.</dd>
+<dt>Bezug zu trifuse</dt><dd>Am engsten verwandt: Marine, Orange, Grün und Blau sind die Farben der Mutter.</dd>
+<dt class="risk">Risiko</dt><dd class="risk">Dunkel und laut; Geschenksuche am Abend kann sich damit nach Logistik statt nach Handwerk anfühlen. Die Kartonkarten brauchen gute Produktfotos, sonst wirkt es wie Lagerware.</dd>
+</dl>
+</div>
+</article>
+
+<article class="card" id="c">
+<div class="head"><span class="k">Richtung C</span><h3>Marktschild</h3></div>
+<div class="body">
+<div class="shots"><div class="frame desk"><img src="bilder/c-marktschild-desktop.png" alt="Richtung C am Desktop"></div><div class="phone"><div class="s"><img src="bilder/c-marktschild-mobil.png" alt="Richtung C am Handy"></div></div></div>
+<dl>
+<dt>These</dt><dd>Wochenmarkt mit einem Paket. Markise, handgemalte Preisschilder, ein Stand je Macher. Der Anteil des Machers steht wie ein Preis auf dem Schild.</dd>
+<dt>Welt</dt><dd>Markisenstreifen, Preisschild, Tafel, Stand.</dd>
+<dt>Farbe</dt><dd><div class="chips"><span class="chip"><i style="background:#ffffff"></i>Weiß, hell wie der Markttag</span><span class="chip"><i style="background:#d7301f"></i>Markisenrot, trägt die Seite</span><span class="chip"><i style="background:#ffd166"></i>Schildgelb für Preise</span><span class="chip"><i style="background:#1a1a1a"></i>Tafelschwarz</span></div></dd>
+<dt>Schrift</dt><dd>Alfa Slab One für Titel und Preise (Schildermaler), Nunito Sans für Text.</dd>
+<dt>Erster Blick</dt><dd>Markise, Titel mit rotem Zweitsatz, Schild des Tages, Kennzahlenband, Stände.</dd>
+<dt>Signatur</dt><dd>Preisschilder sind leicht gedreht und wechseln beim Überfahren den Text zum Macheranteil.</dd>
+<dt>Bezug zu trifuse</dt><dd>Nur Symbol und Wortmarke; Rot ist keine trifuse-Farbe. Das Orange der Mutter könnte das Rot ersetzen.</dd>
+<dt class="risk">Risiko</dt><dd class="risk">Am freundlichsten, aber auch am nächsten an „Hofladen“; für Keramik oder Textil kann es zu lebensmittelnah wirken.</dd>
+</dl>
+</div>
+</article>
+
+</div>
+
+<h2>Der Standardweg</h2>
+<article class="card canon">
+<div class="head"><span class="k">Kategorie-Standard</span><h3>Sauberer Marktplatz wie Etsy oder Avocadostore</h3></div>
+<div class="body" style="grid-template-columns:1fr">
+<dl>
+<dt>These</dt><dd>Weißer Grund, Produktraster, ruhige Systemschrift, eine Akzentfarbe, Händlername klein über dem Titel. Der Anteil des Machers steht auf der Produktseite als Zeile. Bewährt, unauffällig, keine Lernkurve.</dd>
+<dt>Farbe</dt><dd><div class="chips"><span class="chip"><i style="background:#ffffff"></i>Weiß</span><span class="chip"><i style="background:#ff741f"></i>trifuse-Orange als Akzent</span><span class="chip"><i style="background:#14232b"></i>Marine für Text</span></div></dd>
+<dt class="risk">Risiko</dt><dd class="risk">Kein eigenes Bild; die Marke lebt dann nur vom Namen. Wer diesen Weg wählt, nennt zwei Shops, an deren Niveau wir uns messen.</dd>
+</dl>
+</div>
+</article>
+
+<h2>Geprüft und zurückgestellt</h2>
+<div class="demoted">
+<div><b>Manufakturbogen</b> · Produkt als Datenblatt des Machers mit Material und Herkunft. Zurückgestellt: trägt die Aufteilung schlechter als der Bon; die Idee „Herkunftszeile“ wandert in jede Richtung.</div>
+<div><b>Einmachglas-Etikett</b> · ovale Etiketten, Zutatenlisten. Zurückgestellt: zu nah an Lebensmitteln, Keramik und Textil passen nicht hinein.</div>
+<div><b>Postkarte vom Macher</b> · jedes Produkt als Karte mit Gruß und Briefmarke. Zurückgestellt: schön, aber die Geschichte überdeckt den Preis; behalten als Idee für die Markenseite je Macher.</div>
+<div><b>Lagerregal</b> · Regaletiketten und Lagerplätze. Zurückgestellt: zeigt den Betrieb, nicht das Geschenk; die Lagerzeile „aus unserem Lager in MG“ bleibt.</div>
+</div>
+
+<div class="note">Was alle drei Richtungen gemeinsam haben, weil es aus dem Versprechen folgt: Der Macheranteil steht an jedem Produkt, nicht nur in der Kasse. Jede Marke hat ein Gesicht und einen Ort. Der Korb über mehrere Macher endet in einem Paket. Auswahl, Umbau und Nachmessen (hell und dunkel, schmal und breit, Künstler-Durchgang) folgen nach der Entscheidung.</div>
+</div>

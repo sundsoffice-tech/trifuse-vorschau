@@ -1,0 +1,52 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>trifuse.store · Richtung A Kassenbon</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Public+Sans:wght@400;600&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+:root{--g:#0f3d2e;--g2:#145239;--straw:#f4c84a;--paper:#fbf6e6;--ink:#101a16;--white:#fff;--muted:#9fbfae}
+*{box-sizing:border-box}body{margin:0;background:var(--g);color:var(--white);font:16px/1.5 "Public Sans",system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header{display:flex;align-items:center;gap:12px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font:700 22px "Familjen Grotesk",sans-serif;color:#fff;text-decoration:none}.logo img{width:30px;height:30px;border-radius:7px}
+.logo b{color:var(--straw);font-weight:700}
+nav{margin-left:auto;display:flex;gap:18px;font-weight:600;font-size:15px}nav a{color:#dfeee6;text-decoration:none}
+.cart{background:var(--straw);color:var(--ink);padding:8px 14px;border-radius:6px;font-weight:700;font-family:"Familjen Grotesk"}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:center;padding:40px 0 28px}
+h1{font:700 clamp(38px,6vw,68px)/1 "Familjen Grotesk",sans-serif;margin:0 0 14px;letter-spacing:-.02em;text-wrap:balance}
+.hero p{font-size:18px;color:#dfeee6;max-width:34ch;margin:0 0 20px}
+.btn{display:inline-block;background:var(--straw);color:var(--ink);font:700 16px "Familjen Grotesk";padding:14px 22px;border-radius:6px;text-decoration:none}
+.btn.ghost{background:transparent;color:#fff;border:2px solid #dfeee6;margin-left:8px}
+/* Der Bon: Signatur der Richtung */
+.bon{background:var(--paper);color:var(--ink);font-family:"Courier Prime",monospace;padding:22px 22px 18px;position:relative;max-width:380px;justify-self:end;box-shadow:0 14px 30px rgba(0,0,0,.35);transform:rotate(-1.5deg)}
+.bon:before,.bon:after{content:"";position:absolute;left:0;right:0;height:10px;background:radial-gradient(circle,transparent 6px,var(--paper) 6.5px) -8px 0/16px 10px}
+.bon:before{top:-10px}.bon:after{bottom:-10px;transform:scaleY(-1)}
+.bon h2{font:700 15px "Courier Prime";margin:0 0 10px;letter-spacing:.08em;text-align:center}
+.bon .row{display:flex;justify-content:space-between;border-bottom:1px dashed #b9b19a;padding:6px 0;font-size:15px}
+.bon .row.big{font-weight:700;font-size:18px;border-bottom:2px solid var(--ink)}
+.bon .stamp{position:absolute;right:18px;bottom:8px;border:3px solid #b5471f;color:#b5471f;font:700 13px "Familjen Grotesk";padding:4px 8px;transform:rotate(-12deg);letter-spacing:.1em;opacity:.9}
+.bon small{display:block;text-align:left;margin-top:14px;font-size:11px;color:#5b5a52;max-width:60%}
+.band{display:flex;gap:24px;flex-wrap:wrap;padding:18px 0;border-top:1px solid #2a6a52;border-bottom:1px solid #2a6a52;font:600 14px "Familjen Grotesk";color:#dfeee6;white-space:nowrap}
+.band span b{color:var(--straw);font-family:"Courier Prime";font-size:16px}
+h2.sec{font:700 30px "Familjen Grotesk";margin:36px 0 14px;letter-spacing:-.01em}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.card{background:var(--white);color:var(--ink);border-radius:6px;overflow:hidden;position:relative}
+.card img{display:block;width:100%;aspect-ratio:1;object-fit:cover}
+.card .t{padding:12px 14px 14px}.card .m{font:600 12px "Familjen Grotesk";color:#5a6b62;letter-spacing:.04em;text-transform:uppercase}
+.card h3{font:700 17px/1.2 "Familjen Grotesk";margin:4px 0 8px}
+.tag{display:flex;justify-content:space-between;align-items:baseline;gap:8px;background:var(--paper);border:1px dashed #b9b19a;font:13px "Courier Prime";padding:5px 8px;border-radius:3px;white-space:nowrap}
+.tag b{font-size:16px}.tag i{font-style:normal;color:#2e6b50;font-weight:700;font-size:11.5px}
+.makers{display:flex;gap:14px;margin:30px 0 50px;flex-wrap:wrap}.maker{display:flex;align-items:center;gap:10px;background:var(--g2);padding:10px 14px;border-radius:6px;font-weight:600}.maker span{width:36px;height:36px;border-radius:50%;background:var(--straw);color:var(--ink);display:grid;place-items:center;font:700 15px "Familjen Grotesk"}
+@media (max-width:760px){.hero{grid-template-columns:1fr;padding-top:22px}.bon{justify-self:stretch;max-width:none;transform:rotate(-1deg)}.grid{grid-template-columns:1fr 1fr}nav{display:none}h1{font-size:40px}.btn.ghost{margin:10px 0 0}}
+</style></head><body><div class="wrap">
+<header><a class="logo" href="#"><img src="trifuse-icon.svg" alt="">trifuse<b>.store</b></a><nav><a href="#">Produkte</a><a href="#">Macher</a><a href="#">Selbst verkaufen</a></nav><a class="cart" href="#">Korb 2</a></header>
+<section class="hero"><div><h1>Direkt vom Macher. Fair ausgezahlt.</h1><p>Kleine Hersteller, ein Paket, ein Bon. Auf jedem Preis steht, was beim Macher ankommt.</p><a class="btn" href="#">Produkte ansehen</a><a class="btn ghost" href="#">So funktioniert's</a></div>
+<div class="bon"><h2>trifuse.store · BON 000142</h2><div class="row"><span>Sommerhonig 500 g</span><span>8,90 €</span></div><div class="row"><span>Müsli-Schale Salbei ×2</span><span>48,00 €</span></div><div class="row"><span>Versand, ein Paket</span><span>0,00 €</span></div><div class="row big"><span>Gesamt</span><span>56,90 €</span></div><div class="row"><span>davon an Wiesenkram</span><span>7,57 €</span></div><div class="row"><span>davon an Ton &amp; Tisch</span><span>40,80 €</span></div><div class="stamp">FAIR AUSGEZAHLT</div><small>Provision 15 % · Lager &amp; Versand trifuse</small></div></section>
+<div class="band"><span><b>85 %</b> jedes Preises gehen an den Macher</span><span><b>1</b> Paket, auch bei drei Marken</span><span><b>14</b> Tage Rückgabe</span><span><b>MG</b> Lager am Niederrhein</span></div>
+<h2 class="sec">Neu auf dem Bon</h2>
+<div class="grid">
+<div class="card"><img src="demo/honig.svg" alt=""><div class="t"><div class="m">Wiesenkram</div><h3>Sommerhonig 500 g</h3><span class="tag"><b>8,90 €</b><i>→ 7,57 € an Hanna</i></span></div></div>
+<div class="card"><img src="demo/schale.svg" alt=""><div class="t"><div class="m">Ton &amp; Tisch</div><h3>Müsli-Schale Salbei</h3><span class="tag"><b>24,00 €</b><i>→ 20,40 € an Milan</i></span></div></div>
+<div class="card"><img src="demo/kerze.svg" alt=""><div class="t"><div class="m">Lichtwerk MG</div><h3>Rapswachskerze Terrakotta</h3><span class="tag"><b>18,90 €</b><i>→ 16,07 € an Lea</i></span></div></div>
+<div class="card"><img src="demo/brett.svg" alt=""><div class="t"><div class="m">Ton &amp; Tisch</div><h3>Servierbrett Eiche</h3><span class="tag"><b>39,00 €</b><i>→ 33,15 € an Milan</i></span></div></div>
+</div>
+<h2 class="sec">Die Macher</h2>
+<div class="makers"><div class="maker"><span>H</span>Hanna Vogt · Wiesenkram</div><div class="maker"><span>M</span>Milan Oster · Ton &amp; Tisch</div><div class="maker"><span>L</span>Lea Brandt · Lichtwerk MG</div></div>
+</div></body></html>

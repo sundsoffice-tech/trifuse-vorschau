@@ -1,0 +1,51 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>trifuse.store · Richtung C Marktschild</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Nunito+Sans:wght@400;700&display=swap">
+<style>
+:root{--red:#d7301f;--red2:#b4261a;--cream:#fff;--ink:#1a1a1a;--blue:#1f4fb8;--stripe:repeating-linear-gradient(90deg,var(--red) 0 28px,#fff 28px 56px)}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:16px/1.5 "Nunito Sans",system-ui,sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+.awning{height:18px;background:var(--stripe);border-bottom:3px solid var(--red2)}
+header{display:flex;align-items:center;gap:12px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font:400 22px "Alfa Slab One";color:var(--ink);text-decoration:none}.logo img{width:30px;height:30px;border-radius:7px}.logo b{color:var(--red);font-weight:400}
+nav{margin-left:auto;display:flex;gap:18px;font-weight:700;font-size:15px}nav a{color:#333;text-decoration:none}
+.cart{background:var(--red);color:#fff;padding:8px 14px;border-radius:4px;font:400 15px "Alfa Slab One"}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;padding:34px 0 24px}
+h1{font:400 clamp(40px,6.5vw,76px)/1.02 "Alfa Slab One";margin:0 0 14px;text-wrap:balance}
+h1 em{font-style:normal;color:var(--red)}
+.hero p{font-size:18px;max-width:36ch;margin:0 0 20px;color:#333}
+.btn{display:inline-block;background:var(--red);color:#fff;font:400 16px "Alfa Slab One";padding:13px 22px;border-radius:4px;text-decoration:none;box-shadow:0 3px 0 var(--red2)}
+.btn.ghost{background:#fff;color:var(--ink);border:2px solid var(--ink);box-shadow:0 3px 0 var(--ink);margin-left:8px}
+/* Schild: Signatur */
+.schild{background:var(--ink);color:#fff;padding:26px 24px;border-radius:8px;position:relative;justify-self:end;max-width:400px;transform:rotate(1.5deg);box-shadow:0 12px 24px rgba(0,0,0,.25)}
+.schild:before{content:"";position:absolute;inset:8px;border:2px dashed rgba(255,255,255,.45);border-radius:6px;pointer-events:none}
+.schild .k{font:400 13px "Alfa Slab One";letter-spacing:.08em;color:#ffd166;text-transform:uppercase}
+.schild .p{font:400 64px/1 "Alfa Slab One";margin:4px 0 2px}.schild .p small{font-size:26px}
+.schild .s{font:700 16px "Nunito Sans";color:#fff}.schild .s b{color:#7ee081}
+.schild .z{margin-top:12px;border-top:1px solid rgba(255,255,255,.3);padding-top:10px;font-size:14px;color:#ddd}
+.band{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;border:3px solid var(--ink);border-radius:8px;overflow:hidden;margin:10px 0 0}
+.band div{padding:12px 8px;border-right:3px solid var(--ink)}.band div:last-child{border:0}.band b{display:block;font:400 24px "Alfa Slab One";color:var(--red)}.band span{font-size:13px;font-weight:700}
+h2.sec{font:400 30px "Alfa Slab One";margin:36px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.card{border:3px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff;position:relative}
+.card img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-bottom:3px solid var(--ink)}
+.card .t{padding:12px 14px 14px}.card .m{font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.06em}
+.card h3{font:400 18px/1.2 "Alfa Slab One";margin:4px 0 8px}
+.card .preis{position:absolute;top:10px;right:10px;background:#ffd166;color:var(--ink);font:400 18px "Alfa Slab One";padding:6px 10px;border-radius:4px;transform:rotate(4deg);border:2px solid var(--ink)}
+.card .share{font-size:13px;font-weight:700;color:#1d7a3a}
+.makers{display:flex;gap:14px;margin:30px 0 50px;flex-wrap:wrap}.maker{border:3px solid var(--ink);border-radius:999px;padding:8px 16px;font-weight:700;background:#fff}
+@media (max-width:760px){.hero{grid-template-columns:1fr;padding-top:18px}.schild{justify-self:stretch;max-width:none;transform:rotate(1deg)}.grid{grid-template-columns:1fr 1fr}nav{display:none}h1{font-size:40px}.band{grid-template-columns:1fr 1fr}.band div:nth-child(2){border-right:0}.band div:nth-child(1),.band div:nth-child(2){border-bottom:3px solid var(--ink)}.btn.ghost{margin:10px 0 0}}
+</style></head><body><div class="awning"></div><div class="wrap">
+<header><a class="logo" href="#"><img src="trifuse-icon.svg" alt="">trifuse<b>.store</b></a><nav><a href="#">Produkte</a><a href="#">Macher</a><a href="#">Selbst verkaufen</a></nav><a class="cart" href="#">Korb 2</a></header>
+<section class="hero"><div><h1>Wie auf dem Markt. <em>Nur mit einem Paket.</em></h1><p>Honig vom Hof, Keramik aus der Werkstatt, Kerzen aus Mönchengladbach. Du bezahlst einmal, der Macher bekommt den größten Teil, wir versenden.</p><a class="btn" href="#">Zum Markt</a><a class="btn ghost" href="#">Die Macher</a></div>
+<div class="schild"><div class="k">Heute auf dem Schild</div><div class="p">8<small>,90 €</small></div><div class="s">Sommerhonig 500 g · <b>7,57 € gehen an Hanna</b></div><div class="z">Wiesenkram, Hof am Niederrhein · Provision 15 % · Versand aus dem Lager in MG</div></div></section>
+<div class="band"><div><b>85 %</b><span>an den Macher</span></div><div><b>1</b><span>Paket für alles</span></div><div><b>3</b><span>Macher, 10 Produkte</span></div><div><b>14 Tage</b><span>Rückgabe</span></div></div>
+<h2 class="sec">Heute am Stand</h2>
+<div class="grid">
+<div class="card"><span class="preis">8,90 €</span><img src="demo/honig.svg" alt=""><div class="t"><div class="m">Wiesenkram</div><h3>Sommerhonig 500 g</h3><div class="share">7,57 € an Hanna</div></div></div>
+<div class="card"><span class="preis">24,00 €</span><img src="demo/schale.svg" alt=""><div class="t"><div class="m">Ton &amp; Tisch</div><h3>Müsli-Schale Salbei</h3><div class="share">20,40 € an Milan</div></div></div>
+<div class="card"><span class="preis">18,90 €</span><img src="demo/kerze.svg" alt=""><div class="t"><div class="m">Lichtwerk MG</div><h3>Rapswachskerze Terrakotta</h3><div class="share">16,07 € an Lea</div></div></div>
+<div class="card"><span class="preis">39,00 €</span><img src="demo/brett.svg" alt=""><div class="t"><div class="m">Ton &amp; Tisch</div><h3>Servierbrett Eiche</h3><div class="share">33,15 € an Milan</div></div></div>
+</div>
+<h2 class="sec">Die Macher</h2>
+<div class="makers"><div class="maker">Hanna Vogt · Wiesenkram</div><div class="maker">Milan Oster · Ton &amp; Tisch</div><div class="maker">Lea Brandt · Lichtwerk MG</div></div>
+</div></body></html>
