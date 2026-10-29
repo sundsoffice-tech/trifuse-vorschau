@@ -1,0 +1,237 @@
+// Datenmodell des Marktplatzes.
+// Provider-Wechsel auf Postgres: provider = "postgresql" und DATABASE_URL anpassen,
+// danach `npx prisma migrate dev`. Das Modell selbst ist datenbankneutral gehalten.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  VENDOR
+}
+
+enum VendorStatus {
+  PENDING
+  ACTIVE
+  PAUSED
+}
+
+enum ProductStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  REJECTED
+  ARCHIVED
+}
+
+enum ShippingBy {
+  VENDOR
+  WAREHOUSE
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELLED
+  REFUNDED
+}
+
+enum FulfillmentStatus {
+  NEW
+  PACKED
+  SHIPPED
+  DELIVERED
+  RETURNED
+}
+
+enum PayoutStatus {
+  DRAFT
+  PAID
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role
+  vendorId     String?
+  vendor       Vendor?   @relation(fields: [vendorId], references: [id])
+  sessions     Session[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Vendor {
+  id                String       @id @default(cuid())
+  slug              String       @unique
+  name              String
+  description       String       @default("")
+  email             String
+  phone             String       @default("")
+  logoPath          String?
+  status            VendorStatus @default(PENDING)
+  commissionPercent Float        @default(15)
+  autoApprove       Boolean      @default(false)
+  payoutIban        String       @default("")
+  payoutHolder      String       @default("")
+  payoutNote        String       @default("")
+  addressLine       String       @default("")
+  postalCode        String       @default("")
+  city              String       @default("")
+  users             User[]
+  products          Product[]
+  orderItems        OrderItem[]
+  payouts           Payout[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  name      String
+  sortOrder Int       @default(0)
+  products  Product[]
+}
+
+model Product {
+  id             String         @id @default(cuid())
+  vendorId       String
+  vendor         Vendor         @relation(fields: [vendorId], references: [id])
+  categoryId     String?
+  category       Category?      @relation(fields: [categoryId], references: [id])
+  slug           String         @unique
+  title          String
+  description    String         @default("")
+  priceCents     Int
+  compareAtCents Int?
+  currency       String         @default("EUR")
+  stock          Int            @default(0)
+  sku            String         @default("")
+  status         ProductStatus  @default(DRAFT)
+  rejectReason   String         @default("")
+  shippingBy     ShippingBy     @default(WAREHOUSE)
+  weightGrams    Int?
+  images         ProductImage[]
+  cartItems      CartItem[]
+  orderItems     OrderItem[]
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([vendorId, status])
+  @@index([categoryId, status])
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  path      String
+  alt       String  @default("")
+  sortOrder Int     @default(0)
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  token     String     @unique
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int
+
+  @@unique([cartId, productId])
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  number          String      @unique
+  status          OrderStatus @default(PENDING)
+  email           String
+  name            String
+  addressLine     String
+  postalCode      String
+  city            String
+  country         String      @default("DE")
+  note            String      @default("")
+  subtotalCents   Int
+  shippingCents   Int
+  totalCents      Int
+  currency        String      @default("EUR")
+  paymentProvider String      @default("")
+  paymentRef      String?     @unique
+  paidAt          DateTime?
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+// Eine Zeile je gekauftem Produkt. Preise, Provision und Haendleranteil werden
+// beim Kauf eingefroren, damit die Auszahlung spaeter nachvollziehbar bleibt.
+model OrderItem {
+  id                String            @id @default(cuid())
+  orderId           String
+  order             Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId         String?
+  product           Product?          @relation(fields: [productId], references: [id], onDelete: SetNull)
+  vendorId          String
+  vendor            Vendor            @relation(fields: [vendorId], references: [id])
+  title             String
+  sku               String            @default("")
+  unitPriceCents    Int
+  quantity          Int
+  lineTotalCents    Int
+  commissionPercent Float
+  commissionCents   Int
+  vendorNetCents    Int
+  shippingBy        ShippingBy
+  fulfillment       FulfillmentStatus @default(NEW)
+  payoutId          String?
+  payout            Payout?           @relation(fields: [payoutId], references: [id])
+
+  @@index([vendorId, payoutId])
+  @@index([orderId])
+}
+
+model Payout {
+  id         String       @id @default(cuid())
+  vendorId   String
+  vendor     Vendor       @relation(fields: [vendorId], references: [id])
+  status     PayoutStatus @default(DRAFT)
+  totalCents Int
+  itemCount  Int
+  reference  String       @default("")
+  note       String       @default("")
+  items      OrderItem[]
+  createdAt  DateTime     @default(now())
+  paidAt     DateTime?
+}
+
+model Setting {
+  key   String @id
+  value String
+}

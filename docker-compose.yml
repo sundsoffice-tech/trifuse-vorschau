@@ -1,0 +1,14 @@
+services:
+  shop:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      DATABASE_URL: "file:../data/shop.db"
+    volumes:
+      - shop-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  shop-data:

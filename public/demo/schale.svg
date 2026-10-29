@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="Schale">
+<rect width="800" height="800" fill="#d9e3dd"/>
+<circle cx="400" cy="380" r="190" fill="#2f5c45" opacity=".12"/>
+<rect x="250" y="260" width="300" height="300" rx="40" fill="#2f5c45" opacity=".25"/>
+<text x="400" y="700" text-anchor="middle" font-family="Georgia, serif" font-size="56" fill="#2f5c45">Schale</text>
+</svg>
