@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Hook in /opt/sunds-shop/repo.git: nimmt den Push auf main entgegen und baut synchron (Galabau-Muster).
+# Scheitert der Bau, bleibt der laufende Stand unberuehrt, und der Pusher sieht den Fehler im Terminal.
+set -euo pipefail
+while read -r _alt neu ref; do
+  [ "$ref" = "refs/heads/main" ] || { echo "hook: $ref ignoriert (nur main wird gebaut)"; continue; }
+  echo "hook: baue $neu"
+  sudo /opt/sunds-shop/bauen.sh "$neu"
+done

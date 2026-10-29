@@ -18,7 +18,8 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
 
 ## Offen, nach Dringlichkeit
 
-1. Entscheiden, ob der Shop ein eigenes Repo bekommt (`trifuse-shop`) oder im Branch bleibt.
+1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.
+2. Entscheiden, ob der Shop ein eigenes Repo bekommt (`trifuse-shop`) oder im Branch bleibt.
 2. Markenname festlegen (`NEXT_PUBLIC_BRAND_NAME`).
 3. Impressum, Datenschutz, AGB, Widerruf: Platzhalter füllen, juristisch prüfen.
 4. Stripe-Schlüssel und Webhook einrichten, einmal echten Testkauf im Stripe-Testmodus durchführen.
