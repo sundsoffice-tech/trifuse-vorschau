@@ -28,7 +28,7 @@ export default async function AdminHome() {
       {paymentsMode() === "test" ? <Alert tone="warn">Echte Zahlungen sind noch aus: Bestellungen werden ohne Geldfluss als bezahlt markiert. Zum Einschalten bitte an die Technik wenden (Stripe-Zugang hinterlegen).</Alert> : null}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat label="Umsatz" value={formatCents(paid30._sum.totalCents ?? 0)} hint={`${plural(orders30, "bezahlte Bestellung", "bezahlte Bestellungen")} · davon Versand ${formatCents(paid30._sum.shippingCents ?? 0)}`} />
-        <Stat label="Unser Anteil" value={formatCents(items30._sum.commissionCents ?? 0)} hint={`an die Macher: ${formatCents(items30._sum.vendorNetCents ?? 0)}`} />
+        <Stat label="Unser Anteil" value={formatCents(items30._sum.commissionCents ?? 0)} hint={`aus ${formatCents(paid30._sum.subtotalCents ?? 0)} Warenwert`} />
         <Stat label="Noch an Macher zu zahlen" value={formatCents(openTotal)} hint={plural(openPayouts.length, "Macher mit offenem Guthaben", "Macher mit offenem Guthaben")} />
         <Stat label="Zu prüfen" value={String(pendingProducts + pendingVendors)} hint={`${plural(pendingProducts, "Produkt", "Produkte")} · ${plural(pendingVendors, "Bewerbung", "Bewerbungen")}`} />
       </div>

@@ -26,7 +26,7 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
     <div className="container-x py-10 max-w-3xl">
       {order.status === "PAID" ? (
         <>
-          <h1 className="font-display text-3xl md:text-4xl font-semibold">Danke, deine Bestellung ist da.</h1>
+          <h1 className="font-display text-3xl md:text-4xl font-semibold">Danke, deine Bestellung ist eingegangen.</h1>
           <p className="text-ink-2 mt-3 num">Bestellnummer <strong className="text-ink">{order.number}</strong>. Eine Bestätigung geht an {order.email}. Wir melden uns, sobald das Paket unterwegs ist, in der Regel in 2 bis 4 Werktagen.</p>
           <p className="mt-3 num text-accent-text font-semibold">{formatCents(shareTotal)} deiner Bestellung gehen an {byVendor.size === 1 ? [...byVendor.keys()][0] : `${byVendor.size} Macher`}.</p>
         </>
@@ -64,7 +64,8 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         <div className="p-5 text-sm">
           <p className="font-semibold">Lieferadresse</p>
           <p className="text-ink-2">{order.name}<br />{order.addressLine}<br />{order.postalCode} {order.city}</p>
-          {order.note ? <p className="text-ink-2 mt-2">Dein Gruß: „{order.note}“</p> : null}
+          {order.note ? <p className="text-ink-2 mt-2">Grußkarte: „{order.note}“</p> : null}
+          {order.deliveryNote ? <p className="text-ink-2 mt-1">Dein Hinweis an uns: „{order.deliveryNote}“</p> : null}
         </div>
       </div>
       <p className="text-sm text-ink-2 mt-6">Fragen zur Bestellung? Schreib an <a href={`mailto:${BRAND.supportEmail}`} className="underline">{BRAND.supportEmail}</a> und nenne die Bestellnummer.</p>

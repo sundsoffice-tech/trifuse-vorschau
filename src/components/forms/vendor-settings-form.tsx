@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { updateVendorProfileAction, changePasswordAction } from "@/modules/vendors/actions";
 import { imageUrl } from "@/modules/media/url";
 import { BRAND } from "@/lib/brand";
+import { formatIban } from "@/lib/text";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Field } from "@/components/ui/field";
 import { Alert } from "@/components/ui/alert";
@@ -21,7 +22,7 @@ export function VendorSettingsForm({ vendor }: { vendor: VendorData }) {
       <div className="card p-5 md:p-6 space-y-4">
         <h2 className="font-semibold text-lg">So erscheinst du im Shop</h2>
         <Field label="Name deiner Marke oder Werkstatt" name="name" error={err.name}><input id="name" name="name" className="input" defaultValue={vendor.name} required /></Field>
-        <Field label="Ort" name="city" hint="Steht bei jedem Produkt, zum Beispiel „aus Viersen“."><input id="city" name="city" className="input" defaultValue={vendor.city} /></Field>
+        <Field label="Woher kommst du?" name="city" hint="Steht bei jedem Produkt hinter „aus“, zum Beispiel „Viersen“ oder „Wegberg“."><input id="city" name="city" className="input" defaultValue={vendor.city} /></Field>
         <Field label="Über dich und deine Arbeit" name="description" hint="Erscheint auf deiner Seite und bei jedem Produkt. Wer bist du, wo arbeitest du, wie entsteht es?"><textarea id="description" name="description" className="textarea" defaultValue={vendor.description} maxLength={3000} /></Field>
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-md border border-line bg-surface-2 overflow-hidden shrink-0 img-surface">
@@ -39,16 +40,13 @@ export function VendorSettingsForm({ vendor }: { vendor: VendorData }) {
         <p className="text-sm text-ink-2">Deine Anmelde-Adresse: <strong>{vendor.email}</strong>. Zum Ändern schreib uns an <a href={`mailto:${BRAND.supportEmail}`} className="underline">{BRAND.supportEmail}</a>.</p>
         <Field label="Telefon" name="phone"><input id="phone" name="phone" type="tel" className="input" defaultValue={vendor.phone} /></Field>
         <Field label="Straße und Hausnummer" name="addressLine"><input id="addressLine" name="addressLine" className="input" defaultValue={vendor.addressLine} /></Field>
-        <div className="grid grid-cols-[120px_1fr] gap-4">
-          <Field label="PLZ" name="postalCode"><input id="postalCode" name="postalCode" className="input" defaultValue={vendor.postalCode} /></Field>
-          <Field label="Ort der Werkstatt" name="cityAddress"><input id="cityAddress" name="cityAddress" className="input" defaultValue={vendor.city} /></Field>
-        </div>
+        <Field label="PLZ" name="postalCode"><input id="postalCode" name="postalCode" className="input max-w-[160px]" defaultValue={vendor.postalCode} /></Field>
       </div>
       <div className="card p-5 md:p-6 space-y-4" id="bank">
         <h2 className="font-semibold text-lg">Wohin das Geld geht</h2>
         <p className="text-sm text-ink-2 num">{Math.round(100 - vendor.commissionPercent)} % jedes Verkaufs kommen zu dir, gesammelt überwiesen. Ohne Bankverbindung können wir nicht überweisen.</p>
         <Field label="Kontoinhaber" name="payoutHolder"><input id="payoutHolder" name="payoutHolder" className="input" defaultValue={vendor.payoutHolder} /></Field>
-        <Field label="IBAN" name="payoutIban" error={err.payoutIban}><input id="payoutIban" name="payoutIban" className="input num" defaultValue={vendor.payoutIban} placeholder="DE00 0000 0000 0000 0000 00" /></Field>
+        <Field label="IBAN" name="payoutIban" error={err.payoutIban} hint="Leerzeichen sind erlaubt."><input id="payoutIban" name="payoutIban" className="input num" defaultValue={formatIban(vendor.payoutIban)} placeholder="DE00 0000 0000 0000 0000 00" /></Field>
       </div>
       <SubmitButton pendingText="Speichert …">Speichern</SubmitButton>
     </form>

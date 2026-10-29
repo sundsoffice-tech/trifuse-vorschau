@@ -69,9 +69,9 @@ export function ProductForm({
         <Field label="Beschreibung" name="description" hint="Material, Größe, Besonderheiten, wie es entsteht. Absätze bleiben erhalten.">
           <textarea id="description" name="description" className="textarea !min-h-[160px]" defaultValue={product?.description ?? ""} maxLength={5000} />
         </Field>
-        <Field label="Art" name="categoryId">
-          <select id="categoryId" name="categoryId" className="select" defaultValue={product?.categoryId ?? ""}>
-            <option value="">Keine Zuordnung</option>
+        <Field label="Art" name="categoryId" error={err.categoryId} hint="Danach stöbern Kunden. Ohne Art findet dein Produkt kaum jemand.">
+          <select id="categoryId" name="categoryId" className="select" defaultValue={product?.categoryId ?? ""} required>
+            <option value="">Bitte wählen</option>
             {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </Field>
@@ -80,7 +80,7 @@ export function ProductForm({
       <div className="card p-5 md:p-6 space-y-5">
         <h2 className="font-semibold text-lg">Preis und Bestand</h2>
         <div className="grid sm:grid-cols-3 gap-4">
-          <Field label="Verkaufspreis in Euro" name="price" error={err.price} hint="Inklusive Mehrwertsteuer, zum Beispiel 24,90">
+          <Field label="Verkaufspreis in Euro" name="price" error={err.price} hint="Mit Mehrwertsteuer, z. B. 24,90">
             <input id="price" name="price" inputMode="decimal" className="input num" value={price} onChange={(e) => setPrice(e.target.value)} required />
           </Field>
           <Field label="Streichpreis (optional)" name="compareAt" error={err.compareAt}>
@@ -100,7 +100,7 @@ export function ProductForm({
           </select>
         </Field>
         <details className="group">
-          <summary className="cursor-pointer text-sm font-semibold text-ink-2 min-h-[44px] flex items-center">Weitere Angaben (optional)</summary>
+          <summary className="details-summary">Weitere Angaben anzeigen (Artikelnummer, Gewicht)</summary>
           <div className="grid sm:grid-cols-2 gap-4 mt-3">
             <Field label="Deine Artikelnummer" name="sku" hint="Falls du eine hast, erleichtert sie das Packen."><input id="sku" name="sku" className="input" defaultValue={product?.sku ?? ""} maxLength={60} /></Field>
             <Field label="Gewicht in Gramm" name="weightGrams" hint="Hilft uns beim Versand."><input id="weightGrams" name="weightGrams" type="number" min={0} className="input num" defaultValue={product?.weightGrams ?? ""} /></Field>

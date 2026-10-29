@@ -5,6 +5,7 @@ import { createPayoutDraftAction } from "@/modules/payouts/actions";
 import { getSetting } from "@/lib/settings";
 import { formatCents } from "@/lib/money";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { formatIban } from "@/lib/text";
 
 export default async function AdminPayouts() {
   const [open, payouts, schedule] = await Promise.all([openPayoutsOverview(), db.payout.findMany({ orderBy: { createdAt: "desc" }, include: { vendor: { select: { name: true } } }, take: 100 }), getSetting("payout_schedule")]);
@@ -24,7 +25,7 @@ export default async function AdminPayouts() {
                     <td><Link href={`/admin/haendler/${o.vendor.id}`} className="text-accent-text font-semibold">{o.vendor.name}</Link></td>
                     <td>{o.count}</td><td className="nowrap">{formatCents(o.grossCents)}</td><td className="nowrap text-ink-2">{formatCents(o.commissionCents)}</td>
                     <td className="nowrap font-semibold">{formatCents(o.openCents)}</td>
-                    <td className="text-sm">{hasBank ? <span className="num">{o.vendor.payoutIban}</span> : <span className="badge badge-warn">fehlt</span>}</td>
+                    <td className="text-sm"><span className="num whitespace-nowrap">{hasBank ? formatIban(o.vendor.payoutIban) : null}</span>{!hasBank ? <span className="badge badge-warn">fehlt</span> : null}</td>
                     <td>
                       {hasBank ? (
                         <form action={createPayoutDraftAction}><input type="hidden" name="vendorId" value={o.vendor.id} /><button className="btn btn-primary btn-sm" type="submit">Auszahlung erstellen</button></form>

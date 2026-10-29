@@ -17,10 +17,10 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       <div className="pt-3 flex flex-col gap-1">
         <h3 className="font-semibold leading-snug text-[1.05rem]"><Link href={`/produkt/${product.slug}`}>{product.title}</Link></h3>
         <p className="text-sm text-ink-2">
-          <Link href={`/macher/${product.vendor.slug}`} className="hover:underline">{product.vendor.name}</Link>
-          {product.vendor.city ? <span className="text-ink-3"> · {product.vendor.city}</span> : null}
+          <Link href={`/macher/${product.vendor.slug}`} className="hover:underline whitespace-nowrap">{product.vendor.name}</Link>
+          {product.vendor.city ? <span className="text-ink-3 block sm:inline"><span className="hidden sm:inline"> · </span>{product.vendor.city}</span> : null}
         </p>
-        <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-3">
+        <div className="mt-1 flex flex-col gap-0.5">
           <Price cents={product.priceCents} compareAt={product.compareAtCents} />
           <MakerShare shareCents={makerShareCents(product.priceCents, product.vendor.commissionPercent)} makerName={product.vendor.name} className="text-sm" />
         </div>

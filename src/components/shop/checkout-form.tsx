@@ -35,8 +35,11 @@ export function CheckoutForm({ testMode }: { testMode: boolean }) {
             <input id="city" name="city" autoComplete="address-level2" required className="input" />
           </Field>
         </div>
-        <Field label="Geschenkgruß oder Anmerkung (optional)" name="note" hint="Ein Gruß wird auf einer Karte beigelegt, keine Rechnung im Paket.">
+        <Field label="Grußkarte (optional)" name="note" hint="Liegt dem Paket bei. Keine Rechnung im Paket.">
           <textarea id="note" name="note" className="textarea !min-h-[80px]" maxLength={500} />
+        </Field>
+        <Field label="Hinweis an uns (optional)" name="deliveryNote" hint="Zum Beispiel: beim Nachbarn abgeben. Kommt nicht auf die Karte.">
+          <input id="deliveryNote" name="deliveryNote" className="input" maxLength={300} />
         </Field>
       </section>
       <section className="space-y-3">

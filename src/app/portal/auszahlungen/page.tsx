@@ -7,6 +7,7 @@ import { formatCents } from "@/lib/money";
 import { Stat } from "@/components/ui/stat";
 import { Alert } from "@/components/ui/alert";
 import { StatusBadge } from "@/components/ui/status-badge";
+import { formatPayoutDate } from "@/modules/orders/texts";
 
 export default async function PortalPayouts() {
   const user = await requireVendorUser();
@@ -16,7 +17,7 @@ export default async function PortalPayouts() {
       <div><h1 className="font-display text-3xl font-semibold">Auszahlungen</h1><p className="text-ink-2">Dein Anteil aus bezahlten Verkäufen, gesammelt überwiesen, {schedule}.</p></div>
       {!vendor.payoutIban ? <Alert tone="warn">Damit wir dir {s.openCents > 0 ? formatCents(s.openCents) : "dein Geld"} überweisen können, fehlt deine Bankverbindung. <Link href="/portal/einstellungen#bank" className="underline font-semibold">Jetzt eintragen</Link></Alert> : null}
       <div className="grid sm:grid-cols-2 gap-3">
-        <Stat label="Nächste Auszahlung" value={formatCents(s.openCents)} hint={`${s.open.length} ${s.open.length === 1 ? "Verkauf" : "Verkäufe"} noch nicht überwiesen · ${schedule}`} />
+        <Stat label="Nächste Auszahlung" value={formatCents(s.openCents)} hint={`${s.open.length} ${s.open.length === 1 ? "Verkauf" : "Verkäufe"} noch nicht überwiesen, ${formatPayoutDate(schedule)}`} />
         <Stat label="Bereits überwiesen" value={formatCents(s.paidCents)} />
       </div>
       <section className="card">

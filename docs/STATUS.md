@@ -18,6 +18,13 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
   Haken, Bewerbung ohne Passwort, Auszahlung ohne IBAN gesperrt, Auszahlungstermin sichtbar, deutsche
   Foto-Auswahl, ein Wort „Macher“, Umbrüche und Kontraste, Seitenleiste durchgehend, Grammatik in Zahlen.
   Nicht lösbar ohne Fabrice: echte Produktfotos (Platzhalter sagen jetzt „Foto folgt“).
+- **Zweiter Künstler-Durchgang** (`docs/KUENSTLER-2026-10-29-zweiter-durchgang.md`): 37 von 58 behoben, 16 teilweise,
+  22 neue Funde. Davon eingearbeitet: Tabellen passen ins Fenster, Grußkarte und Hinweis getrennt, Kaufknopf am
+  Handy im ersten Bildschirm, Handy-Kopf ohne „Anmelden“, Art als Pflichtfeld, IBAN in Vierergruppen,
+  Verwendungszweck vorausgefüllt und Pflicht, Auszahlungstermin als Datum, „aus Wegberg“ statt „aus Niederrhein“,
+  ein Ort-Feld, Rückgabe-Satz einheitlich und bei Lebensmitteln ehrlich, Fußzeilen-Links 44 px, Komponenten-CSS
+  in Tailwind-Ebene (vorher schlugen Klassen wie `hidden` fehl). Offen und bewusst: Zahlarten in der Kasse erst mit
+  Stripe sichtbar, Foto-Reihenfolge erst nach dem Speichern, Telefonnummer im Kundendienst, Gesichter der Macher.
 
 - Shop, Händlerportal, Verwaltung, Kasse (Stripe oder Testkasse), Auszahlungen je Händler, Headless-API,
   Seed mit Demo-Daten, Dockerfile und Compose.

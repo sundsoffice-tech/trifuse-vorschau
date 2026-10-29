@@ -6,9 +6,9 @@ import { formatCents } from "@/lib/money";
 import { StatusBadge } from "@/components/ui/status-badge";
 
 function nextStep(f: string): { value: string; label: string } | null {
-  if (f === "NEW") return { value: "PACKED", label: "Als gepackt markieren" };
-  if (f === "PACKED") return { value: "SHIPPED", label: "Als verschickt markieren" };
-  if (f === "SHIPPED") return { value: "DELIVERED", label: "Als zugestellt markieren" };
+  if (f === "NEW") return { value: "PACKED", label: "Gepackt melden" };
+  if (f === "PACKED") return { value: "SHIPPED", label: "Verschickt melden" };
+  if (f === "SHIPPED") return { value: "DELIVERED", label: "Zugestellt melden" };
   return null;
 }
 
@@ -23,15 +23,15 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
       <div>
         <Link href="/admin/bestellungen" className="text-sm text-ink-2 hover:underline">← Bestellungen</Link>
         <div className="flex flex-wrap items-center gap-3 mt-1"><h1 className="font-display text-3xl font-semibold num">{order.number}</h1><StatusBadge status={order.status} kind="order" /></div>
-        <p className="text-ink-2 text-sm num">{order.createdAt.toLocaleString("de-DE")} · Zahlung: {paymentText}{order.paidAt ? `, bezahlt ${order.paidAt.toLocaleString("de-DE")}` : ""}</p>
+        <p className="text-ink-2 text-sm num">Bestellt am {order.createdAt.toLocaleString("de-DE", { dateStyle: "medium", timeStyle: "short" })}{order.paidAt ? `, bezahlt um ${order.paidAt.toLocaleTimeString("de-DE", { timeStyle: "short" })}` : ""} · Zahlung: {paymentText}</p>
         {order.paymentRef ? <p className="text-xs text-ink-3 num">Kennung beim Zahlungsdienst: {order.paymentRef}</p> : null}
       </div>
 
-      <div className="grid lg:grid-cols-[minmax(0,1fr)_300px] gap-6 min-w-0">
+      <div className="grid xl:grid-cols-[minmax(0,1fr)_260px] gap-6 min-w-0">
         <section className="card min-w-0">
           <div className="p-4 border-b border-line"><h2 className="font-semibold">Artikel</h2></div>
           <div className="table-wrap"><table className="table">
-            <thead><tr><th>Produkt</th><th>Macher</th><th>Stück</th><th className="nowrap">Preis</th><th className="nowrap">Unser Anteil</th><th className="nowrap">An den Macher</th><th>Versand</th></tr></thead>
+            <thead><tr><th>Produkt</th><th>Macher</th><th>Stück</th><th className="nowrap">Preis</th><th className="nowrap">An den Macher</th><th>Versand</th></tr></thead>
             <tbody>
               {order.items.map((i) => {
                 const step = nextStep(i.fulfillment);
@@ -41,9 +41,8 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
                     <td><Link href={`/admin/haendler/${i.vendorId}`} className="text-accent-text">{i.vendor.name}</Link><span className="block text-xs text-ink-2">{i.shippingBy === "VENDOR" ? "verschickt selbst" : "über unser Lager"}</span></td>
                     <td className="num">{i.quantity}</td>
                     <td className="nowrap">{formatCents(i.lineTotalCents)}</td>
-                    <td className="nowrap text-ink-2">{formatCents(i.commissionCents)} ({i.commissionPercent} %)</td>
-                    <td className="nowrap font-semibold">{formatCents(i.vendorNetCents)}{i.payoutId ? <Link href={`/admin/auszahlungen/${i.payoutId}`} className="block text-xs text-ok font-normal">in Auszahlung</Link> : null}</td>
-                    <td className="min-w-[200px]">
+                    <td className="nowrap font-semibold">{formatCents(i.vendorNetCents)}<span className="block text-xs text-ink-2 font-normal">unser Anteil {formatCents(i.commissionCents)}</span>{i.payoutId ? <Link href={`/admin/auszahlungen/${i.payoutId}`} className="block text-xs text-ok font-normal">in Auszahlung</Link> : null}</td>
+                    <td className="min-w-[180px]">
                       <StatusBadge status={i.fulfillment} />
                       {order.status === "PAID" && step ? (
                         <form action={adminSetFulfillmentAction} className="mt-2">
@@ -78,7 +77,8 @@ export default async function AdminOrderDetail({ params }: { params: Promise<{ i
             <h2 className="font-semibold mb-2">Kunde</h2>
             <p>{order.name}<br />{order.addressLine}<br />{order.postalCode} {order.city}</p>
             <p className="mt-2 break-all"><a href={`mailto:${order.email}`} className="text-accent-text">{order.email}</a></p>
-            {order.note ? <p className="mt-2 text-ink-2">Gruß oder Anmerkung: „{order.note}“</p> : null}
+            {order.note ? <p className="mt-2 text-ink-2">Grußkarte: „{order.note}“</p> : null}
+            {order.deliveryNote ? <p className="mt-1 text-ink-2">Hinweis: „{order.deliveryNote}“</p> : null}
           </section>
           <section className="card p-4 space-y-3 text-sm">
             <h2 className="font-semibold">Aktionen</h2>

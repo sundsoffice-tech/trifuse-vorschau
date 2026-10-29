@@ -45,7 +45,7 @@
     --warn-soft: #3a2f12;
     --bad: #f08a8a;
     --bad-soft: #3d1f1f;
-    --img-filter: brightness(.86);
+    --img-filter: brightness(.78);
     color-scheme: dark;
   }
 }
@@ -81,6 +81,7 @@ h1, h2, h3 { text-wrap: balance; }
 .num { font-variant-numeric: tabular-nums lining-nums; }
 .img-surface img { filter: var(--img-filter); }
 
+@layer components {
 .container-x { width: 100%; max-width: 1200px; margin-inline: auto; padding-inline: 16px; }
 @media (min-width: 768px) { .container-x { padding-inline: 32px; } }
 
@@ -112,7 +113,7 @@ h1, h2, h3 { text-wrap: balance; }
 .badge-muted { background: var(--surface-2); color: var(--ink-2); }
 .badge-accent { background: var(--accent-soft); color: var(--accent-text); }
 
-.chip { display: inline-flex; align-items: center; min-height: 44px; padding: .4rem .9rem; border-radius: 6px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-size: .9rem; font-weight: 500; text-decoration: none; }
+.chip { display: inline-flex; align-items: center; min-height: 46px; padding: .4rem .9rem; border-radius: 6px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); font-size: .9rem; font-weight: 500; text-decoration: none; }
 .chip:hover { background: var(--surface-2); }
 .chip[aria-current="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
@@ -136,6 +137,13 @@ h1, h2, h3 { text-wrap: balance; }
 .band span { font-size: .875rem; color: var(--ink-2); }
 
 .marker::before { content: ""; display: inline-block; width: .5em; height: .5em; background: var(--accent); margin-right: .6em; vertical-align: middle; }
+
+.details-summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: .4rem; font-weight: 600; color: var(--ink-2); font-size: .9rem; list-style: none; }
+.details-summary::-webkit-details-marker { display: none; }
+.details-summary::before { content: "▸"; color: var(--accent-text); }
+details[open] > .details-summary::before { content: "▾"; }
+.footer-link { display: inline-block; padding-block: .55rem; min-height: 44px; }
+}
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 @media print { .print\:hidden { display: none !important; } }

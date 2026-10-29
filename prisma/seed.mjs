@@ -38,7 +38,7 @@ async function main() {
   const vendors = [
     { slug: "lichtwerk-mg", name: "Lichtwerk MG", email: "lichtwerk@example.com", city: "Mönchengladbach", description: "Lea gießt Kerzen aus Rapswachs in ihrer Werkstatt in Rheydt. Jede Kerze wird von Hand gegossen, geduldig abgekühlt und einzeln geprüft.", contact: "Lea Brandt", iban: "DE02120300000000202051" },
     { slug: "ton-und-tisch", name: "Ton & Tisch", email: "tonundtisch@example.com", city: "Viersen", description: "Milan dreht Steinzeug für den Alltag: Schalen, Becher, Bretter. Alles entsteht an der Scheibe in Viersen und wird zweimal gebrannt.", contact: "Milan Oster", iban: "" },
-    { slug: "wiesenkram", name: "Wiesenkram", email: "wiesenkram@example.com", city: "Niederrhein", description: "Hanna führt einen kleinen Hof am Niederrhein: Bienen, Kräuterbeete, eine Seifenküche. Was sie dort macht, verkauft sie hier.", contact: "Hanna Vogt", iban: "DE75512108001245126199" },
+    { slug: "wiesenkram", name: "Wiesenkram", email: "wiesenkram@example.com", city: "Wegberg", description: "Hanna führt einen kleinen Hof bei Wegberg am Niederrhein: Bienen, Kräuterbeete, eine Seifenküche. Was sie dort macht, verkauft sie hier.", contact: "Hanna Vogt", iban: "DE75512108001245126199" },
   ];
   const created = {};
   for (const v of vendors) {

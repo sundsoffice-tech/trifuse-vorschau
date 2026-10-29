@@ -6,7 +6,7 @@ import { ProductCard } from "@/components/shop/product-card";
 import { MakerRow } from "@/components/shop/maker-row";
 
 export default async function HomePage() {
-  const [{ items }, categories, vendors, settings] = await Promise.all([listActiveProducts({ perPage: 8 }), listCategoriesWithCounts(), listActiveVendors(), getAllSettings()]);
+  const [{ items }, categories, vendors, settings] = await Promise.all([listActiveProducts({ perPage: 8, inStockOnly: true }), listCategoriesWithCounts(), listActiveVendors(), getAllSettings()]);
   const makerPercent = Math.round(100 - settings.commissionPercent);
   return (
     <div className="container-x">
@@ -37,7 +37,7 @@ export default async function HomePage() {
         <div><b className="num">{makerPercent} %</b><span>jedes Preises gehen an den Macher</span></div>
         <div><b>Ein Paket</b><span>auch wenn du bei drei Machern bestellst</span></div>
         <div><b>2 bis 4 Werktage</b><span>sorgfältig verpackt, Versand {formatCents(settings.shippingFlatCents)}, ab {formatCents(settings.freeShippingFromCents)} frei</span></div>
-        <div><b>14 Tage</b><span>Rückgabe, ohne Wenn und Aber</span></div>
+        <div><b>14 Tage</b><span>Widerrufsrecht, Lebensmittel ungeöffnet</span></div>
       </div>
 
       <section className="py-10">

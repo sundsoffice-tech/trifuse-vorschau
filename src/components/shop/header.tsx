@@ -23,7 +23,7 @@ export async function Header() {
           <label className="sr-only" htmlFor="q">Suche</label>
           <input id="q" name="q" type="search" placeholder="Honig, Kerze, Geschenk …" className="input !min-h-[40px] !py-1.5 w-52 lg:w-72" />
         </form>
-        <Link href={accountHref} className="nav-link ml-auto md:ml-0 hidden sm:flex">{accountLabel}</Link>
+        <Link href={accountHref} className="nav-link ml-auto md:ml-0 hidden md:flex">{accountLabel}</Link>
         <Link href="/warenkorb" className="btn btn-secondary btn-sm ml-auto sm:ml-0" aria-label={`Warenkorb, ${cart.count} Artikel`}>
           Warenkorb{cart.count > 0 ? <span className="ml-1 inline-flex min-w-5 h-5 px-1.5 items-center justify-center rounded bg-accent text-accent-ink text-xs num">{cart.count}</span> : null}
         </Link>
@@ -33,6 +33,7 @@ export async function Header() {
           <label className="sr-only" htmlFor="q-mobil">Suche</label>
           <input id="q-mobil" name="q" type="search" placeholder="Honig, Kerze, Geschenk …" className="input !min-h-[44px]" />
         </form>
+        <Link className="chip" href="/produkte">Produkte</Link>
         <Link className="chip" href="/macher">Macher</Link>
       </div>
     </header>

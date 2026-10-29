@@ -6,7 +6,7 @@ import { getSetting } from "@/lib/settings";
 import { formatCents } from "@/lib/money";
 import { Stat } from "@/components/ui/stat";
 import { Alert } from "@/components/ui/alert";
-import { fulfillmentText } from "@/modules/orders/texts";
+import { fulfillmentText, formatPayoutDate } from "@/modules/orders/texts";
 
 export default async function PortalHome() {
   const user = await requireVendorUser();
@@ -30,9 +30,9 @@ export default async function PortalHome() {
       {vendor.status === "ACTIVE" && !vendor.payoutIban ? <Alert tone="warn">Damit wir dir dein Geld überweisen können, fehlt noch deine Bankverbindung. <Link href="/portal/einstellungen#bank" className="underline font-semibold">Jetzt eintragen</Link></Alert> : null}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat label="Im Shop sichtbar" value={String(count("ACTIVE"))} hint={pending ? `${pending} ${pending === 1 ? "wartet" : "warten"} auf Freigabe` : undefined} />
-        <Stat label="Verkauft" value={`${sold._sum.quantity ?? 0} Stück`} hint={`für ${formatCents(sold._sum.lineTotalCents ?? 0)}`} />
-        <Stat label="Kommt zu dir" value={formatCents(sold._sum.vendorNetCents ?? 0)} hint={`${Math.round(100 - vendor.commissionPercent)} % jedes Verkaufs`} />
-        <Stat label="Nächste Auszahlung" value={formatCents(payout.openCents)} hint={schedule} />
+        <Stat label="Verkauft" value={`${sold._sum.quantity ?? 0} Stück`} hint={`für ${formatCents(sold._sum.lineTotalCents ?? 0)} insgesamt`} />
+        <Stat label="Schon überwiesen" value={formatCents(payout.paidCents)} hint={`${Math.round(100 - vendor.commissionPercent)} % jedes Verkaufs kommen zu dir`} />
+        <Stat label="Nächste Auszahlung" value={formatCents(payout.openCents)} hint={formatPayoutDate(schedule)} />
       </div>
       <Link href="/portal/produkte/neu" className="btn btn-primary">Neues Produkt</Link>
       <section className="card">

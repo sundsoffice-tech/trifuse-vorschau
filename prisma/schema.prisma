@@ -180,6 +180,8 @@ model Order {
   city            String
   country         String      @default("DE")
   note            String      @default("")
+  // Hinweis an uns (z. B. beim Nachbarn abgeben), getrennt von der Grußkarte
+  deliveryNote    String      @default("")
   subtotalCents   Int
   shippingCents   Int
   totalCents      Int

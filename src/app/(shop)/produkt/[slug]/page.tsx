@@ -33,7 +33,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </nav>
       <div className="grid md:grid-cols-2 gap-8 lg:gap-14">
         <div>
-          <div className="rounded-md border border-line overflow-hidden aspect-square bg-surface-2 img-surface">
+          <div className="rounded-md border border-line overflow-hidden aspect-[4/3] md:aspect-square bg-surface-2 img-surface">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={imageUrl(first?.path)} alt={first?.alt || product.title} className="w-full h-full object-cover" />
           </div>
@@ -57,13 +57,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <Price cents={product.priceCents} compareAt={product.compareAtCents} className="text-2xl mt-4" />
           <p className="text-sm text-ink-2 mt-1 num">inkl. MwSt., zzgl. {formatCents(settings.shippingFlatCents)} Versand, ab {formatCents(settings.freeShippingFromCents)} Bestellwert versandkostenfrei</p>
 
-          <div className="mt-4 rounded-md border border-line bg-surface-2 p-4">
-            <p className="font-semibold num">Von {formatCents(product.priceCents)} gehen {formatCents(share)} an {product.vendor.name}.</p>
-            <p className="text-sm text-ink-2 mt-1 num">Das sind {makerPercent} %. Der Rest deckt Verpackung, Versand, Zahlung und Kundendienst.</p>
+          <div className="mt-5">
+            {product.stock > 0 ? <AddToCartForm productId={product.id} max={Math.min(product.stock, 10)} /> : <p className="badge badge-muted !text-sm !px-3 !py-1.5">Zurzeit ausverkauft</p>}
           </div>
 
-          <div className="mt-6">
-            {product.stock > 0 ? <AddToCartForm productId={product.id} max={Math.min(product.stock, 10)} /> : <p className="badge badge-muted !text-sm !px-3 !py-1.5">Zurzeit ausverkauft</p>}
+          <div className="mt-5 rounded-md border border-line bg-surface-2 p-4">
+            <p className="font-semibold num">Von {formatCents(product.priceCents)} gehen {formatCents(share)} an {product.vendor.name}.</p>
+            <p className="text-sm text-ink-2 mt-1 num">Das sind {makerPercent} %. Der Rest deckt Verpackung, Versand, Zahlung und Kundendienst.</p>
           </div>
 
           <dl className="mt-6 grid grid-cols-[auto_1fr] gap-x-6 gap-y-1.5 text-sm">
@@ -73,7 +73,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <dt className="text-ink-2">Verfügbar</dt>
             <dd className="num">{product.stock > 10 ? "Auf Lager" : product.stock > 0 ? `Noch ${product.stock} Stück` : "Ausverkauft"}</dd>
             <dt className="text-ink-2">Rückgabe</dt>
-            <dd>14 Tage, ohne Angabe von Gründen</dd>
+            <dd>14 Tage Widerrufsrecht; Lebensmittel nur ungeöffnet</dd>
           </dl>
 
           {product.description ? <div className="prose mt-8 text-ink-2 whitespace-pre-line">{product.description}</div> : null}

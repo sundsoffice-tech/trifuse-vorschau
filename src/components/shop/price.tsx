@@ -12,6 +12,6 @@ export function Price({ cents, compareAt, className = "" }: { cents: number; com
 /** Die eine Zeile, die das Versprechen einlöst: was vom Preis beim Macher ankommt. */
 export function MakerShare({ shareCents, makerName, className = "" }: { shareCents: number; makerName: string; className?: string }) {
   return (
-    <span className={`num text-accent-text font-semibold ${className}`}>{formatCents(shareCents)} gehen an {makerName}</span>
+    <span className={`num text-accent-text font-semibold ${className}`}>{formatCents(shareCents)} <span className="hidden sm:inline">gehen </span>an {makerName}</span>
   );
 }

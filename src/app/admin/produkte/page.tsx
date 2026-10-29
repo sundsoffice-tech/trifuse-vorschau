@@ -29,7 +29,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
       </div>
       <div className="flex flex-wrap gap-2 items-center">
         {tabs.map((t) => <Link key={t.value} href={`/admin/produkte?status=${t.value}${sp.q ? `&q=${encodeURIComponent(sp.q)}` : ""}`} className="chip !min-h-[40px]" aria-current={status === t.value ? "true" : undefined}>{t.label}{t.value !== "ALL" ? <span className="opacity-70 ml-1 num">{count(t.value)}</span> : null}</Link>)}
-        <form className="ml-auto flex gap-2" action="/admin/produkte" role="search"><input type="hidden" name="status" value={status} /><input name="q" defaultValue={sp.q ?? ""} placeholder="Name, Macher oder Artikelnummer" className="input !min-h-[40px] !py-1 w-64" aria-label="Suche" /><button className="btn btn-secondary btn-sm">Suchen</button></form>
+        <form className="ml-auto flex gap-2" action="/admin/produkte" role="search"><input type="hidden" name="status" value={status} /><input name="q" defaultValue={sp.q ?? ""} placeholder="Name, Macher, Artikelnr." className="input !min-h-[40px] !py-1 w-56" aria-label="Suche" /><button className="btn btn-secondary btn-sm">Suchen</button></form>
       </div>
       <ul className="card divide-y divide-line">
         {products.map((p) => (

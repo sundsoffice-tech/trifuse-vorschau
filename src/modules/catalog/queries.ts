@@ -15,6 +15,8 @@ export type CatalogFilter = {
   category?: string;
   vendor?: string;
   sort?: "neu" | "preis-auf" | "preis-ab";
+  /** Startseite „Neu dabei“: nichts zeigen, was niemand kaufen kann. */
+  inStockOnly?: boolean;
   page?: number;
   perPage?: number;
 };
@@ -25,6 +27,7 @@ export async function listActiveProducts(filter: CatalogFilter = {}) {
   const where: Prisma.ProductWhereInput = {
     status: "ACTIVE",
     vendor: { status: "ACTIVE" },
+    ...(filter.inStockOnly ? { stock: { gt: 0 } } : {}),
     ...(filter.category ? { category: { slug: filter.category } } : {}),
     ...(filter.vendor ? { vendor: { slug: filter.vendor, status: "ACTIVE" } } : {}),
     ...(filter.q

@@ -6,6 +6,7 @@ import { adminCreateVendorAction, adminUpdateVendorAction, adminResetVendorPassw
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Field } from "@/components/ui/field";
 import { Alert } from "@/components/ui/alert";
+import { formatIban } from "@/lib/text";
 
 export function AdminVendorCreateForm() {
   const [state, action] = useActionState(adminCreateVendorAction, null);
@@ -55,7 +56,7 @@ export function AdminVendorEditForm({ vendor }: { vendor: Vendor }) {
       </div>
       <div className="grid sm:grid-cols-2 gap-4">
         <Field label="Kontoinhaber" name="payoutHolder"><input id="payoutHolder" name="payoutHolder" className="input" defaultValue={vendor.payoutHolder} /></Field>
-        <Field label="IBAN" name="payoutIban"><input id="payoutIban" name="payoutIban" className="input num" defaultValue={vendor.payoutIban} /></Field>
+        <Field label="IBAN" name="payoutIban"><input id="payoutIban" name="payoutIban" className="input num" defaultValue={formatIban(vendor.payoutIban)} /></Field>
       </div>
       <Field label="Interne Notiz zur Auszahlung" name="payoutNote" hint="Sieht nur das Team."><textarea id="payoutNote" name="payoutNote" className="textarea !min-h-[70px]" defaultValue={vendor.payoutNote} /></Field>
       <SubmitButton pendingText="Speichert …">Speichern</SubmitButton>

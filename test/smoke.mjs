@@ -69,7 +69,7 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
   await page.getByRole("button", { name: "Zahlung erfolgreich" }).click();
   await page.waitForURL(/\/bestellung\//);
   const body = await page.textContent("body");
-  check(body?.includes("Danke, deine Bestellung ist da") ?? false, "Bestellbestätigung nach Testzahlung");
+  check(body?.includes("Danke, deine Bestellung ist eingegangen") ?? false, "Bestellbestätigung nach Testzahlung");
   check(!/Warenkorb\s*\d/.test(body ?? ""), "Warenkorb-Zähler nach dem Kauf leer");
   const number = body?.match(/M-\d{4}-\d{6}/)?.[0];
   check(Boolean(number), `Bestellnummer vergeben: ${number}`);
@@ -95,6 +95,7 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   await page.fill("#description", "Automatisch angelegtes Testprodukt.");
   await page.fill("#price", "7,50");
   await page.fill("#stock", "5");
+  await page.selectOption("#categoryId", { index: 1 });
   await page.getByRole("button", { name: /zur Freigabe schicken/ }).click();
   await page.waitForURL(/\/portal\/produkte\/(?!neu)[a-z0-9]+/);
   check((await page.textContent("body"))?.includes("Wartet auf Freigabe") ?? false, "Händlerprodukt wartet auf Freigabe");

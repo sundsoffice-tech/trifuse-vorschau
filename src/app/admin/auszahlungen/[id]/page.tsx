@@ -6,6 +6,7 @@ import { formatCents } from "@/lib/money";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Alert } from "@/components/ui/alert";
 import { PrintButton } from "@/components/ui/print-button";
+import { formatIban } from "@/lib/text";
 
 export default async function AdminPayoutDetail({ params }: { params: Promise<{ id: string }> }) {
   const payout = await getPayoutWithItems((await params).id);
@@ -13,6 +14,8 @@ export default async function AdminPayoutDetail({ params }: { params: Promise<{ 
   const gross = payout.items.reduce((s, i) => s + i.lineTotalCents, 0);
   const commission = payout.items.reduce((s, i) => s + i.commissionCents, 0);
   const hasBank = Boolean(payout.vendor.payoutIban);
+  const monat = payout.createdAt.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+  const zweck = `Auszahlung ${monat}, ${payout.vendor.name}`;
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="print:hidden">
@@ -30,7 +33,7 @@ export default async function AdminPayoutDetail({ params }: { params: Promise<{ 
           <div className="text-right">
             <p className="font-semibold">{payout.vendor.name}</p>
             <p className="text-ink-2">{payout.vendor.payoutHolder || "Kontoinhaber fehlt"}</p>
-            <p className="text-ink-2 num">{payout.vendor.payoutIban || "IBAN fehlt"}</p>
+            <p className="text-ink-2 num">{payout.vendor.payoutIban ? formatIban(payout.vendor.payoutIban) : "IBAN fehlt"}</p>
           </div>
         </div>
         <div className="table-wrap mt-5"><table className="table">
@@ -40,14 +43,18 @@ export default async function AdminPayoutDetail({ params }: { params: Promise<{ 
         </table></div>
         {payout.note ? <p className="text-sm text-ink-2 mt-4">Notiz: {payout.note}</p> : null}
       </section>
-      <section className="card p-5 flex flex-wrap items-center gap-4 print:hidden">
+      <section className="card p-5 print:hidden space-y-4">
         {payout.status === "DRAFT" ? (
-          <>
-            <form action={markPayoutPaidAction} className="flex flex-wrap items-center gap-2"><input type="hidden" name="payoutId" value={payout.id} /><input name="reference" placeholder="Verwendungszweck der Überweisung" className="input !min-h-[40px] w-64" disabled={!hasBank} /><button className="btn btn-primary" type="submit" disabled={!hasBank} title={hasBank ? undefined : "Erst möglich, wenn die Bankverbindung eingetragen ist"}>Als überwiesen markieren</button></form>
-            <form action={deletePayoutDraftAction}><input type="hidden" name="payoutId" value={payout.id} /><button className="btn btn-ghost text-bad" type="submit">Entwurf verwerfen</button></form>
-          </>
-        ) : <p className="text-sm text-ok">Diese Auszahlung ist überwiesen.</p>}
-        <PrintButton className="btn btn-secondary ml-auto" />
+          <form action={markPayoutPaidAction} className="space-y-3">
+            <input type="hidden" name="payoutId" value={payout.id} />
+            <div><label className="label" htmlFor="reference">Verwendungszweck der Überweisung</label><input id="reference" name="reference" defaultValue={zweck} className="input max-w-lg" required disabled={!hasBank} /></div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button className="btn btn-primary" type="submit" disabled={!hasBank} title={hasBank ? undefined : "Erst möglich, wenn die Bankverbindung eingetragen ist"}>Als überwiesen markieren</button>
+              <PrintButton className="btn btn-secondary" />
+            </div>
+          </form>
+        ) : <div className="flex flex-wrap items-center gap-3"><p className="text-sm text-ok">Diese Auszahlung ist überwiesen.</p><PrintButton className="btn btn-secondary ml-auto" /></div>}
+        {payout.status === "DRAFT" ? <form action={deletePayoutDraftAction} className="border-t border-line pt-3"><input type="hidden" name="payoutId" value={payout.id} /><button className="btn btn-ghost btn-sm text-bad" type="submit">Entwurf verwerfen, Verkäufe werden wieder offen</button></form> : null}
       </section>
     </div>
   );

@@ -12,6 +12,7 @@ export type CheckoutCustomer = {
   city: string;
   country: string;
   note: string;
+  deliveryNote: string;
 };
 
 async function nextOrderNumber(tx: Prisma.TransactionClient): Promise<string> {

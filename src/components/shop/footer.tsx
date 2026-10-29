@@ -12,19 +12,20 @@ export function Footer() {
         </div>
         <div>
           <p className="font-semibold mb-2">Einkaufen</p>
-          <ul className="space-y-1 text-ink-2">
-            <li><Link href="/produkte">Alle Produkte</Link></li>
-            <li><Link href="/macher">Alle Macher</Link></li>
-            <li><Link href="/verkaufen">Selbst verkaufen</Link></li>
+          <ul className="text-ink-2">
+            <li><Link className="footer-link" href="/produkte">Alle Produkte</Link></li>
+            <li><Link className="footer-link" href="/macher">Alle Macher</Link></li>
+            <li><Link className="footer-link" href="/verkaufen">Selbst verkaufen</Link></li>
+            <li><Link className="footer-link" href="/login">Anmelden für Macher und Team</Link></li>
           </ul>
         </div>
         <div>
           <p className="font-semibold mb-2">Rechtliches</p>
-          <ul className="space-y-1 text-ink-2">
-            <li><Link href="/impressum">Impressum</Link></li>
-            <li><Link href="/datenschutz">Datenschutz</Link></li>
-            <li><Link href="/agb">AGB</Link></li>
-            <li><Link href="/widerruf">Widerrufsbelehrung</Link></li>
+          <ul className="text-ink-2">
+            <li><Link className="footer-link" href="/impressum">Impressum</Link></li>
+            <li><Link className="footer-link" href="/datenschutz">Datenschutz</Link></li>
+            <li><Link className="footer-link" href="/agb">AGB</Link></li>
+            <li><Link className="footer-link" href="/widerruf">Widerrufsbelehrung</Link></li>
           </ul>
         </div>
       </div>

@@ -17,7 +17,9 @@ export async function createPayoutDraftAction(formData: FormData) {
 export async function markPayoutPaidAction(formData: FormData) {
   await requireAdmin();
   const id = field(formData, "payoutId");
-  await markPayoutPaid(id, field(formData, "reference"));
+  const reference = field(formData, "reference");
+  if (!reference) throw new Error("Bitte den Verwendungszweck der Überweisung angeben.");
+  await markPayoutPaid(id, reference);
   revalidatePath("/admin/auszahlungen");
   revalidatePath(`/admin/auszahlungen/${id}`);
   revalidatePath("/portal/auszahlungen");

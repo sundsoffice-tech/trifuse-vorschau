@@ -37,6 +37,7 @@ export function parseProductForm(formData: FormData): ParsedProduct {
   const weightRaw = field(formData, "weightGrams");
   const weightGrams = weightRaw ? intField(formData, "weightGrams", 0) : null;
   const categoryId = field(formData, "categoryId") || null;
+  if (!categoryId) errors.categoryId = "Bitte eine Art wählen.";
   const description = field(formData, "description").slice(0, 5000);
 
   if (Object.keys(errors).length) return { ok: false, fieldErrors: errors };

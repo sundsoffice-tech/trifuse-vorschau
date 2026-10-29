@@ -27,7 +27,7 @@ export async function checkoutAction(_prev: ActionState, formData: FormData): Pr
   let redirectUrl: string;
   try {
     const order = await createOrderFromCart(
-      { email, name, addressLine, postalCode, city, country: "DE", note: field(formData, "note").slice(0, 500) },
+      { email, name, addressLine, postalCode, city, country: "DE", note: field(formData, "note").slice(0, 500), deliveryNote: field(formData, "deliveryNote").slice(0, 300) },
       provider.id,
     );
     redirectUrl = (await provider.startCheckout(order)).redirectUrl;
