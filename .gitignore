@@ -14,3 +14,4 @@ data/uploads/*
 test/ergebnisse/
 npm-debug.log*
 .DS_Store
+test/vorschau/
