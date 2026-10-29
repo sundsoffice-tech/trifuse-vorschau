@@ -8,7 +8,7 @@ export function Footer() {
         <div>
           <p className="font-display text-xl font-semibold">trifuse<span className="text-accent-text">.store</span></p>
           <p className="text-ink-2 mt-2 max-w-xs">{BRAND.claim} Jedes Produkt zeigt, was beim Macher ankommt.</p>
-          <p className="text-ink-2 mt-3">Fragen? <a href={`mailto:${BRAND.supportEmail}`} className="underline">{BRAND.supportEmail}</a></p>
+          <p className="text-ink-2 mt-1">Fragen? <a href={`mailto:${BRAND.supportEmail}`} className="footer-link underline">{BRAND.supportEmail}</a></p>
         </div>
         <div>
           <p className="font-semibold mb-2">Einkaufen</p>

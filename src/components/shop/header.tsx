@@ -10,7 +10,7 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-30 bg-bg/95 backdrop-blur border-b border-line">
       <div className="container-x flex items-center gap-3 h-16">
-        <Link href="/" className="flex items-center gap-2.5 font-display text-[1.45rem] font-semibold tracking-tight text-ink" aria-label={`${BRAND.name} Startseite`}>
+        <Link href="/" className="flex items-center gap-2.5 min-h-[44px] font-display text-[1.45rem] font-semibold tracking-tight text-ink" aria-label={`${BRAND.name} Startseite`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/marke.svg" alt="" width={30} height={30} className="rounded-md" />
           <span>trifuse<span className="text-accent-text">.store</span></span>
@@ -24,7 +24,7 @@ export async function Header() {
           <input id="q" name="q" type="search" placeholder="Honig, Kerze, Geschenk …" className="input !min-h-[40px] !py-1.5 w-52 lg:w-72" />
         </form>
         <Link href={accountHref} className="nav-link ml-auto md:ml-0 hidden md:flex">{accountLabel}</Link>
-        <Link href="/warenkorb" className="btn btn-secondary btn-sm ml-auto sm:ml-0" aria-label={`Warenkorb, ${cart.count} Artikel`}>
+        <Link href="/warenkorb" className="btn btn-secondary ml-auto sm:ml-0" aria-label={`Warenkorb, ${cart.count} Artikel`}>
           Warenkorb{cart.count > 0 ? <span className="ml-1 inline-flex min-w-5 h-5 px-1.5 items-center justify-center rounded bg-accent text-accent-ink text-xs num">{cart.count}</span> : null}
         </Link>
       </div>

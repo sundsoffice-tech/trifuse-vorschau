@@ -33,7 +33,7 @@ export default async function VendorPage({ params, searchParams }: { params: Pro
           <p className="text-sm text-ink-2 mt-3 num">{makerPercent} % jedes Preises gehen direkt an {vendor.name}.</p>
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7 md:gap-x-6 mt-8">{result.items.map((p) => <ProductCard key={p.id} product={p} />)}</div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7 md:gap-x-6 mt-8">{result.items.map((p) => <ProductCard key={p.id} product={p} headingLevel="h2" />)}</div>
       {result.items.length === 0 ? <p className="text-ink-2 mt-6">{vendor.name} hat noch keine Produkte veröffentlicht.</p> : null}
       <Pagination page={result.page} pages={result.pages} makeHref={(p) => `/macher/${slug}${p > 1 ? `?seite=${p}` : ""}`} />
     </div>

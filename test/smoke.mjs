@@ -46,7 +46,7 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
   const page = await ctx.newPage();
   await page.goto(base + "/macher/wiesenkram");
   // Erstes Produkt, das nicht ausverkauft ist (Parallelproben kaufen Bestände leer).
-  const first = page.locator('article:not(:has-text("Ausverkauft")) h3 a').first();
+  const first = page.locator('article:not(:has-text("Ausverkauft")) :is(h2,h3) a').first();
   const title = (await first.textContent())?.trim();
   await first.click();
   await page.waitForURL(/\/produkt\//);

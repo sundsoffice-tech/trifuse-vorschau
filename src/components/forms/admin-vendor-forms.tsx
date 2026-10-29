@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import type { Vendor } from "@prisma/client";
-import { adminCreateVendorAction, adminUpdateVendorAction, adminResetVendorPasswordAction, adminCreateAccessAction } from "@/modules/vendors/admin-actions";
+import { adminCreateVendorAction, adminUpdateVendorAction, adminResetVendorPasswordAction, adminCreateAccessAction, adminApproveVendorAction } from "@/modules/vendors/admin-actions";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { Field } from "@/components/ui/field";
 import { Alert } from "@/components/ui/alert";
@@ -84,6 +84,21 @@ export function AdminResetPasswordForm({ user }: { user: { id: string; email: st
       <span className="flex-1 min-w-[200px]">{user.name} <span className="text-ink-2">{user.email}</span></span>
       <SubmitButton className="btn btn-secondary btn-sm" pendingText="…">Neues Passwort erzeugen</SubmitButton>
       {state?.message ? <p className={`w-full break-all ${state.ok ? "text-ok" : "text-bad"}`}>{state.message}</p> : null}
+    </form>
+  );
+}
+
+export function AdminApproveForm({ vendorId, email, pending }: { vendorId: string; email: string; pending: boolean }) {
+  const [state, action] = useActionState(adminApproveVendorAction, null);
+  // Bleibt nach dem Freischalten sichtbar, damit das Startpasswort nicht mit der Bewerbung verschwindet.
+  if (state?.ok) return <Alert tone="ok"><span className="break-all">{state.message}</span></Alert>;
+  if (!pending) return null;
+  return (
+    <form action={action} className="flex flex-wrap items-center gap-3">
+      <input type="hidden" name="vendorId" value={vendorId} />
+      <SubmitButton className="btn btn-primary" pendingText="Schaltet frei …">Bewerbung annehmen und Zugang anlegen</SubmitButton>
+      <span className="text-sm text-ink-2">Erzeugt das Startpasswort für {email}.</span>
+      {state && !state.ok ? <p className="w-full text-bad text-sm">{state.message}</p> : null}
     </form>
   );
 }

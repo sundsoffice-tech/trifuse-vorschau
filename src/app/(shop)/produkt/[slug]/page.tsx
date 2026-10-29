@@ -27,9 +27,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   return (
     <div className="container-x py-8">
       <nav className="text-sm text-ink-2 mb-6" aria-label="Pfad">
-        <Link href="/produkte" className="hover:underline">Produkte</Link>
-        {product.category ? <> / <Link href={`/produkte?kategorie=${product.category.slug}`} className="hover:underline">{product.category.name}</Link></> : null}
-        {" / "}<span className="text-ink">{product.title}</span>
+        <Link href="/produkte" className="link-44 hover:underline">Produkte</Link>
+        {product.category ? <> / <Link href={`/produkte?kategorie=${product.category.slug}`} className="link-44 hover:underline">{product.category.name}</Link></> : null}
+        {" / "}<span className="text-ink">{product.title.length > 60 ? product.title.slice(0, 57).trimEnd() + " …" : product.title}</span>
       </nav>
       <div className="grid md:grid-cols-2 gap-8 lg:gap-14">
         <div>
@@ -50,7 +50,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
         <div>
           <p className="text-ink-2">
-            <Link href={`/macher/${product.vendor.slug}`} className="font-semibold text-ink hover:underline">{product.vendor.name}</Link>
+            <Link href={`/macher/${product.vendor.slug}`} className="link-44 font-semibold text-ink hover:underline">{product.vendor.name}</Link>
             {product.vendor.city ? <> · aus {product.vendor.city}</> : null}
           </p>
           <h1 className="font-display text-3xl md:text-4xl font-semibold mt-1 leading-tight">{product.title}</h1>
@@ -81,7 +81,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="card p-5 mt-8">
             <p className="font-semibold">Über {product.vendor.name}</p>
             <p className="text-ink-2 text-sm mt-1">{product.vendor.description || "Macher auf trifuse.store."}</p>
-            <Link href={`/macher/${product.vendor.slug}`} className="text-accent-text text-sm font-semibold mt-2 inline-block underline-offset-4 hover:underline">Alle Produkte von {product.vendor.name}</Link>
+            <Link href={`/macher/${product.vendor.slug}`} className="link-44 text-accent-text text-sm font-semibold underline-offset-4 hover:underline">Alle Produkte von {product.vendor.name}</Link>
           </div>
         </div>
       </div>

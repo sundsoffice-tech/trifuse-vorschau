@@ -24,7 +24,7 @@ export default async function HomePage() {
       <section className="pb-4">
         <div className="flex items-baseline justify-between gap-4 mb-4">
           <h2 className="font-display text-2xl md:text-3xl font-semibold">Neu dabei</h2>
-          <Link href="/produkte" className="text-accent-text font-semibold underline-offset-4 hover:underline">Alle ansehen</Link>
+          <Link href="/produkte" className="link-44 text-accent-text font-semibold underline-offset-4 hover:underline">Alle ansehen</Link>
         </div>
         {items.length ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7 md:gap-x-6">{items.map((p) => <ProductCard key={p.id} product={p} />)}</div>

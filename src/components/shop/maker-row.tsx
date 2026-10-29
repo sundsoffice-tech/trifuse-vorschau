@@ -17,7 +17,7 @@ export function MakerRow({ vendor, productCount, full = false }: { vendor: Vendo
       <div className="min-w-0">
         <p className="font-semibold">{vendor.name}</p>
         {vendor.city ? <p className="text-sm text-ink-2">aus {vendor.city}</p> : null}
-        <p className={`text-sm text-ink-2 mt-1 ${full ? "" : "line-clamp-2"}`}>{vendor.description || "Macher auf trifuse.store."}</p>
+        <p className={`text-sm text-ink-2 mt-1 break-words ${full ? "" : "line-clamp-2"}`}>{vendor.description || "Macher auf trifuse.store."}</p>
         <p className="text-sm text-accent-text font-semibold mt-2 num">{full ? `Alle ${productCount} Produkte von ${vendor.name}` : `${productCount} ${productCount === 1 ? "Produkt" : "Produkte"}`}</p>
       </div>
     </Link>

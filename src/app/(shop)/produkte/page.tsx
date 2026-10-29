@@ -49,7 +49,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
       </ul>
 
       {result.items.length ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7 md:gap-x-6 mt-8">{result.items.map((p) => <ProductCard key={p.id} product={p} />)}</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-7 md:gap-x-6 mt-8">{result.items.map((p) => <ProductCard key={p.id} product={p} headingLevel="h2" />)}</div>
       ) : (
         <div className="mt-8"><Empty title="Nichts gefunden" text="Probiere einen anderen Begriff oder eine andere Art." action={<Link href="/produkte" className="btn btn-secondary">Alle Produkte</Link>} /></div>
       )}

@@ -4,7 +4,8 @@ import { imageUrl } from "@/modules/media/url";
 import { makerShareCents } from "@/lib/share";
 import { Price, MakerShare } from "./price";
 
-export function ProductCard({ product }: { product: ProductCardData }) {
+export function ProductCard({ product, headingLevel = "h3" }: { product: ProductCardData; headingLevel?: "h2" | "h3" }) {
+  const H = headingLevel;
   const img = product.images[0];
   const soldOut = product.stock <= 0;
   return (
@@ -15,9 +16,9 @@ export function ProductCard({ product }: { product: ProductCardData }) {
         {soldOut ? <span className="badge badge-muted absolute left-2 top-2">Ausverkauft</span> : product.stock <= 3 ? <span className="badge badge-warn absolute left-2 top-2">Nur noch {product.stock}</span> : null}
       </Link>
       <div className="pt-3 flex flex-col gap-1">
-        <h3 className="font-semibold leading-snug text-[1.05rem]"><Link href={`/produkt/${product.slug}`}>{product.title}</Link></h3>
-        <p className="text-sm text-ink-2">
-          <Link href={`/macher/${product.vendor.slug}`} className="hover:underline whitespace-nowrap">{product.vendor.name}</Link>
+        <H className="font-semibold leading-snug text-[1.05rem] break-words"><Link href={`/produkt/${product.slug}`} className="block py-1.5">{product.title}</Link></H>
+        <p className="text-sm text-ink-2 break-words">
+          <Link href={`/macher/${product.vendor.slug}`} className="hover:underline inline-block py-1.5">{product.vendor.name}</Link>
           {product.vendor.city ? <span className="text-ink-3 block sm:inline"><span className="hidden sm:inline"> · </span>{product.vendor.city}</span> : null}
         </p>
         <div className="mt-1 flex flex-col gap-0.5">

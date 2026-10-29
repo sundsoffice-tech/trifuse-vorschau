@@ -30,6 +30,10 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
   Seed mit Demo-Daten, Dockerfile und Compose.
 - Prüfkette grün: Lint, TypeScript, 4 Unit-Tests, Build, Smoke-Test mit 27 Prüfungen, Screenshots angesehen.
 
+- **impeccable audit, harden, onboard (29.10.2026, spät):** 17 von 20 im Audit, 25 Randzustände als Bilder geprüft,
+  Macher-Erstlauf von der Bewerbung bis zum eingereichten Produkt in sieben Bildschirmen. Bericht
+  `docs/PRUEFUNG-2026-10-29.md`, Werkzeug `npm run test:pruefung` (räumt seine Testdaten selbst auf).
+
 ## Offen, nach Dringlichkeit
 
 1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.

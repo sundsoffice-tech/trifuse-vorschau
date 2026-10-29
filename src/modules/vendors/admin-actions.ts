@@ -96,3 +96,19 @@ export async function adminCreateAccessAction(_prev: ActionState, formData: Form
     return { ok: false, message: e instanceof Error ? e.message : "Zugang konnte nicht angelegt werden." };
   }
 }
+
+/** Bewerbung annehmen: Stand auf Aktiv, Zugang anlegen, Startpasswort zeigen (ein Schritt statt zwei). */
+export async function adminApproveVendorAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdmin();
+  const id = field(formData, "vendorId");
+  try {
+    await db.vendor.update({ where: { id }, data: { status: "ACTIVE" } });
+    const password = await ensureVendorUser(id);
+    revalidatePath("/", "layout");
+    revalidatePath("/admin/haendler");
+    revalidatePath(`/admin/haendler/${id}`);
+    return { ok: true, message: password ? `Freigeschaltet. Startpasswort, nur jetzt sichtbar: ${password}. Schick es mit der Zusage an den Macher.` : "Freigeschaltet; der Zugang bestand schon." };
+  } catch (e) {
+    return { ok: false, message: e instanceof Error ? e.message : "Freischalten fehlgeschlagen." };
+  }
+}
