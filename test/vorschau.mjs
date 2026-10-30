@@ -71,6 +71,13 @@ async function login(page, who) {
   await page.goto(base + "/portal/einstellungen"); await shoot(page, "portal-einstellungen");
   await ctx.close();
 }
+// Haendler ohne Bankverbindung: Erste Schritte
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } }); const page = await ctx.newPage();
+  await login(page, { email: "tonundtisch@example.com", password: vendor.password });
+  await shoot(page, "portal-erste-schritte");
+  await ctx.close();
+}
 // Verwaltung
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } }); const page = await ctx.newPage();
