@@ -38,6 +38,7 @@ async function login(page, who) {
   await page.getByRole("button", { name: "Zahlung erfolgreich" }).click(); await page.waitForURL(/\/bestellung\//);
   await shoot(page, "shop-bestellung");
   await page.goto(base + "/verkaufen"); await shoot(page, "shop-verkaufen");
+  await page.goto(base + "/passwort-vergessen"); await shoot(page, "shop-passwort-vergessen");
   await ctx.close();
 }
 // Hell am Handy, dunkel am Rechner (Künstler: nicht angesehen)
@@ -85,6 +86,8 @@ async function login(page, who) {
   await shoot(page, "admin-uebersicht");
   await page.goto(base + "/admin/produkte?status=PENDING"); await shoot(page, "admin-freigabe");
   await page.goto(base + "/admin/produkte?status=ALL"); await shoot(page, "admin-produkte");
+  await page.goto(base + "/admin/produkte/import"); await shoot(page, "admin-import");
+  await page.goto(base + "/admin/postausgang"); await shoot(page, "admin-postausgang");
   await page.goto(base + "/admin/haendler"); await shoot(page, "admin-haendler");
   const firstVendor = await page.locator("table a").first().getAttribute("href");
   await page.goto(base + firstVendor); await shoot(page, "admin-haendler-detail");
@@ -96,6 +99,10 @@ async function login(page, who) {
   await shoot(page, "admin-auszahlung-abrechnung");
   await page.goto(base + "/admin/kategorien"); await shoot(page, "admin-kategorien");
   await page.goto(base + "/admin/einstellungen"); await shoot(page, "admin-einstellungen");
+  // Bestellung mit Rückbuchung (der Smoke-Test bucht je Lauf ein Stück zurück)
+  await page.goto(base + "/admin/bestellungen?status=PAID");
+  const mitRueckgabe = page.locator("tbody tr").filter({ hasText: "M-" }).first().getByRole("link").first();
+  if (await mitRueckgabe.count()) { await mitRueckgabe.click(); await page.waitForURL(/\/admin\/bestellungen\/[a-z0-9]+/); await shoot(page, "admin-bestellung-rueckbuchung"); }
   await ctx.close();
 }
 await browser.close();
