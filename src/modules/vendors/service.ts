@@ -2,6 +2,8 @@ import "server-only";
 import { db } from "@/lib/db";
 import { slugify, randomSuffix } from "@/lib/slug";
 import { hashPassword, generatePassword } from "@/lib/password";
+import { notifyApplication, notifyVendorWelcome } from "@/modules/mail/notify";
+import { issuePasswordLink, WELCOME_TTL_MS } from "@/modules/auth/reset";
 import { getSettingNumber } from "@/lib/settings";
 import type { VendorStatus } from "@prisma/client";
 
@@ -66,7 +68,7 @@ export async function createVendorApplication(input: { name: string; contactName
   const email = input.email.toLowerCase();
   if (await db.vendor.findFirst({ where: { email } })) throw new Error("Mit dieser E-Mail gibt es schon eine Bewerbung oder einen Zugang.");
   const commissionPercent = await getSettingNumber("commission_percent");
-  return db.vendor.create({
+  const vendor = await db.vendor.create({
     data: {
       name: input.name,
       slug: await uniqueVendorSlug(input.name),
@@ -80,6 +82,8 @@ export async function createVendorApplication(input: { name: string; contactName
       commissionPercent,
     },
   });
+  await notifyApplication(vendor).catch((e) => console.error("Bewerbungs-Mails konnten nicht eingereiht werden:", e));
+  return vendor;
 }
 
 /** Freischaltung: legt den ersten Zugang an, wenn es noch keinen gibt. Liefert das Startpasswort. */
@@ -88,6 +92,9 @@ export async function ensureVendorUser(vendorId: string) {
   if (vendor.users.length > 0) return null;
   if (await db.user.findUnique({ where: { email: vendor.email } })) throw new Error("Für diese E-Mail gibt es schon einen Zugang.");
   const password = generatePassword();
-  await db.user.create({ data: { email: vendor.email, passwordHash: await hashPassword(password), name: vendor.payoutHolder || vendor.name, role: "VENDOR", vendorId } });
+  const user = await db.user.create({ data: { email: vendor.email, passwordHash: await hashPassword(password), name: vendor.payoutHolder || vendor.name, role: "VENDOR", vendorId } });
+  // Willkommensmail mit Link zum Setzen des eigenen Passworts; das Startpasswort bleibt als Rückfall für den Admin.
+  const url = await issuePasswordLink(user.id, WELCOME_TTL_MS);
+  await notifyVendorWelcome(vendor, url).catch((e) => console.error("Willkommensmail konnte nicht eingereiht werden:", e));
   return password;
 }

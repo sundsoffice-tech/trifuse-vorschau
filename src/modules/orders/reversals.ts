@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { reversalAmounts, sumFrozen } from "@/lib/ledger";
 import { getPaymentProvider } from "@/modules/payments";
 import type { Prisma, ReversalReason } from "@prisma/client";
+import { notifyRefund } from "@/modules/mail/notify";
 
 export type ReverseInput = {
   itemId: string;
@@ -74,6 +75,7 @@ async function payRefund(orderId: string, reversalIds: string[], amountCents: nu
       db.reversal.updateMany({ where: { id: { in: reversalIds } }, data: { refundRef: ref, refundedAt: new Date(), refundError: "" } }),
       db.order.update({ where: { id: orderId }, data: { refundedCents: { increment: amountCents } } }),
     ]);
+    await notifyRefund(orderId, amountCents).catch((e) => console.error("Erstattungs-Mail konnte nicht eingereiht werden:", e));
     return { ok: true as const };
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unbekannter Fehler";

@@ -8,7 +8,9 @@ next-env.d.ts
 .env
 .env.*.local
 data/*.db
-data/*.db-journal
+data/*.db-*
+data/mails/
+data/sicherung/
 data/uploads/*
 !data/uploads/.gitkeep
 test/ergebnisse/

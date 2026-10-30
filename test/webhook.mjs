@@ -83,6 +83,7 @@ try {
   const r6 = await send("charge.refunded", { id: "ch_test_3", object: "charge", payment_intent: "pi_unbekannt", amount: 100, amount_refunded: 100, metadata: {}, refunds: { data: [] } });
   check(r6.status === 200, "Unbekannter Zahlungsvorgang wird bestätigt (Stripe soll nicht ewig wiederholen)");
 } finally {
+  await db.mailOutbox.deleteMany({ where: { relatedId: { in: created } } });
   await db.order.deleteMany({ where: { id: { in: created } } });
   await db.webhookEvent.deleteMany({ where: { id: { startsWith: "evt_test_" } } });
   await db.product.update({ where: { id: product.id }, data: { stock: stockBefore } });

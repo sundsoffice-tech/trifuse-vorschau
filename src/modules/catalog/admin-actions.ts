@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { field, type ActionState } from "@/lib/form";
 import { requireAdmin } from "@/modules/auth/session";
+import { notifyProductDecision } from "@/modules/mail/notify";
 import { parseProductForm, createProduct, updateProduct, addProductImages, deleteProductImage, moveImageFirst } from "./product-service";
 import type { ProductStatus } from "@prisma/client";
 
@@ -50,7 +51,12 @@ export async function adminProductStatusAction(formData: FormData) {
   const map: Record<string, ProductStatus> = { approve: "ACTIVE", reject: "REJECTED", archive: "ARCHIVED", unpublish: "DRAFT", restore: "DRAFT" };
   const status = map[intent];
   if (!status) return;
+  const before = await db.product.findUnique({ where: { id: productId }, select: { status: true } });
   await db.product.update({ where: { id: productId }, data: { status, rejectReason: intent === "reject" ? field(formData, "reason").slice(0, 500) : "" } });
+  // Der Macher erfährt die Entscheidung über ein eingereichtes Produkt per Mail.
+  if (before?.status === "PENDING" && (intent === "approve" || intent === "reject")) {
+    await notifyProductDecision(productId, intent === "approve", field(formData, "reason")).catch((e) => console.error("Produkt-Mail konnte nicht eingereiht werden:", e));
+  }
   revalidateCatalog(productId);
 }
 

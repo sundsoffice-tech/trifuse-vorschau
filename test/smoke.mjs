@@ -147,7 +147,15 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   }
   await page.goto(base + "/admin/bestellungen");
   await shoot(page, "admin-bestellungen");
+  // Postausgang: Bestellbestätigung an den Käufer und Verkaufsmeldung an den Macher sind raus (Dateimodus)
+  await page.goto(base + "/admin/postausgang");
+  const post = await page.textContent("body");
+  check((post?.includes(`Deine Bestellung ${orderNumber} ist eingegangen`) && post.includes("kunde@example.com")) ?? false, "Bestellbestätigung im Postausgang");
+  check(post?.includes(`(${orderNumber})`) && post.includes("wiesenkram@example.com") || false, "Verkaufsmeldung an den Macher im Postausgang");
+  check(!post?.includes("Fehlgeschlagen (") || post.includes("Fehlgeschlagen (0)"), "Keine fehlgeschlagene Mail");
+  await shoot(page, "admin-postausgang");
   // Rückgabe nach der Auszahlung: Rückbuchung entsteht, Geld simuliert zurück, Saldo beim Macher negativ
+  await page.goto(base + "/admin/bestellungen?status=PAID");
   await page.getByRole("link", { name: orderNumber }).click();
   await page.waitForURL(/\/admin\/bestellungen\/[a-z0-9]+/);
   await page.locator("summary", { hasText: "Zurückbuchen" }).first().click();
@@ -178,6 +186,41 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   check((t?.includes("Rückgabe") && t.includes("verrechnet")) ?? false, "Macher sieht Rückgabe und Verrechnungshinweis");
   await page.goto(base + "/portal/bestellungen");
   check((await page.textContent("body"))?.includes("Rückgabe 1 Stück") ?? false, "Rückgabe steht beim Verkauf des Machers");
+  await ctx.close();
+}
+
+// 4c. Passwort vergessen: Mail landet als Datei, Link funktioniert, neues Passwort meldet an
+{
+  const { readdir, readFile } = await import("node:fs/promises");
+  const mailDir = new URL("../data/mails/", import.meta.url).pathname;
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage();
+  await page.goto(base + "/login");
+  await page.getByRole("link", { name: "Passwort vergessen?" }).click();
+  await page.waitForURL(/\/passwort-vergessen/);
+  await page.fill("#email", vendor.email);
+  await page.getByRole("button", { name: "Link schicken" }).click();
+  await page.getByText("ist eine Mail mit einem Link unterwegs").waitFor();
+  await shoot(page, "passwort-vergessen");
+  let link = null;
+  for (let i = 0; i < 20 && !link; i++) {
+    await new Promise((r) => setTimeout(r, 250));
+    const files = (await readdir(mailDir).catch(() => [])).filter((f) => f.endsWith(".json")).sort().reverse();
+    for (const f of files.slice(0, 10)) {
+      const m = JSON.parse(await readFile(mailDir + f, "utf8"));
+      if (m.to === vendor.email && /passwort-neu/.test(m.text)) { link = m.text.match(/https?:\/\/\S+\/passwort-neu\/\S+/)?.[0]; break; }
+    }
+  }
+  check(Boolean(link), "Passwort-Mail als Datei abgelegt, Link gefunden");
+  await page.goto(link.replace(/^https?:\/\/[^/]+/, base));
+  await page.fill("#password", vendor.password);
+  await page.fill("#confirm", vendor.password);
+  await shoot(page, "passwort-neu");
+  await page.getByRole("button", { name: "Passwort festlegen und anmelden" }).click();
+  await page.waitForURL(/\/portal/);
+  check(page.url().includes("/portal"), "Nach neuem Passwort direkt im Macherbereich");
+  const again = await page.goto(link.replace(/^https?:\/\/[^/]+/, base));
+  check((await page.textContent("body"))?.includes("abgelaufen oder schon benutzt") ?? false, `Benutzter Link ist entwertet (${again?.status()})`);
   await ctx.close();
 }
 

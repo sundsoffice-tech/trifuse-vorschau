@@ -56,16 +56,17 @@ enum PayoutStatus {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  passwordHash String
-  name         String
-  role         Role
-  vendorId     String?
-  vendor       Vendor?   @relation(fields: [vendorId], references: [id])
-  sessions     Session[]
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id             String          @id @default(cuid())
+  email          String          @unique
+  passwordHash   String
+  name           String
+  role           Role
+  vendorId       String?
+  vendor         Vendor?         @relation(fields: [vendorId], references: [id])
+  sessions       Session[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  passwordResets PasswordReset[]
 }
 
 model Session {
@@ -238,27 +239,27 @@ enum ReversalReason {
 /// damit Verkäufe und Rückbuchungen in Auszahlungen einfach summiert werden. Eine Rückbuchung nach erfolgter
 /// Auszahlung wandert in die nächste Auszahlung des Machers und zieht dort ab.
 model Reversal {
-  id                String         @id @default(cuid())
-  orderId           String
-  order             Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  orderItemId       String
-  orderItem         OrderItem      @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
-  vendorId          String
-  vendor            Vendor         @relation(fields: [vendorId], references: [id])
-  quantity          Int
-  lineTotalCents    Int
-  commissionCents   Int
-  vendorNetCents    Int
-  reason            ReversalReason
-  note              String         @default("")
-  restocked         Boolean        @default(false)
+  id              String         @id @default(cuid())
+  orderId         String
+  order           Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemId     String
+  orderItem       OrderItem      @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  vendorId        String
+  vendor          Vendor         @relation(fields: [vendorId], references: [id])
+  quantity        Int
+  lineTotalCents  Int
+  commissionCents Int
+  vendorNetCents  Int
+  reason          ReversalReason
+  note            String         @default("")
+  restocked       Boolean        @default(false)
   // Rückzahlung an den Kunden beim Zahlungsdienst: Kennung, Zeitpunkt, letzter Fehler
-  refundRef         String?
-  refundedAt        DateTime?
-  refundError       String         @default("")
-  payoutId          String?
-  payout            Payout?        @relation(fields: [payoutId], references: [id])
-  createdAt         DateTime       @default(now())
+  refundRef       String?
+  refundedAt      DateTime?
+  refundError     String         @default("")
+  payoutId        String?
+  payout          Payout?        @relation(fields: [payoutId], references: [id])
+  createdAt       DateTime       @default(now())
 
   @@index([vendorId, payoutId])
   @@index([orderItemId])
@@ -290,4 +291,43 @@ model Payout {
 model Setting {
   key   String @id
   value String
+}
+
+enum MailStatus {
+  QUEUED
+  SENDING
+  SENT
+  FAILED
+}
+
+/// Postausgang: jede Mail wird zuerst gespeichert, dann zugestellt. Überlebt Neustarts und Ausfälle
+/// des Mailservers; mehrere Instanzen beanspruchen eine Mail über den Statuswechsel QUEUED -> SENDING.
+model MailOutbox {
+  id        String     @id @default(cuid())
+  to        String
+  subject   String
+  text      String
+  html      String
+  template  String
+  relatedId String     @default("")
+  status    MailStatus @default(QUEUED)
+  attempts  Int        @default(0)
+  lastError String     @default("")
+  messageId String     @default("")
+  createdAt DateTime   @default(now())
+  claimedAt DateTime?
+  sentAt    DateTime?
+
+  @@index([status, createdAt])
+}
+
+/// Link zum Setzen eines neuen Passworts (vergessen oder erster Zugang). Gespeichert wird nur der Hash.
+model PasswordReset {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }

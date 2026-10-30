@@ -49,6 +49,9 @@ Verbotsliste im Skill `dossier` lesen; nach größeren Änderungen den Künstler
 - Geld immer in Cent als `Int`, nie Float. Rundung nur in `splitLine()` (`src/lib/money.ts`).
 - Zahlung nur über die Provider-Schnittstelle `src/modules/payments/provider.ts`. Neue Anbieter als neuer
   Provider, nie im Checkout verdrahten.
+- Mails nur über `queueMail()` in `src/modules/mail/service.ts` (Postausgang, erst speichern, dann senden) mit
+  einer Vorlage aus `templates.ts` (rein, ohne Datenbank, mit relativen `.ts`-Importen für den Unit-Test).
+  Auslöser liegen in `notify.ts`. Nie `nodemailer` direkt aus einer Action oder Seite aufrufen.
 - Bilder nur über den Storage-Adapter `src/modules/media/storage.ts`. Der lokale Adapter ist der Start; ein
   S3-kompatibler Adapter kommt, sobald mehr als eine Instanz läuft.
 - Datenbank: Prisma, heute SQLite. Kein datenbankspezifisches SQL außer `SELECT 1` (Health) und dem

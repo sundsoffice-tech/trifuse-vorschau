@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { splitLine } from "@/lib/money";
 import { getCartView } from "@/modules/cart/service";
 import { Prisma } from "@prisma/client";
+import { notifyOrderPaid } from "@/modules/mail/notify";
 
 export type CheckoutCustomer = {
   email: string;
@@ -105,17 +106,21 @@ async function createOrderTransaction(cart: Awaited<ReturnType<typeof getCartVie
 }
 
 export async function markOrderPaid(orderId: string, paymentRef: string | null, paymentIntent: string | null = null) {
-  return db.$transaction(async (tx) => {
+  const { order, transitioned } = await db.$transaction(async (tx) => {
     const order = await tx.order.findUnique({ where: { id: orderId } });
     if (!order) throw new Error("Bestellung nicht gefunden.");
     if (order.status === "PAID") {
       // Der Zahlungsvorgang kann nachträglich bekannt werden (Rückkehr vor Webhook); dann nur ergänzen.
-      if (paymentIntent && !order.paymentIntent) return tx.order.update({ where: { id: orderId }, data: { paymentIntent } });
-      return order;
+      if (paymentIntent && !order.paymentIntent) return { order: await tx.order.update({ where: { id: orderId }, data: { paymentIntent } }), transitioned: false };
+      return { order, transitioned: false };
     }
     if (order.status !== "PENDING") throw new Error(`Bestellung ist ${order.status} und kann nicht als bezahlt markiert werden.`);
-    return tx.order.update({ where: { id: orderId }, data: { status: "PAID", paidAt: new Date(), paymentRef: paymentRef ?? order.paymentRef, paymentIntent: paymentIntent ?? order.paymentIntent } });
+    const updated = await tx.order.update({ where: { id: orderId }, data: { status: "PAID", paidAt: new Date(), paymentRef: paymentRef ?? order.paymentRef, paymentIntent: paymentIntent ?? order.paymentIntent } });
+    return { order: updated, transitioned: true };
   });
+  // Genau einmal, beim Übergang nach PAID: Bestätigung an den Kunden, Verkaufsmeldung je Macher.
+  if (transitioned) await notifyOrderPaid(orderId).catch((e) => console.error("Mails zur Bestellung konnten nicht eingereiht werden:", e));
+  return order;
 }
 
 /** Storniert eine offene Bestellung und gibt den reservierten Bestand frei. */

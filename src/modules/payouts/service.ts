@@ -1,6 +1,7 @@
 import "server-only";
 import { db } from "@/lib/db";
 import type { Prisma } from "@prisma/client";
+import { notifyPayoutPaid } from "@/modules/mail/notify";
 
 // Verkäufe (Positionen) zählen, sobald die Bestellung bezahlt ist; eine spätere Erstattung ändert den
 // Status auf REFUNDED, die Position bleibt aber Teil der Buchführung, weil ihr eine Rückbuchung
@@ -109,7 +110,9 @@ export async function createPayoutDraft(vendorId: string, note = "") {
 export async function markPayoutPaid(payoutId: string, reference: string) {
   const payout = await db.payout.findUniqueOrThrow({ where: { id: payoutId }, include: { vendor: { select: { payoutIban: true, name: true } } } });
   if (!payout.vendor.payoutIban) throw new Error(`Für ${payout.vendor.name} fehlt die Bankverbindung. Ohne sie kann nichts überwiesen worden sein.`);
-  return db.payout.update({ where: { id: payoutId }, data: { status: "PAID", paidAt: new Date(), reference } });
+  const updated = await db.payout.update({ where: { id: payoutId }, data: { status: "PAID", paidAt: new Date(), reference } });
+  await notifyPayoutPaid(payoutId).catch((e) => console.error("Auszahlungs-Mail konnte nicht eingereiht werden:", e));
+  return updated;
 }
 
 /** Löst einen Entwurf wieder auf; Positionen und Rückbuchungen werden wieder offen. */

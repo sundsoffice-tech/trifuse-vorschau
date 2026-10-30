@@ -41,6 +41,13 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
   und vier weiteren Ereignissen. Geprüft: 6 Unit-Tests, `npm run test:webhook` (12 Prüfungen offline),
   Smoke-Test um Rückgabe nach Auszahlung erweitert (33 Prüfungen), Bilder angesehen.
 
+- **Mail-Modul (30.10.2026):** Postausgang in der Datenbank, Transport SMTP/Datei/aus, zehn Vorlagen
+  (Bestellbestätigung, Verkaufsmeldung je Macher, Bewerbung an Bewerber und Team, Willkommen mit
+  Passwort-Link, Passwort vergessen, Produkt freigegeben/abgelehnt, Auszahlung überwiesen, Erstattung),
+  Admin-Seite `/admin/postausgang` mit erneutem Senden, „Passwort vergessen“ für Macher und Team.
+  Geprüft: 3 Unit-Tests für Vorlagen, Smoke-Test prüft Postausgang und den kompletten Passwort-Weg über
+  die Datei-Mail (42 Prüfungen).
+
 ## Offen, nach Dringlichkeit
 
 1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.
@@ -49,7 +56,7 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
 4. Entscheiden, ob der Shop ein eigenes Repo bekommt (`trifuse-shop`) oder im Branch bleibt.
 3. Impressum, Datenschutz, AGB, Widerruf: Platzhalter füllen, juristisch prüfen.
 4. Stripe-Schlüssel und Webhook einrichten (Ereignisse siehe `.env.example`), einmal echten Testkauf und eine Erstattung im Stripe-Testmodus durchführen.
-5. Bestellbestätigung und Händler-Benachrichtigung per Mail (Versandweg des Hauses, kein eigener SMTP).
+5. SMTP-Zugang des Hauses in `.env` eintragen (`MAIL_MODE=smtp`, `SMTP_*`, `MAIL_FROM`) und eine echte Mail über `/admin/postausgang` prüfen; bis dahin bleibt der Dateimodus.
 6. Docker-Build auf einem Server mit Daemon prüfen.
 7. Rate-Limit für Login und Bewerbung (siehe `docs/SKALIERUNG.md`, Stufe 2).
 

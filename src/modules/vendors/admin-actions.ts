@@ -91,7 +91,7 @@ export async function adminCreateAccessAction(_prev: ActionState, formData: Form
   try {
     const password = await ensureVendorUser(field(formData, "vendorId"));
     revalidatePath(`/admin/haendler/${field(formData, "vendorId")}`);
-    return password ? { ok: true, message: `Zugang angelegt. Startpasswort, nur jetzt sichtbar: ${password}` } : { ok: true, message: "Es gibt schon einen Zugang." };
+    return password ? { ok: true, message: `Zugang angelegt. Der Macher bekommt eine Mail mit einem Link zum Festlegen seines Passworts. Falls die Mail nicht ankommt, Startpasswort (nur jetzt sichtbar): ${password}` } : { ok: true, message: "Es gibt schon einen Zugang." };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Zugang konnte nicht angelegt werden." };
   }
@@ -107,7 +107,7 @@ export async function adminApproveVendorAction(_prev: ActionState, formData: For
     revalidatePath("/", "layout");
     revalidatePath("/admin/haendler");
     revalidatePath(`/admin/haendler/${id}`);
-    return { ok: true, message: password ? `Freigeschaltet. Startpasswort, nur jetzt sichtbar: ${password}. Schick es mit der Zusage an den Macher.` : "Freigeschaltet; der Zugang bestand schon." };
+    return { ok: true, message: password ? `Freigeschaltet. Der Macher bekommt eine Willkommensmail mit einem Link zum Festlegen seines Passworts (gilt 7 Tage). Falls die Mail nicht ankommt, Startpasswort (nur jetzt sichtbar): ${password}.` : "Freigeschaltet; der Zugang bestand schon." };
   } catch (e) {
     return { ok: false, message: e instanceof Error ? e.message : "Freischalten fehlgeschlagen." };
   }
