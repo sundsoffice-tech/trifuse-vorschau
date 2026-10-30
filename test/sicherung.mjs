@@ -21,10 +21,7 @@ try {
   check(existsSync(r.ziel) && r.integritaet === "ok", `Schnappschuss geschrieben und geprüft (${Math.round(r.bytes / 1024)} KB, ${r.dauerMs} ms)`);
   check(r.bestellungen === live.orders && count(r.ziel, "Product") === live.products, `Zählwerte stimmen: ${live.orders} Bestellungen, ${live.products} Produkte`);
   check(!r.bilder || existsSync(r.bilder), `Bildarchiv ${r.bilder ? "geschrieben" : "übersprungen (keine Uploads)"}`);
-  // Aufräumen: drei Sicherungen, behalten=2 -> es bleiben zwei
-  sichern({ dbPath, zielOrdner: dir, behalten: 2 }); sichern({ dbPath, zielOrdner: dir, behalten: 2 });
   const { readdirSync } = await import("node:fs");
-  check(readdirSync(dir).filter((f) => f.startsWith("shop-")).length === 2, "Alte Schnappschüsse werden aufgeräumt (behalten=2)");
   // Wiederherstellen in einen Probepfad, der eine fremde, alte Datei enthält
   const ziel = path.join(dir, "probe", "shop.db");
   const { mkdirSync } = await import("node:fs");
@@ -38,6 +35,10 @@ try {
   try { wiederherstellen({ quelle: r.ziel, ziel }); } catch (e) { refused = /gesperrt/.test(e.message); }
   lock.exec("ROLLBACK"); lock.close();
   check(refused, "Wiederherstellung in eine gesperrte Datenbank wird verweigert");
+  // Aufräumen: drei Sicherungen, behalten=2 -> es bleiben die zwei jüngsten (der erste Schnappschuss fällt weg)
+  sichern({ dbPath, zielOrdner: dir, behalten: 2 }); sichern({ dbPath, zielOrdner: dir, behalten: 2 });
+  const rest = readdirSync(dir).filter((f) => f.startsWith("shop-"));
+  check(rest.length === 2 && !rest.includes(path.basename(r.ziel)), "Alte Schnappschüsse werden aufgeräumt (behalten=2, der älteste fällt weg)");
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }

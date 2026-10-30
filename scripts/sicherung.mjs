@@ -6,6 +6,7 @@
 import { readFileSync, existsSync, mkdirSync, statSync, readdirSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
 process.removeAllListeners("warning"); // node:sqlite meldet sich als experimentell; die Meldung ist hier nur Rauschen
 const { DatabaseSync } = await import("node:sqlite");
@@ -65,7 +66,7 @@ export function sichern({ dbPath, zielOrdner, mitBildern = false, behalten = 14 
   return { ziel, bilder, bytes: statSync(ziel).size, bestellungen, dauerMs: Date.now() - start, integritaet };
 }
 
-if (process.argv[1] && import.meta.url.endsWith(path.basename(process.argv[1]))) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const dbPath = dbPathFromEnv();
   const zielOrdner = flag("--ziel") ?? process.env.SICHERUNG_DIR ?? path.join(path.dirname(dbPath), "sicherung");
   const r = sichern({ dbPath, zielOrdner, mitBildern, behalten });
