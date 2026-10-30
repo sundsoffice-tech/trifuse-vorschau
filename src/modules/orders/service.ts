@@ -104,13 +104,17 @@ async function createOrderTransaction(cart: Awaited<ReturnType<typeof getCartVie
   }, ORDER_TX_OPTIONS);
 }
 
-export async function markOrderPaid(orderId: string, paymentRef: string | null) {
+export async function markOrderPaid(orderId: string, paymentRef: string | null, paymentIntent: string | null = null) {
   return db.$transaction(async (tx) => {
     const order = await tx.order.findUnique({ where: { id: orderId } });
     if (!order) throw new Error("Bestellung nicht gefunden.");
-    if (order.status === "PAID") return order;
+    if (order.status === "PAID") {
+      // Der Zahlungsvorgang kann nachträglich bekannt werden (Rückkehr vor Webhook); dann nur ergänzen.
+      if (paymentIntent && !order.paymentIntent) return tx.order.update({ where: { id: orderId }, data: { paymentIntent } });
+      return order;
+    }
     if (order.status !== "PENDING") throw new Error(`Bestellung ist ${order.status} und kann nicht als bezahlt markiert werden.`);
-    return tx.order.update({ where: { id: orderId }, data: { status: "PAID", paidAt: new Date(), paymentRef: paymentRef ?? order.paymentRef } });
+    return tx.order.update({ where: { id: orderId }, data: { status: "PAID", paidAt: new Date(), paymentRef: paymentRef ?? order.paymentRef, paymentIntent: paymentIntent ?? order.paymentIntent } });
   });
 }
 
@@ -137,7 +141,10 @@ export async function expireStaleOrders() {
 export async function getOrderWithItems(orderId: string) {
   return db.order.findUnique({
     where: { id: orderId },
-    include: { items: { include: { vendor: { select: { name: true, slug: true } }, product: { select: { slug: true, images: { take: 1, orderBy: { sortOrder: "asc" } } } } } } },
+    include: {
+      items: { include: { vendor: { select: { name: true, slug: true } }, product: { select: { slug: true, images: { take: 1, orderBy: { sortOrder: "asc" } } } }, reversals: { orderBy: { createdAt: "asc" } } } },
+      reversals: { orderBy: { createdAt: "asc" } },
+    },
   });
 }
 

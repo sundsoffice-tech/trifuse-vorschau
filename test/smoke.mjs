@@ -41,6 +41,7 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
 }
 
 // 2. Kaufablauf im Testmodus
+let orderNumber = null;
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await ctx.newPage();
@@ -72,6 +73,7 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
   check(body?.includes("Danke, deine Bestellung ist eingegangen") ?? false, "Bestellbestätigung nach Testzahlung");
   check(!/Warenkorb\s*\d/.test(body ?? ""), "Warenkorb-Zähler nach dem Kauf leer");
   const number = body?.match(/M-\d{4}-\d{6}/)?.[0];
+  orderNumber = number ?? null;
   check(Boolean(number), `Bestellnummer vergeben: ${number}`);
   await shoot(page, "bestellung");
   await page.goto(base + "/warenkorb");
@@ -125,17 +127,57 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   check((await page.textContent("body"))?.includes(newProductTitle) ?? false, "Freigegebenes Produkt ist im Shop sichtbar");
   await page.goto(base + "/admin/auszahlungen");
   await shoot(page, "admin-auszahlungen");
-  const createButtons = page.getByRole("button", { name: "Auszahlung erstellen" });
-  check((await createButtons.count()) > 0, "Offene Guthaben vorhanden");
-  await createButtons.first().click();
+  // Der Macher des gekauften Produkts hat je nach Vorlauf einen positiven Saldo (Auszahlung) oder einen
+  // ausgeglichenen (Verrechnung): jede Runde dieses Tests bucht am Ende eine Rückgabe, die vorgetragen wird.
+  const wiesenkramRow = page.locator("tr", { hasText: "Wiesenkram" }).first();
+  const createButton = wiesenkramRow.getByRole("button", { name: "Auszahlung erstellen" });
+  const settleButton = wiesenkramRow.getByRole("button", { name: "Verrechnen" });
+  const hasCreate = (await createButton.count()) > 0;
+  check(hasCreate || (await settleButton.count()) > 0, "Offener Saldo für den Macher des Kaufs vorhanden");
+  await (hasCreate ? createButton : settleButton).click();
   await page.waitForURL(/\/admin\/auszahlungen\/[a-z0-9]+/);
   await shoot(page, "admin-auszahlung-detail");
-  await page.fill("input[name=reference]", "SMOKE-UEBERWEISUNG");
-  await page.getByRole("button", { name: "Als überwiesen markieren" }).click();
-  await page.waitForLoadState("networkidle");
-  check((await page.textContent("body"))?.includes("Diese Auszahlung ist überwiesen") ?? false, "Auszahlung als überwiesen markiert");
+  if (hasCreate) {
+    await page.fill("input[name=reference]", "SMOKE-UEBERWEISUNG");
+    await page.getByRole("button", { name: "Als überwiesen markieren" }).click();
+    await page.waitForLoadState("networkidle");
+    check((await page.textContent("body"))?.includes("Diese Auszahlung ist überwiesen") ?? false, "Auszahlung als überwiesen markiert");
+  } else {
+    check((await page.textContent("body"))?.includes("Verrechnet, es war keine Überweisung nötig") ?? false, "Saldo null: Verkauf und vorgetragene Rückgabe verrechnet, keine Überweisung");
+  }
   await page.goto(base + "/admin/bestellungen");
   await shoot(page, "admin-bestellungen");
+  // Rückgabe nach der Auszahlung: Rückbuchung entsteht, Geld simuliert zurück, Saldo beim Macher negativ
+  await page.getByRole("link", { name: orderNumber }).click();
+  await page.waitForURL(/\/admin\/bestellungen\/[a-z0-9]+/);
+  await page.locator("summary", { hasText: "Zurückbuchen" }).first().click();
+  await page.locator("form:has(input[name=itemId])").first().getByRole("button", { name: "Zurückbuchen" }).click();
+  await page.waitForLoadState("networkidle");
+  const nachRueckgabe = await page.textContent("body");
+  check(nachRueckgabe?.includes("Rückbuchungen") && nachRueckgabe.includes("zurückgezahlt") && nachRueckgabe.includes("in nächster Auszahlung"), "Rückbuchung gebucht, Testrückzahlung vermerkt, wartet auf nächste Auszahlung");
+  check(nachRueckgabe?.includes("Vollständig erstattet") ?? false, "Bestellung mit einer Position ist nach der Rückgabe vollständig erstattet");
+  await shoot(page, "admin-bestellung-rueckbuchung");
+  await page.goto(base + "/admin/auszahlungen");
+  const saldo = await page.textContent("body");
+  check(saldo?.includes("Negativer Saldo") ?? false, "Auszahlungsübersicht zeigt den negativen Saldo des Machers");
+  await shoot(page, "admin-auszahlungen-rueckbuchung");
+  await ctx.close();
+}
+
+// 4b. Macher sieht die Rückgabe
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(base + "/login");
+  await page.fill("#email", vendor.email);
+  await page.fill("#password", vendor.password);
+  await page.getByRole("button", { name: "Anmelden" }).click();
+  await page.waitForURL(/\/portal/);
+  await page.goto(base + "/portal/auszahlungen");
+  const t = await page.textContent("body");
+  check((t?.includes("Rückgabe") && t.includes("verrechnet")) ?? false, "Macher sieht Rückgabe und Verrechnungshinweis");
+  await page.goto(base + "/portal/bestellungen");
+  check((await page.textContent("body"))?.includes("Rückgabe 1 Stück") ?? false, "Rückgabe steht beim Verkauf des Machers");
   await ctx.close();
 }
 

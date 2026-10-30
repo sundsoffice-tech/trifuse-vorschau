@@ -2,19 +2,19 @@ import { requireVendorUser } from "@/modules/auth/session";
 import { db } from "@/lib/db";
 import { vendorSetFulfillmentAction } from "@/modules/catalog/vendor-actions";
 import { formatCents } from "@/lib/money";
-import { fulfillmentText } from "@/modules/orders/texts";
+import { fulfillmentText, reversalReasonText } from "@/modules/orders/texts";
 import { Empty } from "@/components/ui/empty";
 
 export default async function PortalSales() {
   const user = await requireVendorUser();
   const items = await db.orderItem.findMany({
     where: { vendorId: user.vendorId, order: { status: { in: ["PAID", "REFUNDED"] } } },
-    include: { order: { select: { id: true, number: true, paidAt: true, status: true, name: true, addressLine: true, postalCode: true, city: true } } },
+    include: { order: { select: { id: true, number: true, paidAt: true, status: true, name: true, addressLine: true, postalCode: true, city: true } }, reversals: { orderBy: { createdAt: "asc" } } },
     orderBy: { order: { paidAt: "desc" } },
   });
   return (
     <div className="space-y-6">
-      <div><h1 className="font-display text-3xl font-semibold">Verkäufe</h1><p className="text-ink-2">Jeder bezahlte Verkauf einzeln, mit dem Betrag, der zu dir kommt.</p></div>
+      <div><h1 className="font-display text-3xl font-semibold">Verkäufe</h1><p className="text-ink-2">Jeder bezahlte Verkauf einzeln, mit dem Betrag, der zu dir kommt. Rückgaben stehen beim Verkauf und werden mit der nächsten Auszahlung verrechnet.</p></div>
       {items.length === 0 ? <Empty title="Noch keine Verkäufe" text="Sobald jemand eines deiner Produkte bezahlt hat, steht es hier." /> : (
         <div className="card table-wrap">
           <table className="table">
@@ -25,7 +25,7 @@ export default async function PortalSales() {
                   <td className="nowrap">{i.order.paidAt?.toLocaleDateString("de-DE") ?? "–"}<span className="block text-xs text-ink-2">{i.order.number}</span></td>
                   <td>{i.title}<span className="block text-xs text-ink-2 num">{i.quantity} × {formatCents(i.unitPriceCents)}</span></td>
                   <td className="num">{i.quantity}</td>
-                  <td className="nowrap font-semibold">{formatCents(i.vendorNetCents)}<span className="block text-xs text-ink-2 font-normal">von {formatCents(i.lineTotalCents)}</span></td>
+                  <td className="nowrap font-semibold">{formatCents(i.vendorNetCents)}<span className="block text-xs text-ink-2 font-normal">von {formatCents(i.lineTotalCents)}</span>{i.reversals.map((r) => <span key={r.id} className="block text-xs text-bad font-normal">{reversalReasonText(r.reason)} {r.quantity} Stück: {formatCents(r.vendorNetCents)}</span>)}</td>
                   <td>
                     {i.shippingBy === "VENDOR" && (i.fulfillment === "NEW" || i.fulfillment === "PACKED") ? (
                       <form action={vendorSetFulfillmentAction} className="space-y-1">

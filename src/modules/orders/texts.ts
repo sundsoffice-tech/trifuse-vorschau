@@ -1,4 +1,4 @@
-import type { FulfillmentStatus, ShippingBy } from "@prisma/client";
+import type { FulfillmentStatus, ShippingBy, ReversalReason } from "@prisma/client";
 
 /** Was der Macher zu einem Verkauf wissen muss: ob er etwas tun muss (Künstler-Fund 29). */
 export function fulfillmentText(status: FulfillmentStatus, shippingBy: ShippingBy): string {
@@ -28,4 +28,8 @@ export function nextPayoutDate(schedule: string, now = new Date()): Date | null 
 export function formatPayoutDate(schedule: string): string {
   const d = nextPayoutDate(schedule);
   return d ? `voraussichtlich am ${d.toLocaleDateString("de-DE", { day: "numeric", month: "long", year: "numeric" })}` : schedule;
+}
+
+export function reversalReasonText(reason: ReversalReason): string {
+  return reason === "RETURN" ? "Rückgabe" : reason === "GOODWILL" ? "Kulanz" : "Erstattung";
 }

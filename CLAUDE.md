@@ -31,6 +31,7 @@ npm run lint && npm run typecheck && npm test && npm run build
 npm start &            # oder laufender Server
 npm run test:smoke     # Playwright: Seiten hell/dunkel, Kauf, Portal, Freigabe, Auszahlung, API
 npm run test:parallel  # bei Änderungen an Kauf, Bestand oder Transaktionen: 20 und 30 gleichzeitige Käufer
+npm run test:webhook   # bei Änderungen an Zahlung, Webhook, Rückbuchungen: signierte Stripe-Ereignisse offline
 ```
 
 Dazu die Hausregel HINSEHEN: Alles Sichtbare in den Screenshots unter `test/ergebnisse/` ansehen, beide
@@ -55,6 +56,9 @@ Verbotsliste im Skill `dossier` lesen; nach größeren Änderungen den Künstler
   (gemessen, siehe `docs/STATUS.md`). Der Wechsel auf Postgres darf nur Provider und URL kosten.
 - Alles, was gleichzeitig passieren kann (Kauf, Bestand, Auszahlung), läuft in einer Transaktion mit
   Wiederholung bei Kollision. Nach jeder Änderung daran `npm run test:parallel` mit 20 und 30 Käufern fahren.
+- Rückgaben und Erstattungen sind Rückbuchungen (`Reversal`) mit eingefrorenen negativen Beträgen, nie eine
+  Änderung der Verkaufsposition. Reihenfolge immer: erst Buchung in der Datenbank, dann Geld beim
+  Zahlungsdienst. Siehe `docs/ENTSCHEIDUNGEN.md` (30.10.2026).
 - Next.js 16: Cache Components sind bewusst aus (`cacheComponents: false`), weil der Shop durchgehend
   nutzerabhängig rendert. Vor jeder Caching-Maßnahme `docs/SKALIERUNG.md` lesen.
 - Sprache: Deutsch mit echten Umlauten in allen sichtbaren Texten, Commits und Doku. Englisch nur in

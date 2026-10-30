@@ -7,7 +7,9 @@ export interface PaymentProvider {
   readonly id: "stripe" | "test";
   startCheckout(order: OrderForCheckout): Promise<{ redirectUrl: string }>;
   /** Prüft nach der Rückleitung, ob bezahlt wurde (Fallback, falls der Webhook nicht ankam). */
-  verifyReturn(order: Order, params: Record<string, string | undefined>): Promise<{ paid: boolean; ref: string | null }>;
+  verifyReturn(order: Order, params: Record<string, string | undefined>): Promise<{ paid: boolean; ref: string | null; paymentIntent?: string | null }>;
+  /** Zahlt dem Kunden einen Teilbetrag zurück. Liefert die Kennung der Rückzahlung beim Dienst. */
+  refund(order: Order, amountCents: number, reason: string): Promise<{ ref: string }>;
 }
 
 export function appUrl(path: string) {

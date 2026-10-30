@@ -15,7 +15,8 @@
     "test": "node --test test/*.test.mjs",
     "test:smoke": "node test/smoke.mjs",
     "test:parallel": "node test/parallel.mjs",
-    "test:pruefung": "node test/pruefung.mjs"
+    "test:pruefung": "node test/pruefung.mjs",
+    "test:webhook": "node test/webhook.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

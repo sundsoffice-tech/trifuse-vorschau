@@ -17,7 +17,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     const params = Object.fromEntries(new URL(req.url).searchParams.entries());
     try {
       const check = await getPaymentProvider("stripe").verifyReturn(order, params);
-      if (check.paid) await markOrderPaid(order.id, check.ref);
+      if (check.paid) await markOrderPaid(order.id, check.ref, check.paymentIntent ?? null);
     } catch (e) {
       console.error("Rückkehr von Stripe: Prüfung fehlgeschlagen", e);
     }

@@ -10,4 +10,7 @@ export const testProvider: PaymentProvider = {
   async verifyReturn() {
     return { paid: false, ref: null };
   },
+  async refund(order, amountCents) {
+    return { ref: `test_refund_${order.number}_${amountCents}_${Date.now().toString(36)}` };
+  },
 };

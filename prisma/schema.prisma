@@ -100,6 +100,7 @@ model Vendor {
   users             User[]
   products          Product[]
   orderItems        OrderItem[]
+  reversals         Reversal[]
   payouts           Payout[]
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
@@ -188,8 +189,13 @@ model Order {
   currency        String      @default("EUR")
   paymentProvider String      @default("")
   paymentRef      String?     @unique
+  // Zahlungsvorgang beim Dienst (Stripe payment_intent), nötig für Erstattungen und die Zuordnung von Webhooks
+  paymentIntent   String?     @unique
+  // Vom Zahlungsdienst gemeldete Erstattungssumme; Abgleich gegen die Rückbuchungen unten
+  refundedCents   Int         @default(0)
   paidAt          DateTime?
   items           OrderItem[]
+  reversals       Reversal[]
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 }
@@ -216,9 +222,54 @@ model OrderItem {
   fulfillment       FulfillmentStatus @default(NEW)
   payoutId          String?
   payout            Payout?           @relation(fields: [payoutId], references: [id])
+  reversals         Reversal[]
 
   @@index([vendorId, payoutId])
   @@index([orderId])
+}
+
+enum ReversalReason {
+  RETURN
+  REFUND
+  GOODWILL
+}
+
+/// Rückbuchung zu einer Bestellposition (Rückgabe, Erstattung, Kulanz). Beträge sind eingefroren und NEGATIV,
+/// damit Verkäufe und Rückbuchungen in Auszahlungen einfach summiert werden. Eine Rückbuchung nach erfolgter
+/// Auszahlung wandert in die nächste Auszahlung des Machers und zieht dort ab.
+model Reversal {
+  id                String         @id @default(cuid())
+  orderId           String
+  order             Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItemId       String
+  orderItem         OrderItem      @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  vendorId          String
+  vendor            Vendor         @relation(fields: [vendorId], references: [id])
+  quantity          Int
+  lineTotalCents    Int
+  commissionCents   Int
+  vendorNetCents    Int
+  reason            ReversalReason
+  note              String         @default("")
+  restocked         Boolean        @default(false)
+  // Rückzahlung an den Kunden beim Zahlungsdienst: Kennung, Zeitpunkt, letzter Fehler
+  refundRef         String?
+  refundedAt        DateTime?
+  refundError       String         @default("")
+  payoutId          String?
+  payout            Payout?        @relation(fields: [payoutId], references: [id])
+  createdAt         DateTime       @default(now())
+
+  @@index([vendorId, payoutId])
+  @@index([orderItemId])
+}
+
+/// Empfangene Webhook-Ereignisse, damit ein doppelt zugestelltes Ereignis nicht doppelt wirkt.
+model WebhookEvent {
+  id         String   @id
+  provider   String
+  type       String
+  receivedAt DateTime @default(now())
 }
 
 model Payout {
@@ -231,6 +282,7 @@ model Payout {
   reference  String       @default("")
   note       String       @default("")
   items      OrderItem[]
+  reversals  Reversal[]
   createdAt  DateTime     @default(now())
   paidAt     DateTime?
 }

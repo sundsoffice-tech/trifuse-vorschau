@@ -1,8 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { field, isValidEmail, type ActionState } from "@/lib/form";
+import { field, intField, isValidEmail, type ActionState } from "@/lib/form";
 import { createOrderFromCart, markOrderPaid, cancelPendingOrder } from "./service";
+import { reverseOrderItem, reverseWholeOrder, retryRefund } from "./reversals";
 import { getPaymentProvider, paymentsMode } from "@/modules/payments";
 import { db } from "@/lib/db";
 import { clearCart } from "@/modules/cart/service";
@@ -84,13 +85,56 @@ export async function adminMarkPaidAction(formData: FormData) {
   revalidatePath("/admin/auszahlungen");
 }
 
-export async function adminRefundOrderAction(formData: FormData) {
+const REASONS = ["RETURN", "REFUND", "GOODWILL"] as const;
+function reasonField(formData: FormData): (typeof REASONS)[number] {
+  const r = field(formData, "reason");
+  return (REASONS as readonly string[]).includes(r) ? (r as (typeof REASONS)[number]) : "REFUND";
+}
+
+/** Eine Stückzahl einer Position zurückbuchen: Rückgabe, Erstattung oder Kulanz. */
+export async function adminReverseItemAction(formData: FormData) {
   await requireAdmin();
-  const orderId = field(formData, "orderId");
-  const order = await db.order.findUnique({ where: { id: orderId }, include: { items: true } });
-  if (!order || order.status !== "PAID") return;
-  if (order.items.some((i) => i.payoutId)) throw new Error("Positionen stecken schon in einer Auszahlung. Erst die Auszahlung auflösen.");
-  await db.order.update({ where: { id: orderId }, data: { status: "REFUNDED" } });
+  const itemId = field(formData, "itemId");
+  const quantity = intField(formData, "quantity", 1);
+  const result = await reverseOrderItem({
+    itemId,
+    quantity,
+    reason: reasonField(formData),
+    note: field(formData, "note"),
+    restock: field(formData, "restock") === "1",
+    refundMoney: field(formData, "refundMoney") === "1",
+  });
+  const item = await db.orderItem.findUnique({ where: { id: itemId }, select: { orderId: true } });
   revalidatePath("/admin/bestellungen");
   revalidatePath("/admin/auszahlungen");
+  revalidatePath("/portal/bestellungen");
+  revalidatePath("/portal/auszahlungen");
+  redirect(`/admin/bestellungen/${item?.orderId}${result.refund.ok ? "" : "?rueckzahlung=fehler"}`);
+}
+
+/** Alles Offene einer Bestellung zurückbuchen, eine Rückzahlung für die Summe. */
+export async function adminReverseOrderAction(formData: FormData) {
+  await requireAdmin();
+  const orderId = field(formData, "orderId");
+  const result = await reverseWholeOrder(orderId, {
+    reason: reasonField(formData),
+    note: field(formData, "note"),
+    restock: field(formData, "restock") === "1",
+    refundMoney: field(formData, "refundMoney") === "1",
+    includeShipping: field(formData, "includeShipping") === "1",
+  });
+  revalidatePath("/admin/bestellungen");
+  revalidatePath("/admin/auszahlungen");
+  revalidatePath("/portal/bestellungen");
+  revalidatePath("/portal/auszahlungen");
+  redirect(`/admin/bestellungen/${orderId}${result.refund.ok ? "" : "?rueckzahlung=fehler"}`);
+}
+
+export async function adminRetryRefundAction(formData: FormData) {
+  await requireAdmin();
+  const reversalId = field(formData, "reversalId");
+  const r = await db.reversal.findUniqueOrThrow({ where: { id: reversalId }, select: { orderId: true } });
+  const result = await retryRefund(reversalId);
+  revalidatePath(`/admin/bestellungen/${r.orderId}`);
+  redirect(`/admin/bestellungen/${r.orderId}${result.ok ? "" : "?rueckzahlung=fehler"}`);
 }

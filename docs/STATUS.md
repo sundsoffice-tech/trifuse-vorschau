@@ -1,6 +1,6 @@
 # Stand
 
-Stand: 29.10.2026, abends (Session 1, Fabrice)
+Stand: 30.10.2026 (Session 2, Fabrice)
 
 ## Live
 
@@ -34,6 +34,13 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
   Macher-Erstlauf von der Bewerbung bis zum eingereichten Produkt in sieben Bildschirmen. Bericht
   `docs/PRUEFUNG-2026-10-29.md`, Werkzeug `npm run test:pruefung` (räumt seine Testdaten selbst auf).
 
+- **Rückbuchungen und Webhook-Härtung (30.10.2026):** Rückgabe, Erstattung und Kulanz je Position mit
+  Teilmengen, Bestand zurück, Rückzahlung über die Provider-Schnittstelle (Stripe `refunds.create` mit
+  Idempotenz-Schlüssel, Testkasse simuliert), Verrechnung in Auszahlungen (negativer Saldo wird vorgetragen,
+  Saldo null wird verrechnet), Macher sehen Rückgaben bei Verkauf und Auszahlung. Webhook mit Dubletten-Schutz
+  und vier weiteren Ereignissen. Geprüft: 6 Unit-Tests, `npm run test:webhook` (12 Prüfungen offline),
+  Smoke-Test um Rückgabe nach Auszahlung erweitert (33 Prüfungen), Bilder angesehen.
+
 ## Offen, nach Dringlichkeit
 
 1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.
@@ -41,7 +48,7 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
 3. Kundendienst-Adresse service@trifuse.store einrichten (steht auf Bestellbestätigung und in der Fußzeile).
 4. Entscheiden, ob der Shop ein eigenes Repo bekommt (`trifuse-shop`) oder im Branch bleibt.
 3. Impressum, Datenschutz, AGB, Widerruf: Platzhalter füllen, juristisch prüfen.
-4. Stripe-Schlüssel und Webhook einrichten, einmal echten Testkauf im Stripe-Testmodus durchführen.
+4. Stripe-Schlüssel und Webhook einrichten (Ereignisse siehe `.env.example`), einmal echten Testkauf und eine Erstattung im Stripe-Testmodus durchführen.
 5. Bestellbestätigung und Händler-Benachrichtigung per Mail (Versandweg des Hauses, kein eigener SMTP).
 6. Docker-Build auf einem Server mit Daemon prüfen.
 7. Rate-Limit für Login und Bewerbung (siehe `docs/SKALIERUNG.md`, Stufe 2).
