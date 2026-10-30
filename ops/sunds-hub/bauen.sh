@@ -34,6 +34,7 @@ cp -a .next/standalone/. "$NEU/"
 mkdir -p "$NEU/.next"; cp -a .next/static "$NEU/.next/static"
 cp -a public "$NEU/public"
 cp -a prisma "$NEU/prisma"
+cp -a scripts "$NEU/scripts"                  # Sicherung und Wiederherstellung laufen aus dem Dienstordner
 ln -sfn "$ORDNER/daten" "$NEU/data"          # data/uploads und ggf. DB liegen in daten/ (700, sundsshop)
 echo "GIT_COMMIT=$GIT_COMMIT" > "$NEU/.commit"
 chown -R root:"$BENUTZER" "$NEU"; chmod -R o-rwx "$NEU"

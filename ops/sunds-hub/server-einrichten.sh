@@ -79,6 +79,48 @@ MemoryDenyWriteExecute=no
 MemoryMax=768M
 ReadWritePaths=$ORDNER/daten
 UNIT
+# --- Sicherung: taeglich 03:17 die Datenbank (VACUUM INTO), sonntags zusaetzlich die Bilder; 14 Staende bleiben.
+#     Ziel daten/sicherung liegt im Ordner, den sicherung.sh des Hubs mitsichert (zweite Kopie ausserhalb der Maschine).
+install -d -m 700 -o "$BENUTZER" -g "$BENUTZER" "$ORDNER/daten/sicherung"
+cat > /etc/systemd/system/$DIENST-sicherung.service <<UNIT
+[Unit]
+Description=Marktplatz-Shop: Datenbank sichern (VACUUM INTO)
+[Service]
+Type=oneshot
+User=$BENUTZER
+WorkingDirectory=$ORDNER/app
+EnvironmentFile=$ORDNER/.env
+ExecStart=/usr/bin/node $ORDNER/app/scripts/sicherung.mjs
+UNIT
+cat > /etc/systemd/system/$DIENST-sicherung-bilder.service <<UNIT
+[Unit]
+Description=Marktplatz-Shop: Datenbank und Bilder sichern
+[Service]
+Type=oneshot
+User=$BENUTZER
+WorkingDirectory=$ORDNER/app
+EnvironmentFile=$ORDNER/.env
+ExecStart=/usr/bin/node $ORDNER/app/scripts/sicherung.mjs --mit-bildern
+UNIT
+cat > /etc/systemd/system/$DIENST-sicherung.timer <<UNIT
+[Unit]
+Description=Marktplatz-Shop: taegliche Sicherung
+[Timer]
+OnCalendar=Mon..Sat *-*-* 03:17:00
+Persistent=true
+[Install]
+WantedBy=timers.target
+UNIT
+cat > /etc/systemd/system/$DIENST-sicherung-bilder.timer <<UNIT
+[Unit]
+Description=Marktplatz-Shop: woechentliche Sicherung mit Bildern
+[Timer]
+OnCalendar=Sun *-*-* 03:17:00
+Persistent=true
+[Install]
+WantedBy=timers.target
+UNIT
 systemctl daemon-reload
-echo "   systemd-Drop-in fuer Node geschrieben"
+systemctl enable -q --now $DIENST-sicherung.timer $DIENST-sicherung-bilder.timer
+echo "   systemd-Drop-in fuer Node und Sicherungs-Timer geschrieben"
 echo "   Einrichtung fertig. Jetzt pushen; der Hook baut und startet."

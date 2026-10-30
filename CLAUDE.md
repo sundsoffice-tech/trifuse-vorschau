@@ -32,6 +32,7 @@ npm start &            # oder laufender Server
 npm run test:smoke     # Playwright: Seiten hell/dunkel, Kauf, Portal, Freigabe, Auszahlung, API
 npm run test:parallel  # bei Änderungen an Kauf, Bestand oder Transaktionen: 20 und 30 gleichzeitige Käufer
 npm run test:webhook   # bei Änderungen an Zahlung, Webhook, Rückbuchungen: signierte Stripe-Ereignisse offline
+npm run test:sicherung # bei Änderungen an Datenbankpfad, Sicherung oder Rollout-Skripten
 ```
 
 Dazu die Hausregel HINSEHEN: Alles Sichtbare in den Screenshots unter `test/ergebnisse/` ansehen, beide
@@ -67,6 +68,8 @@ Verbotsliste im Skill `dossier` lesen; nach größeren Änderungen den Künstler
 - Sprache: Deutsch mit echten Umlauten in allen sichtbaren Texten, Commits und Doku. Englisch nur in
   Bezeichnern, Pfaden und Slugs.
 - Keine Secrets im Code. `.env.example` pflegen, `.env` nie committen.
+- Die Datenbank wird nie als Dateikopie gesichert (WAL), nur über `scripts/sicherung.mjs` (`VACUUM INTO`).
+  Wiederherstellen nur bei gestopptem Dienst über `scripts/wiederherstellen.mjs`.
 
 ## Was nicht geht und warum
 

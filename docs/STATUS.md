@@ -61,6 +61,10 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
   im Admin. Geprüft: 4 Unit-Tests (IBAN, Zeichensatz, XML mit xmllint, CSV), Smoke-Test lädt Datei und CSV.
   Nicht geprüft: Annahme der Datei durch eine echte Bank; dafür einmal im Online-Banking hochladen (Entwurf, nicht freigeben).
 
+- **Sicherung (30.10.2026):** `npm run db:backup` (VACUUM INTO, Integritätsprüfung, 14 Stände, Bildarchiv mit
+  `--mit-bildern`), `npm run db:restore <datei>` mit Sperrprüfung, zwei systemd-Timer in `server-einrichten.sh`.
+  Geprüft: `npm run test:sicherung` (Sicherung im Betrieb, Zählwerte, Aufräumen, Wiederherstellung, Sperre).
+
 ## Offen, nach Dringlichkeit
 
 1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.

@@ -29,6 +29,31 @@ Danach von Hand:
 Jeder weitere Stand: `git push hub <zweig>:main`. Datenbank und Bilder liegen in `/opt/sunds-shop/daten/`
 (700, `sundsshop`) und werden von `sicherung.sh` des Hubs mitgesichert.
 
+## Sicherung und Wiederherstellung
+
+Eine Dateikopie von `shop.db` ist keine Sicherung: im WAL-Modus liegen die letzten Änderungen in `shop.db-wal`,
+die Kopie wäre alt oder kaputt. Deshalb schreibt `scripts/sicherung.mjs` mit `VACUUM INTO` einen konsistenten
+Schnappschuss nach `daten/sicherung/shop-<stempel>.db` und prüft ihn (`PRAGMA integrity_check`). Zwei Timer:
+täglich 03:17 nur die Datenbank, sonntags zusätzlich `uploads-<stempel>.tar.gz`; 14 Datenbankstände und 4
+Bildarchive bleiben. Der Hub sichert `daten/` samt diesem Ordner nach außen.
+
+```bash
+ssh sunds-hub "systemctl list-timers 'sunds-shop-*'"                       # läuft der Timer?
+ssh sunds-hub "sudo -u sundsshop ls -lh /opt/sunds-shop/daten/sicherung"  # was liegt da?
+ssh sunds-hub "sudo systemctl start sunds-shop-sicherung.service"         # jetzt sichern
+```
+
+Zurückholen (der Dienst muss stehen, sonst verweigert das Skript):
+
+```bash
+ssh sunds-hub "sudo systemctl stop sunds-shop && cd /opt/sunds-shop/app && \
+  sudo -u sundsshop env \$(sudo grep ^DATABASE_URL /opt/sunds-shop/.env) node scripts/wiederherstellen.mjs /opt/sunds-shop/daten/sicherung/shop-<stempel>.db && \
+  sudo systemctl start sunds-shop"
+```
+
+Der vorherige Stand bleibt als `shop.db.vor-<stempel>` liegen. Geprüft wird der Weg mit `npm run test:sicherung`
+(Sicherung im laufenden Betrieb, Wiederherstellung in einen Probepfad, Zählwerte, Sperre).
+
 Warum nicht aus der Cloud-Session heraus: Von dort ist Port 22 nicht erreichbar, und Schlüssel liegen
 nach Hausregel nie im Repo. Der Server braucht umgekehrt keinen GitHub-Zugang (Push direkt in `repo.git`,
 Galabau-Muster wie bei der Connect-Website).
