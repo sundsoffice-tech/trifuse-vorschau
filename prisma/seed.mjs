@@ -49,23 +49,23 @@ async function main() {
   const cat = async (slug) => (await db.category.findUnique({ where: { slug } }))?.id ?? null;
   const products = [
     ["lichtwerk-mg", "Rapswachskerze Terrakotta", 1890, 2290, 24, "wohnen", "kerze", "Handgegossen in einen Terrakotta-Becher, Brenndauer rund 40 Stunden. Duftfrei, rußarm, der Becher lässt sich nachfüllen."],
-    ["lichtwerk-mg", "Stabkerzen Set Sand", 1450, null, 40, "wohnen", "kerze", "Sechs Stabkerzen aus Rapswachs, 25 cm, gedeckter Sandton."],
+    ["lichtwerk-mg", "Stabkerzen Set Sand", 1450, null, 40, "wohnen", "kerze", "Sechs Stabkerzen aus Rapswachs, 25 cm, gedeckter Sandton.", 6, "stueck"],
     ["ton-und-tisch", "Müsli-Schale Salbei", 2400, null, 12, "kueche", "schale", "Steinzeug, 14 cm Durchmesser, spülmaschinenfest. Glasur Salbeigrün."],
     ["ton-und-tisch", "Servierbrett Eiche", 3900, 4500, 6, "kueche", "brett", "Geöltes Eichenholz mit Lederschlaufe, 40 x 18 cm."],
-    ["wiesenkram", "Sommerhonig 500 g", 890, null, 60, "geschenke", "honig", "Blütenhonig aus eigener Imkerei, cremig gerührt."],
-    ["wiesenkram", "Kräutertee Abendruhe", 690, null, 35, "kueche", "tee", "Melisse, Lavendel und Apfelminze, 50 g lose."],
-    ["wiesenkram", "Kernseife Ringelblume", 590, null, 80, "koerper-pflege", "seife", "Kaltgerührt, ohne Palmöl, 100 g."],
+    ["wiesenkram", "Sommerhonig 500 g", 890, null, 60, "geschenke", "honig", "Blütenhonig aus eigener Imkerei, cremig gerührt.", 500, "g"],
+    ["wiesenkram", "Kräutertee Abendruhe", 690, null, 35, "kueche", "tee", "Melisse, Lavendel und Apfelminze, 50 g lose.", 50, "g"],
+    ["wiesenkram", "Kernseife Ringelblume", 590, null, 80, "koerper-pflege", "seife", "Kaltgerührt, ohne Palmöl, 100 g.", 100, "g"],
     ["ton-und-tisch", "Notizbuch Leinen A5", 1290, null, 0, "papier-schreiben", "notizbuch", "Fadenheftung, 160 Seiten blanko, Leineneinband. Zurzeit ausverkauft."],
     ["lichtwerk-mg", "Baumwolltasche Lichtwerk", 990, null, 30, "textil", "tasche", "Bio-Baumwolle, langer Henkel, Siebdruck in Terrakotta."],
   ];
-  for (const [vslug, title, price, compare, stock, cslug, img, desc] of products) {
+  for (const [vslug, title, price, compare, stock, cslug, img, desc, contentAmount = null, contentUnit = null] of products) {
     const slug = slugify(title);
     await db.product.create({
-      data: { vendorId: created[vslug].id, slug, title, description: desc, priceCents: price, compareAtCents: compare, stock, status: "ACTIVE", categoryId: await cat(cslug), images: { create: [{ path: `/demo/${img}.svg`, alt: title, sortOrder: 0 }] } },
+      data: { vendorId: created[vslug].id, slug, title, description: desc, priceCents: price, compareAtCents: compare, stock, status: "ACTIVE", categoryId: await cat(cslug), contentAmount, contentUnit, images: { create: [{ path: `/demo/${img}.svg`, alt: title, sortOrder: 0 }] } },
     });
   }
   await db.product.create({
-    data: { vendorId: created["wiesenkram"].id, slug: "lippenbalsam-honig", title: "Lippenbalsam Honig", description: "Bienenwachs und Sonnenblumenöl, 10 ml.", priceCents: 450, stock: 50, status: "PENDING", categoryId: await cat("koerper-pflege"), images: { create: [{ path: "/demo/honig.svg", alt: "Lippenbalsam", sortOrder: 0 }] } },
+    data: { vendorId: created["wiesenkram"].id, slug: "lippenbalsam-honig", title: "Lippenbalsam Honig", description: "Bienenwachs und Sonnenblumenöl, 10 ml.", priceCents: 450, stock: 50, contentAmount: 10, contentUnit: "ml", status: "PENDING", categoryId: await cat("koerper-pflege"), images: { create: [{ path: "/demo/honig.svg", alt: "Lippenbalsam", sortOrder: 0 }] } },
   });
   console.log(`Demo-Händler angelegt (Passwort für alle: ${demoPassword}): ${vendors.map((v) => v.email).join(", ")}`);
 }

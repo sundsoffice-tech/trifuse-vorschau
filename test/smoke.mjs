@@ -40,6 +40,22 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
   await ctx.close();
 }
 
+// 1b. Grundpreis nach Preisangabenverordnung steht an Karte und Produktseite
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(base + "/produkte?q=Sommerhonig");
+  check((await page.textContent("body"))?.replace(/\u00a0/g, " ").includes("17,80 €/kg") ?? false, "Grundpreis auf der Produktkarte (Honig 500 g: 17,80 €/kg)");
+  await page.goto(base + "/produkte?q=Kernseife");
+  check((await page.textContent("body"))?.replace(/\u00a0/g, " ").includes("5,90 €/100 g") ?? false, "Grundpreis je 100 g bei kleinen Mengen");
+  await page.locator("article a").first().click();
+  await page.waitForURL(/\/produkt\//);
+  check((await page.textContent("body"))?.includes("Inhalt: 100 g") ?? false, "Inhalt auf der Produktseite");
+  const api = await (await fetch(base + "/api/v1/products?q=Sommerhonig")).json();
+  check(api.items?.[0]?.basePrice?.cents === 1780 && api.items[0].basePrice.per === "kg", "API liefert den Grundpreis");
+  await ctx.close();
+}
+
 // 2. Kaufablauf im Testmodus
 let orderNumber = null;
 {

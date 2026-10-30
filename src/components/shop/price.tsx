@@ -1,10 +1,12 @@
 import { formatCents } from "@/lib/money";
+import { formatBasePrice, type BasePrice } from "@/lib/grundpreis";
 
-export function Price({ cents, compareAt, className = "" }: { cents: number; compareAt?: number | null; className?: string }) {
+export function Price({ cents, compareAt, basePrice: bp, className = "" }: { cents: number; compareAt?: number | null; basePrice?: BasePrice | null; className?: string }) {
   return (
-    <span className={`inline-flex items-baseline gap-2 num ${className}`}>
+    <span className={`inline-flex flex-wrap items-baseline gap-x-2 num ${className}`}>
       <span className="font-semibold">{formatCents(cents)}</span>
       {compareAt && compareAt > cents ? <s className="text-ink-3 text-sm">{formatCents(compareAt)}</s> : null}
+      {bp ? <span className="text-ink-2 text-sm font-normal">({formatBasePrice(bp)})</span> : null}
     </span>
   );
 }

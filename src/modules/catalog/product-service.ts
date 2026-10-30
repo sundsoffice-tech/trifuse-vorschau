@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { slugify, randomSuffix } from "@/lib/slug";
 import { parseEuroToCents } from "@/lib/money";
 import { field, intField } from "@/lib/form";
+import { parseAmount, isContentUnit } from "@/lib/grundpreis";
 import { storeImage, removeImage } from "@/modules/media/storage";
 import type { ProductStatus, ShippingBy } from "@prisma/client";
 
@@ -16,6 +17,8 @@ export type ProductInput = {
   categoryId: string | null;
   shippingBy: ShippingBy;
   weightGrams: number | null;
+  contentAmount: number | null;
+  contentUnit: string | null;
 };
 
 export type ParsedProduct = { ok: true; data: ProductInput } | { ok: false; fieldErrors: Record<string, string> };
@@ -39,11 +42,19 @@ export function parseProductForm(formData: FormData): ParsedProduct {
   const categoryId = field(formData, "categoryId") || null;
   if (!categoryId) errors.categoryId = "Bitte eine Art wählen.";
   const description = field(formData, "description").slice(0, 5000);
+  // Inhalt für den Grundpreis: beides oder nichts.
+  const amountRaw = field(formData, "contentAmount");
+  const unitRaw = field(formData, "contentUnit");
+  const contentAmount = amountRaw ? parseAmount(amountRaw) : null;
+  if (amountRaw && contentAmount == null) errors.contentAmount = "Bitte eine Menge wie 500 oder 0,75 eingeben.";
+  if (amountRaw && !isContentUnit(unitRaw)) errors.contentUnit = "Bitte die Einheit wählen.";
+  if (!amountRaw && unitRaw) errors.contentAmount = "Bitte die Menge eingeben.";
+  const contentUnit = amountRaw && isContentUnit(unitRaw) ? unitRaw : null;
 
   if (Object.keys(errors).length) return { ok: false, fieldErrors: errors };
   return {
     ok: true,
-    data: { title, description, priceCents: priceCents!, compareAtCents, stock, sku: field(formData, "sku").slice(0, 60), categoryId, shippingBy, weightGrams },
+    data: { title, description, priceCents: priceCents!, compareAtCents, stock, sku: field(formData, "sku").slice(0, 60), categoryId, shippingBy, weightGrams, contentAmount, contentUnit },
   };
 }
 

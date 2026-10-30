@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ProductCard as ProductCardData } from "@/modules/catalog/queries";
 import { imageUrl } from "@/modules/media/url";
 import { makerShareCents } from "@/lib/share";
+import { basePrice } from "@/lib/grundpreis";
 import { Price, MakerShare } from "./price";
 
 export function ProductCard({ product, headingLevel = "h3" }: { product: ProductCardData; headingLevel?: "h2" | "h3" }) {
@@ -22,7 +23,7 @@ export function ProductCard({ product, headingLevel = "h3" }: { product: Product
           {product.vendor.city ? <span className="text-ink-3 block sm:inline"><span className="hidden sm:inline"> · </span>{product.vendor.city}</span> : null}
         </p>
         <div className="mt-1 flex flex-col gap-0.5">
-          <Price cents={product.priceCents} compareAt={product.compareAtCents} />
+          <Price cents={product.priceCents} compareAt={product.compareAtCents} basePrice={basePrice(product.priceCents, product.contentAmount, product.contentUnit)} />
           <MakerShare shareCents={makerShareCents(product.priceCents, product.vendor.commissionPercent)} makerName={product.vendor.name} className="text-sm" />
         </div>
       </div>

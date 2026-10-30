@@ -9,6 +9,7 @@ import { SubmitButton } from "@/components/ui/submit-button";
 import { Field } from "@/components/ui/field";
 import { Alert } from "@/components/ui/alert";
 import { ImagePicker } from "./image-picker";
+import { CONTENT_UNITS, basePrice, formatBasePrice, parseAmount } from "@/lib/grundpreis";
 
 type VendorOption = { id: string; name: string; commissionPercent: number };
 
@@ -38,6 +39,9 @@ export function ProductForm({
   const pct = mode === "admin" ? (vendors?.find((v) => v.id === vendorId)?.commissionPercent ?? commissionPercent) : commissionPercent;
   const cents = parseEuroToCents(price);
   const share = cents != null && cents > 0 ? splitLine(cents, pct).vendorNetCents : null;
+  const [amount, setAmount] = useState(product?.contentAmount ? String(product.contentAmount).replace(".", ",") : "");
+  const [unit, setUnit] = useState(product?.contentUnit ?? "");
+  const grundpreis = cents != null && cents > 0 ? basePrice(cents, parseAmount(amount), unit) : null;
 
   return (
     <form action={formAction} className="space-y-6" encType="multipart/form-data" noValidate>
@@ -93,6 +97,18 @@ export function ProductForm({
         <p className="text-sm num" aria-live="polite">
           {share != null ? <>Davon {mode === "vendor" ? "bekommst du" : "bekommt der Macher"} <strong className="text-accent-text">{formatCents(share)}</strong> je Stück ({Math.round(100 - pct)} %). Der Rest deckt Verpackung, Versand, Zahlung und Kundendienst.</> : <span className="text-ink-2">Trag einen Preis ein, dann siehst du hier den Anteil {mode === "vendor" ? "für dich" : "des Machers"}.</span>}
         </p>
+        <div className="grid sm:grid-cols-[1fr_1fr] gap-4">
+          <Field label="Inhalt (Menge)" name="contentAmount" error={err.contentAmount} hint="Pflicht bei allem, was nach Gewicht, Volumen oder Länge verkauft wird: Lebensmittel, Seife, Kerzenwachs, Stoff. Bei Sets die Stückzahl.">
+            <input id="contentAmount" name="contentAmount" inputMode="decimal" className="input num" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="z. B. 500" />
+          </Field>
+          <Field label="Einheit" name="contentUnit" error={err.contentUnit}>
+            <select id="contentUnit" name="contentUnit" className="select" value={unit} onChange={(e) => setUnit(e.target.value)}>
+              <option value="">keine Angabe</option>
+              {CONTENT_UNITS.map((u) => <option key={u.code} value={u.code}>{u.label}</option>)}
+            </select>
+          </Field>
+        </div>
+        {grundpreis ? <p className="text-sm text-ink-2 num" aria-live="polite">Grundpreis, steht neben dem Preis: <strong className="text-ink">{formatBasePrice(grundpreis)}</strong></p> : null}
         <Field label="Versand" name="shippingBy">
           <select id="shippingBy" name="shippingBy" className="select" defaultValue={shippingDefault}>
             <option value="WAREHOUSE">Über unser Lager: wir verpacken und verschicken, du lieferst uns die Ware</option>

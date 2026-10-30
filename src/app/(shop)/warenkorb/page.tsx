@@ -4,6 +4,7 @@ import { getCartView } from "@/modules/cart/service";
 import { changeCartQuantityAction, removeCartItemAction } from "@/modules/cart/actions";
 import { imageUrl } from "@/modules/media/url";
 import { formatCents } from "@/lib/money";
+import { formatBasePrice } from "@/lib/grundpreis";
 import { makerShareCents } from "@/lib/share";
 import { Empty } from "@/components/ui/empty";
 import { Alert } from "@/components/ui/alert";
@@ -53,6 +54,7 @@ export default async function CartPage() {
               <div className="text-right num">
                 <p className="font-semibold">{formatCents(item.lineTotalCents)}</p>
                 {item.quantity > 1 ? <p className="text-xs text-ink-2">{item.quantity} × {formatCents(item.unitPriceCents)}</p> : null}
+                {item.basePrice ? <p className="text-xs text-ink-2">{formatBasePrice(item.basePrice)}</p> : null}
               </div>
             </li>
           ))}

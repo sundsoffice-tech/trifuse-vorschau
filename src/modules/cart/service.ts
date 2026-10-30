@@ -1,4 +1,5 @@
 import "server-only";
+import { basePrice } from "@/lib/grundpreis";
 import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db";
@@ -48,6 +49,7 @@ export async function getCartView() {
       image: p.images[0]?.path ?? null,
       vendor: p.vendor,
       unitPriceCents: p.priceCents,
+      basePrice: basePrice(p.priceCents, p.contentAmount, p.contentUnit),
       requested: item.quantity,
       quantity,
       stock: p.stock,

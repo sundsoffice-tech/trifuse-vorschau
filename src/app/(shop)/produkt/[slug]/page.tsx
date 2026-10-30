@@ -7,6 +7,7 @@ import { formatCents } from "@/lib/money";
 import { makerShareCents } from "@/lib/share";
 import { imageUrl } from "@/modules/media/url";
 import { Price } from "@/components/shop/price";
+import { basePrice, formatAmount } from "@/lib/grundpreis";
 import { ProductCard } from "@/components/shop/product-card";
 import { AddToCartForm } from "@/components/shop/add-to-cart-form";
 
@@ -54,7 +55,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {product.vendor.city ? <> · aus {product.vendor.city}</> : null}
           </p>
           <h1 className="font-display text-3xl md:text-4xl font-semibold mt-1 leading-tight">{product.title}</h1>
-          <Price cents={product.priceCents} compareAt={product.compareAtCents} className="text-2xl mt-4" />
+          <Price cents={product.priceCents} compareAt={product.compareAtCents} basePrice={basePrice(product.priceCents, product.contentAmount, product.contentUnit)} className="text-2xl mt-4" />
+          {product.contentAmount && product.contentUnit ? <p className="text-sm text-ink-2 num">Inhalt: {formatAmount(product.contentAmount, product.contentUnit)}</p> : null}
           <p className="text-sm text-ink-2 mt-1 num">inkl. MwSt., zzgl. {formatCents(settings.shippingFlatCents)} Versand, ab {formatCents(settings.freeShippingFromCents)} Bestellwert versandkostenfrei</p>
 
           <div className="mt-5">

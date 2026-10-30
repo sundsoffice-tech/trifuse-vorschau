@@ -133,6 +133,9 @@ model Product {
   rejectReason   String         @default("")
   shippingBy     ShippingBy     @default(WAREHOUSE)
   weightGrams    Int?
+  // Inhalt für den Grundpreis nach Preisangabenverordnung: Menge und Einheit (g, kg, ml, l, m, m2, stueck)
+  contentAmount  Float?
+  contentUnit    String?
   images         ProductImage[]
   cartItems      CartItem[]
   orderItems     OrderItem[]
