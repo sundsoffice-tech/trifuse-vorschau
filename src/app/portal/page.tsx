@@ -7,6 +7,7 @@ import { formatCents } from "@/lib/money";
 import { Stat } from "@/components/ui/stat";
 import { Alert } from "@/components/ui/alert";
 import { fulfillmentText, formatPayoutDate } from "@/modules/orders/texts";
+import { manufacturerInfo } from "@/lib/hersteller";
 
 export default async function PortalHome() {
   const user = await requireVendorUser();
@@ -25,6 +26,7 @@ export default async function PortalHome() {
     { fertig: produkte > 0, text: "Erstes Produkt anlegen", hinweis: "Mit Foto, Preis und Art. Wir schalten frei.", href: "/portal/produkte/neu" },
     { fertig: Boolean(vendor.payoutIban), text: "Bankverbindung eintragen", hinweis: "Sonst können wir nicht überweisen.", href: "/portal/einstellungen#bank" },
     { fertig: Boolean(vendor.description && vendor.city), text: "Erzählen, wer du bist", hinweis: "Ort und zwei Sätze zu deiner Arbeit; stehen bei jedem Produkt.", href: "/portal/einstellungen" },
+    { fertig: Boolean(manufacturerInfo(vendor)), text: "Anschrift eintragen", hinweis: "Steht als Herstellerangabe bei jedem Produkt; seit Dezember 2024 Pflicht.", href: "/portal/einstellungen#hersteller" },
   ];
   const offen = schritte.filter((s) => !s.fertig).length;
   return (

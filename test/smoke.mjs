@@ -42,6 +42,21 @@ for (const [theme, width] of [["light", 1280], ["dark", 390]]) {
   await ctx.close();
 }
 
+// 1a. Suchmaschinen: vor der Freigabe alles gesperrt, Strukturdaten trotzdem da, Herstellerangabe am Produkt
+{
+  const robots = await (await fetch(base + "/robots.txt")).text();
+  check(/Disallow: \/\s*$/m.test(robots), "robots.txt sperrt alles, solange SITE_INDEXABLE nicht true ist");
+  const sitemap = await fetch(base + "/sitemap.xml");
+  check(sitemap.status === 200 && !(await sitemap.text()).includes("<loc>"), "Sitemap ist vor der Freigabe leer");
+  const html = await (await fetch(base + "/produkt/sommerhonig-500-g")).text();
+  const ld = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)?.[1];
+  const data = ld ? JSON.parse(ld) : null;
+  const product = data?.["@graph"]?.find((n) => n["@type"] === "Product");
+  check(product?.offers?.price === "8.90" && product.offers.priceSpecification?.referenceQuantity?.unitText === "kg", "JSON-LD Product mit Preis und Grundpreis");
+  check(html.includes('<meta name="robots" content="noindex, nofollow"') || html.includes('name="robots"'), "noindex im Kopf der Seite");
+  check(html.includes("Hersteller") && html.includes("Wegberg"), "Herstellerangabe nach Produktsicherheitsverordnung auf der Produktseite");
+}
+
 // 1b. Grundpreis nach Preisangabenverordnung steht an Karte und Produktseite
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
@@ -232,6 +247,53 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   check((t?.includes("Rückgabe") && t.includes("verrechnet")) ?? false, "Macher sieht Rückgabe und Verrechnungshinweis");
   await page.goto(base + "/portal/bestellungen");
   check((await page.textContent("body"))?.includes("Rückgabe 1 Stück") ?? false, "Rückgabe steht beim Verkauf des Machers");
+  await ctx.close();
+}
+
+// 4b2. Fehlversuche beim Anmelden werden gebremst (je Konto nach fünf Fehlversuchen), eigene Adresse je Lauf
+{
+  const ctx = await browser.newContext({ extraHTTPHeaders: { "x-forwarded-for": `10.99.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}` } });
+  const page = await ctx.newPage();
+  const konto = `niemand-${Date.now().toString(36)}@example.com`;
+  let last = "";
+  for (let i = 0; i < 6; i++) {
+    await page.goto(base + "/login");
+    await page.fill("#email", konto); await page.fill("#password", "falsch-falsch-falsch");
+    await page.getByRole("button", { name: "Anmelden" }).click();
+    await page.locator('[role="alert"]').first().waitFor();
+    last = (await page.locator('[role="alert"]').first().textContent()) ?? "";
+  }
+  check(/Zu viele Versuche/.test(last), `Sechster Fehlversuch wird gebremst: „${last.trim()}“`);
+  await ctx.close();
+}
+
+// 4b3. Admin: CSV-Import prüfen und anlegen, Team-Zugang anlegen
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await ctx.newPage();
+  await page.goto(base + "/login");
+  await page.fill("#email", admin.email); await page.fill("#password", admin.password);
+  await page.getByRole("button", { name: "Anmelden" }).click();
+  await page.waitForURL(/\/admin/);
+  await page.goto(base + "/admin/produkte/import");
+  const titel = `Import-Probe ${Date.now().toString(36)}`;
+  await page.fill("#text", `macher;titel;beschreibung;preis;bestand;art;versand;inhalt_menge;inhalt_einheit;status\nwiesenkram;${titel};Aus dem Import.;6,90;20;geschenke;lager;250;g;shop\nniemand;Kaputt;;abc;;geschenke;;;;shop`);
+  await page.getByRole("button", { name: "Prüfen, noch nichts anlegen" }).click();
+  await page.getByText("2 Zeilen: 1 in Ordnung, 1 mit Fehlern").waitFor();
+  await shoot(page, "admin-import-pruefung");
+  await page.getByRole("button", { name: "1 Produkt anlegen" }).click();
+  await page.getByText("1 Produkt angelegt, 1 mit Fehlern übersprungen").waitFor();
+  const api = await (await fetch(base + "/api/v1/products?q=" + encodeURIComponent(titel))).json();
+  check(api.items?.[0]?.title === titel && api.items[0].basePrice?.per === "100 g", "Importiertes Produkt ist im Shop, mit Grundpreis");
+  await page.goto(base + "/admin/einstellungen");
+  const teamMail = `team-${Date.now().toString(36)}@example.com`;
+  await page.fill("#name", "Zweite Person"); await page.fill("#email", teamMail);
+  await page.getByRole("button", { name: "Zugang anlegen und Mail schicken" }).click();
+  await page.getByText("bekommt eine Mail mit einem Link").waitFor();
+  check((await page.textContent("body"))?.includes(teamMail) ?? false, "Zweiter Team-Zugang steht in der Liste");
+  await page.locator("li", { hasText: teamMail }).getByRole("button", { name: "Zugang entfernen" }).click();
+  await page.waitForLoadState("networkidle");
+  check(!(await page.textContent("body"))?.includes(teamMail), "Team-Zugang lässt sich wieder entfernen");
   await ctx.close();
 }
 

@@ -10,7 +10,7 @@ import { Field } from "@/components/ui/field";
 import { Alert } from "@/components/ui/alert";
 import { ImagePicker } from "./image-picker";
 
-type VendorData = { name: string; description: string; phone: string; addressLine: string; postalCode: string; city: string; website: string; payoutHolder: string; payoutIban: string; logoPath: string | null; commissionPercent: number; email: string };
+type VendorData = { name: string; description: string; phone: string; addressLine: string; postalCode: string; city: string; website: string; payoutHolder: string; payoutIban: string; logoPath: string | null; commissionPercent: number; email: string; manufacturerName: string; manufacturerAddress: string; manufacturerEmail: string };
 
 export function VendorSettingsForm({ vendor }: { vendor: VendorData }) {
   const [state, action] = useActionState(updateVendorProfileAction, null);
@@ -34,12 +34,21 @@ export function VendorSettingsForm({ vendor }: { vendor: VendorData }) {
           <div><span className="label">Foto von dir oder deiner Werkstatt (quadratisch)</span><ImagePicker name="logo" multiple={false} label="Foto auswählen" /></div>
         </div>
         <Field label="Website oder Instagram (optional)" name="website"><input id="website" name="website" type="url" className="input" defaultValue={vendor.website} placeholder="https://" /></Field>
+        <details className="group" id="hersteller">
+          <summary className="details-summary">Herstellerangaben, falls nicht du selbst herstellst</summary>
+          <p className="text-sm text-ink-2 mt-2">Seit Dezember 2024 muss bei jedem Produkt stehen, wer es hergestellt hat: Name, Anschrift, E-Mail. Leer gelassen stehen dort du und deine Anschrift von oben. Verkaufst du etwas, das jemand anderes gemacht hat, trag ihn hier ein.</p>
+          <div className="grid sm:grid-cols-2 gap-4 mt-3">
+            <Field label="Hersteller" name="manufacturerName"><input id="manufacturerName" name="manufacturerName" className="input" defaultValue={vendor.manufacturerName} maxLength={120} /></Field>
+            <Field label="E-Mail des Herstellers" name="manufacturerEmail"><input id="manufacturerEmail" name="manufacturerEmail" type="email" className="input" defaultValue={vendor.manufacturerEmail} maxLength={120} /></Field>
+            <div className="sm:col-span-2"><Field label="Anschrift des Herstellers" name="manufacturerAddress"><input id="manufacturerAddress" name="manufacturerAddress" className="input" defaultValue={vendor.manufacturerAddress} maxLength={200} placeholder="Straße Nr., PLZ Ort, Land" /></Field></div>
+          </div>
+        </details>
       </div>
       <div className="card p-5 md:p-6 space-y-4">
         <h2 className="font-semibold text-lg">So erreichen wir dich</h2>
         <p className="text-sm text-ink-2">Deine Anmelde-Adresse: <strong>{vendor.email}</strong>. Zum Ändern schreib uns an <a href={`mailto:${BRAND.supportEmail}`} className="underline">{BRAND.supportEmail}</a>.</p>
         <Field label="Telefon" name="phone"><input id="phone" name="phone" type="tel" className="input" defaultValue={vendor.phone} /></Field>
-        <Field label="Straße und Hausnummer" name="addressLine"><input id="addressLine" name="addressLine" className="input" defaultValue={vendor.addressLine} /></Field>
+        <Field label="Straße und Hausnummer" name="addressLine" hint="Steht als Herstelleranschrift bei deinen Produkten (Pflicht seit Dezember 2024)."><input id="addressLine" name="addressLine" className="input" defaultValue={vendor.addressLine} /></Field>
         <Field label="PLZ" name="postalCode"><input id="postalCode" name="postalCode" className="input max-w-[160px]" defaultValue={vendor.postalCode} /></Field>
       </div>
       <div className="card p-5 md:p-6 space-y-4" id="bank">

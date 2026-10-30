@@ -23,6 +23,7 @@ const templateText: Record<string, string> = {
   "product-rejected": "Produkt abgelehnt",
   "payout-paid": "Auszahlung überwiesen",
   "refund-confirmation": "Erstattung",
+  "admin-invite": "Team-Zugang",
 };
 
 export default async function AdminOutbox({ searchParams }: { searchParams: Promise<{ status?: string }> }) {

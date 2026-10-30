@@ -124,3 +124,10 @@ export function refundConfirmation(name: string, orderNumber: string, amountCent
     { link: orderUrl, label: "Bestellung ansehen" },
   ]);
 }
+
+export function adminInvite(name: string, invitedBy: string, setPasswordUrl: string): MailContent {
+  return render("admin-invite", `Dein Zugang zur Verwaltung von ${BRAND.name}`, [
+    { p: `Hallo ${name}, ${invitedBy} hat dir einen Zugang zur Verwaltung von ${BRAND.name} angelegt. Mit dem Knopf unten legst du dein Passwort fest; der Link gilt 7 Tage.` },
+    { link: setPasswordUrl, label: "Passwort festlegen" },
+  ]);
+}

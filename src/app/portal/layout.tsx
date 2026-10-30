@@ -2,6 +2,10 @@ import { requireVendorUser } from "@/modules/auth/session";
 import { db } from "@/lib/db";
 import { BackofficeShell } from "@/components/ui/backoffice-shell";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
+
 export default async function PortalLayout({ children }: { children: React.ReactNode }) {
   const user = await requireVendorUser();
   const vendor = await db.vendor.findUnique({ where: { id: user.vendorId }, select: { name: true } });

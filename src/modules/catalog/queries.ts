@@ -57,7 +57,7 @@ export async function getActiveProductBySlug(slug: string) {
     where: { slug, status: "ACTIVE", vendor: { status: "ACTIVE" } },
     include: {
       images: { orderBy: { sortOrder: "asc" } },
-      vendor: { select: { id: true, name: true, slug: true, description: true, logoPath: true, city: true, commissionPercent: true } },
+      vendor: { select: { id: true, name: true, slug: true, description: true, logoPath: true, city: true, commissionPercent: true, email: true, addressLine: true, postalCode: true, manufacturerName: true, manufacturerAddress: true, manufacturerEmail: true } },
       category: true,
     },
   });

@@ -80,31 +80,36 @@ model Session {
 }
 
 model Vendor {
-  id                String       @id @default(cuid())
-  slug              String       @unique
-  name              String
-  description       String       @default("")
-  email             String
-  phone             String       @default("")
-  logoPath          String?
-  status            VendorStatus @default(PENDING)
-  commissionPercent Float        @default(15)
-  autoApprove       Boolean      @default(false)
-  payoutIban        String       @default("")
-  payoutHolder      String       @default("")
-  payoutNote        String       @default("")
-  addressLine       String       @default("")
-  postalCode        String       @default("")
-  city              String       @default("")
+  id                  String       @id @default(cuid())
+  slug                String       @unique
+  name                String
+  description         String       @default("")
+  email               String
+  phone               String       @default("")
+  logoPath            String?
+  status              VendorStatus @default(PENDING)
+  commissionPercent   Float        @default(15)
+  autoApprove         Boolean      @default(false)
+  payoutIban          String       @default("")
+  payoutHolder        String       @default("")
+  payoutNote          String       @default("")
+  addressLine         String       @default("")
+  postalCode          String       @default("")
+  city                String       @default("")
   // Wo das Team die Arbeit ansehen kann (Website, Instagram); kommt aus der Bewerbung.
-  website           String       @default("")
-  users             User[]
-  products          Product[]
-  orderItems        OrderItem[]
-  reversals         Reversal[]
-  payouts           Payout[]
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  website             String       @default("")
+  // Herstellerangaben nach Produktsicherheitsverordnung (GPSR, seit 13.12.2024): Name, Anschrift, E-Mail des
+  // Herstellers am Produkt. Leer heißt: der Macher selbst mit seiner Anschrift und Kontakt-E-Mail.
+  manufacturerName    String       @default("")
+  manufacturerAddress String       @default("")
+  manufacturerEmail   String       @default("")
+  users               User[]
+  products            Product[]
+  orderItems          OrderItem[]
+  reversals           Reversal[]
+  payouts             Payout[]
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
 }
 
 model Category {

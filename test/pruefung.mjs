@@ -119,7 +119,7 @@ await abschnitt("onboard", async () => {
   await ap.getByRole("button", { name: /Bewerbung annehmen/ }).click(); await ap.waitForTimeout(6000);
   await shoot(ap, "o5-admin-zugang");
   const body5 = await ap.textContent("body");
-  const pw = body5.match(/nur jetzt sichtbar: ([A-Za-z0-9]+)/)?.[1];
+  const pw = body5.match(/nur jetzt sichtbar\): ([A-Za-z0-9]+)/)?.[1];
   report.onboard.push({ schritt: "Freigeschaltet", passwortErkannt: Boolean(pw), auszug: pw ? undefined : body5.match(/.{0,60}(Freigeschaltet|fehlgeschlagen|Zugang|Fehler).{0,100}/g)?.slice(0, 3) });
   if (!pw) throw new Error("Kein Startpasswort auf der Seite");
   await a.close();

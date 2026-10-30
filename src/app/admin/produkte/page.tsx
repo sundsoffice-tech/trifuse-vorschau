@@ -26,6 +26,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-3xl font-semibold">Produkte</h1>
         <Link href="/admin/produkte/neu" className="btn btn-primary">Produkt anlegen</Link>
+          <Link href="/admin/produkte/import" className="btn btn-secondary">Aus CSV anlegen</Link>
       </div>
       <div className="flex flex-wrap gap-2 items-center">
         {tabs.map((t) => <Link key={t.value} href={`/admin/produkte?status=${t.value}${sp.q ? `&q=${encodeURIComponent(sp.q)}` : ""}`} className="chip !min-h-[40px]" aria-current={status === t.value ? "true" : undefined}>{t.label}{t.value !== "ALL" ? <span className="opacity-70 ml-1 num">{count(t.value)}</span> : null}</Link>)}

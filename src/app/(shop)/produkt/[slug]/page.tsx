@@ -10,10 +10,19 @@ import { Price } from "@/components/shop/price";
 import { basePrice, formatAmount } from "@/lib/grundpreis";
 import { ProductCard } from "@/components/shop/product-card";
 import { AddToCartForm } from "@/components/shop/add-to-cart-form";
+import { appUrl } from "@/modules/payments/provider";
+import { imageSrc } from "@/modules/media/url";
+import { BRAND } from "@/lib/brand";
+import { manufacturerInfo } from "@/lib/hersteller";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const product = await getActiveProductBySlug((await params).slug);
-  return { title: product?.title ?? "Produkt" };
+  if (!product) return { title: "Produkt" };
+  return {
+    title: product.title,
+    description: `${product.title} von ${product.vendor.name}${product.vendor.city ? ` aus ${product.vendor.city}` : ""}. ${product.description.slice(0, 140)}`.trim(),
+    openGraph: { title: product.title, description: product.description.slice(0, 200), images: product.images[0] ? [imageSrc(product.images[0].path, 1280)] : undefined, type: "website" },
+  };
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -25,8 +34,45 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const share = makerShareCents(product.priceCents, product.vendor.commissionPercent);
   const makerPercent = Math.round(100 - product.vendor.commissionPercent);
 
+  const bp = basePrice(product.priceCents, product.contentAmount, product.contentUnit);
+  const hersteller = manufacturerInfo(product.vendor);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Product",
+        name: product.title,
+        description: product.description.slice(0, 500),
+        sku: product.sku || undefined,
+        image: product.images.map((i) => appUrl(imageSrc(i.path, 1280))),
+        brand: { "@type": "Brand", name: product.vendor.name },
+        manufacturer: { "@type": "Organization", name: product.vendor.name },
+        category: product.category?.name,
+        offers: {
+          "@type": "Offer",
+          url: appUrl(`/produkt/${product.slug}`),
+          priceCurrency: "EUR",
+          price: (product.priceCents / 100).toFixed(2),
+          availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+          itemCondition: "https://schema.org/NewCondition",
+          seller: { "@type": "Organization", name: BRAND.name },
+          ...(bp ? { priceSpecification: { "@type": "UnitPriceSpecification", price: (bp.cents / 100).toFixed(2), priceCurrency: "EUR", referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitText: bp.per } } } : {}),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Produkte", item: appUrl("/produkte") },
+          ...(product.category ? [{ "@type": "ListItem", position: 2, name: product.category.name, item: appUrl(`/produkte?kategorie=${product.category.slug}`) }] : []),
+          { "@type": "ListItem", position: product.category ? 3 : 2, name: product.title, item: appUrl(`/produkt/${product.slug}`) },
+        ],
+      },
+    ],
+  };
+
   return (
     <div className="container-x py-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <nav className="text-sm text-ink-2 mb-6" aria-label="Pfad">
         <Link href="/produkte" className="link-44 hover:underline">Produkte</Link>
         {product.category ? <> / <Link href={`/produkte?kategorie=${product.category.slug}`} className="link-44 hover:underline">{product.category.name}</Link></> : null}
@@ -74,6 +120,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <dd className="num">{product.stock > 10 ? "Auf Lager" : product.stock > 0 ? `Noch ${product.stock} Stück` : "Ausverkauft"}</dd>
             <dt className="text-ink-2">Rückgabe</dt>
             <dd>14 Tage Widerrufsrecht; Lebensmittel nur ungeöffnet</dd>
+            {hersteller ? <><dt className="text-ink-2">Hersteller</dt><dd>{hersteller.name}, {hersteller.address}, <a href={`mailto:${hersteller.email}`} className="underline break-all">{hersteller.email}</a></dd></> : null}
           </dl>
 
           {product.description ? <div className="prose mt-8 text-ink-2 whitespace-pre-line">{product.description}</div> : null}

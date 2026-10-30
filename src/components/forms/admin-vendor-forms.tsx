@@ -48,6 +48,11 @@ export function AdminVendorEditForm({ vendor }: { vendor: Vendor }) {
       <div className="grid sm:grid-cols-2 gap-4">
         <Field label="Ort" name="city"><input id="city" name="city" className="input" defaultValue={vendor.city} /></Field>
         <Field label="Website oder Instagram" name="website"><input id="website" name="website" className="input" defaultValue={vendor.website} /></Field>
+        <Field label="Anschrift (Herstellerangabe)" name="addressLine" hint="Straße und Hausnummer; steht mit PLZ und Ort als Hersteller am Produkt."><input id="addressLine" name="addressLine" className="input" defaultValue={vendor.addressLine} /></Field>
+        <Field label="PLZ" name="postalCode"><input id="postalCode" name="postalCode" className="input" defaultValue={vendor.postalCode} /></Field>
+        <Field label="Abweichender Hersteller" name="manufacturerName" hint="Nur wenn der Macher nicht selbst herstellt."><input id="manufacturerName" name="manufacturerName" className="input" defaultValue={vendor.manufacturerName} /></Field>
+        <Field label="Anschrift des Herstellers" name="manufacturerAddress"><input id="manufacturerAddress" name="manufacturerAddress" className="input" defaultValue={vendor.manufacturerAddress} /></Field>
+        <Field label="E-Mail des Herstellers" name="manufacturerEmail"><input id="manufacturerEmail" name="manufacturerEmail" type="email" className="input" defaultValue={vendor.manufacturerEmail} /></Field>
       </div>
       <Field label="Beschreibung" name="description"><textarea id="description" name="description" className="textarea" defaultValue={vendor.description} /></Field>
       <div className="grid sm:grid-cols-2 gap-4">

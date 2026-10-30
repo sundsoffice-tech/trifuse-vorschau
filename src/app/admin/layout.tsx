@@ -1,6 +1,10 @@
 import { requireAdmin } from "@/modules/auth/session";
 import { BackofficeShell } from "@/components/ui/backoffice-shell";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await requireAdmin();
   return (

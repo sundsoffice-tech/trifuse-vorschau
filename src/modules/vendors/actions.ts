@@ -1,6 +1,7 @@
 "use server";
 
 import { isValidIban, normalizeIban } from "@/lib/iban";
+import { limitExceeded } from "@/modules/auth/limit";
 
 import { field, isValidEmail, type ActionState } from "@/lib/form";
 import { createVendorApplication } from "./service";
@@ -24,6 +25,8 @@ export async function applyAsVendorAction(_prev: ActionState, formData: FormData
   if (!isValidEmail(email)) errors.email = "Bitte eine gültige E-Mail-Adresse angeben.";
   if (description.length < 10) errors.description = "Ein, zwei Sätze helfen uns bei der Einschätzung.";
   if (Object.keys(errors).length) return { ok: false, fieldErrors: errors, message: "Bitte die markierten Felder prüfen." };
+  const blocked = await limitExceeded("bewerbung", 10, 60 * 60_000);
+  if (blocked) return { ok: false, message: blocked };
   try {
     await createVendorApplication({ name, contactName, email, description, city, website, phone: field(formData, "phone") });
   } catch (e) {
@@ -60,6 +63,9 @@ export async function updateVendorProfileAction(_prev: ActionState, formData: Fo
       postalCode: field(formData, "postalCode"),
       city: field(formData, "city"),
       website: field(formData, "website").slice(0, 300),
+      manufacturerName: field(formData, "manufacturerName").slice(0, 120),
+      manufacturerAddress: field(formData, "manufacturerAddress").slice(0, 200),
+      manufacturerEmail: field(formData, "manufacturerEmail").toLowerCase().slice(0, 120),
       payoutHolder: field(formData, "payoutHolder"),
       payoutIban: iban,
       ...(logoPath ? { logoPath } : {}),

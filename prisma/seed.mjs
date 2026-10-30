@@ -36,14 +36,14 @@ async function main() {
 
   const demoPassword = "haendler-demo-2026";
   const vendors = [
-    { slug: "lichtwerk-mg", name: "Lichtwerk MG", email: "lichtwerk@example.com", city: "Mönchengladbach", description: "Lea gießt Kerzen aus Rapswachs in ihrer Werkstatt in Rheydt. Jede Kerze wird von Hand gegossen, geduldig abgekühlt und einzeln geprüft.", contact: "Lea Brandt", iban: "DE02120300000000202051" },
-    { slug: "ton-und-tisch", name: "Ton & Tisch", email: "tonundtisch@example.com", city: "Viersen", description: "Milan dreht Steinzeug für den Alltag: Schalen, Becher, Bretter. Alles entsteht an der Scheibe in Viersen und wird zweimal gebrannt.", contact: "Milan Oster", iban: "" },
-    { slug: "wiesenkram", name: "Wiesenkram", email: "wiesenkram@example.com", city: "Wegberg", description: "Hanna führt einen kleinen Hof bei Wegberg am Niederrhein: Bienen, Kräuterbeete, eine Seifenküche. Was sie dort macht, verkauft sie hier.", contact: "Hanna Vogt", iban: "DE75512108001245126199" },
+    { slug: "lichtwerk-mg", name: "Lichtwerk MG", email: "lichtwerk@example.com", addressLine: "Hauptstr. 12", postalCode: "41236", city: "Mönchengladbach", description: "Lea gießt Kerzen aus Rapswachs in ihrer Werkstatt in Rheydt. Jede Kerze wird von Hand gegossen, geduldig abgekühlt und einzeln geprüft.", contact: "Lea Brandt", iban: "DE02120300000000202051" },
+    { slug: "ton-und-tisch", name: "Ton & Tisch", email: "tonundtisch@example.com", addressLine: "Töpferweg 3", postalCode: "41747", city: "Viersen", description: "Milan dreht Steinzeug für den Alltag: Schalen, Becher, Bretter. Alles entsteht an der Scheibe in Viersen und wird zweimal gebrannt.", contact: "Milan Oster", iban: "" },
+    { slug: "wiesenkram", name: "Wiesenkram", email: "wiesenkram@example.com", addressLine: "Am Hof 1", postalCode: "41844", city: "Wegberg", description: "Hanna führt einen kleinen Hof bei Wegberg am Niederrhein: Bienen, Kräuterbeete, eine Seifenküche. Was sie dort macht, verkauft sie hier.", contact: "Hanna Vogt", iban: "DE75512108001245126199" },
   ];
   const created = {};
   for (const v of vendors) {
     created[v.slug] = await db.vendor.create({
-      data: { slug: v.slug, name: v.name, email: v.email, city: v.city, description: v.description, status: "ACTIVE", commissionPercent: 15, autoApprove: false, payoutHolder: v.contact, payoutIban: v.iban, users: { create: { email: v.email, name: v.contact, role: "VENDOR", passwordHash: hashPassword(demoPassword) } } },
+      data: { slug: v.slug, name: v.name, email: v.email, city: v.city, addressLine: v.addressLine, postalCode: v.postalCode, description: v.description, status: "ACTIVE", commissionPercent: 15, autoApprove: false, payoutHolder: v.contact, payoutIban: v.iban, users: { create: { email: v.email, name: v.contact, role: "VENDOR", passwordHash: hashPassword(demoPassword) } } },
     });
   }
   const cat = async (slug) => (await db.category.findUnique({ where: { slug } }))?.id ?? null;

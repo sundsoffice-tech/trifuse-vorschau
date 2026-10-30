@@ -33,6 +33,10 @@ Instanz. Was dafür schon eingebaut ist:
 
 ## Stufe 2: mehrere Instanzen (Auslöser: CPU-Last der Instanz dauerhaft > 70 % oder Deploy ohne Ausfall nötig)
 
+Vorab zu lösen, bevor eine zweite Instanz startet: Rate-Limit (`src/lib/rate-limit.ts`, heute im Prozessspeicher) auf
+Redis umstellen, gleicher Vertrag `hit()`/`peek()`; der Mail-Postausgang und die Webhook-Dublettenerkennung sind schon
+datenbankgestützt und brauchen nichts.
+
 - Bilder in S3-kompatiblen Speicher (Hetzner Object Storage, MinIO): zweiter Adapter in
   `src/modules/media/storage.ts` mit derselben Schnittstelle, `imageUrl()` liefert dann die CDN-Adresse.
 - Sessions und Warenkorb liegen schon in der Datenbank, nicht im Prozess. Nichts zu tun.

@@ -65,6 +65,11 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
   `--mit-bildern`), `npm run db:restore <datei>` mit Sperrprüfung, zwei systemd-Timer in `server-einrichten.sh`.
   Geprüft: `npm run test:sicherung` (Sicherung im Betrieb, Zählwerte, Aufräumen, Wiederherstellung, Sperre).
 
+- **Kleineres (30.10.2026):** Rate-Limit für Anmeldung, Bewerbung und Passwort-vergessen; `SITE_INDEXABLE`
+  mit robots.txt, Sitemap und noindex; JSON-LD Product mit Grundpreis und Breadcrumb, OpenGraph am Produkt;
+  Herstellerangaben (GPSR) am Macher und Produkt; CSV-Import im Admin; Team-Zugänge unter Einstellungen.
+  Smoke-Test jetzt 62 Prüfungen, `npm run test:pruefung` läuft wieder durch.
+
 ## Offen, nach Dringlichkeit
 
 1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.
@@ -75,7 +80,7 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
 4. Stripe-Schlüssel und Webhook einrichten (Ereignisse siehe `.env.example`), einmal echten Testkauf und eine Erstattung im Stripe-Testmodus durchführen.
 5. SMTP-Zugang des Hauses in `.env` eintragen (`MAIL_MODE=smtp`, `SMTP_*`, `MAIL_FROM`) und eine echte Mail über `/admin/postausgang` prüfen; bis dahin bleibt der Dateimodus.
 6. Docker-Build auf einem Server mit Daemon prüfen.
-7. Rate-Limit für Login und Bewerbung (siehe `docs/SKALIERUNG.md`, Stufe 2).
+7. Vor der Freigabe für Suchmaschinen `SITE_INDEXABLE=true` auf dem Server setzen (Fabrices Wort).
 8. Schnittstelle zur Hausbuchhaltung (sunds-buchhaltung) auf Basis des CSV-Exports, nach dem Rollout; Vertrag in `leadmaschine/zentrale/rechnungen/SCHNITTSTELLE-BUCHHALTUNG.md`.
 
 ## Gemessen
