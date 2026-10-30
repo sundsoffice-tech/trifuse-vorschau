@@ -56,6 +56,11 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
   srcset überall, API liefert die Varianten. Gemessen im Smoke-Test: 2400 × 1800 JPEG mit 3 MB wird zu 3 KB
   Kartenbild. Ältere Uploads mit Endung bleiben lesbar.
 
+- **SEPA und Buchhaltung (30.10.2026):** Sammelüberweisung pain.001.001.09 für alle Entwürfe (Konto unter
+  Einstellungen), Schutz vor Doppelexport, CSV je Position und je Auszahlung, IBAN-Prüfziffer bei Machern und
+  im Admin. Geprüft: 4 Unit-Tests (IBAN, Zeichensatz, XML mit xmllint, CSV), Smoke-Test lädt Datei und CSV.
+  Nicht geprüft: Annahme der Datei durch eine echte Bank; dafür einmal im Online-Banking hochladen (Entwurf, nicht freigeben).
+
 ## Offen, nach Dringlichkeit
 
 1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.
@@ -67,6 +72,7 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
 5. SMTP-Zugang des Hauses in `.env` eintragen (`MAIL_MODE=smtp`, `SMTP_*`, `MAIL_FROM`) und eine echte Mail über `/admin/postausgang` prüfen; bis dahin bleibt der Dateimodus.
 6. Docker-Build auf einem Server mit Daemon prüfen.
 7. Rate-Limit für Login und Bewerbung (siehe `docs/SKALIERUNG.md`, Stufe 2).
+8. Schnittstelle zur Hausbuchhaltung (sunds-buchhaltung) auf Basis des CSV-Exports, nach dem Rollout; Vertrag in `leadmaschine/zentrale/rechnungen/SCHNITTSTELLE-BUCHHALTUNG.md`.
 
 ## Gemessen
 

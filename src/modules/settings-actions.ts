@@ -5,6 +5,7 @@ import { field, type ActionState } from "@/lib/form";
 import { requireAdmin } from "@/modules/auth/session";
 import { setSetting } from "@/lib/settings";
 import { parseEuroToCents } from "@/lib/money";
+import { isValidIban, normalizeIban } from "@/lib/iban";
 
 export async function saveSettingsAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdmin();
@@ -17,7 +18,15 @@ export async function saveSettingsAction(_prev: ActionState, formData: FormData)
   if (freeFrom == null) errors.freeShippingFrom = "Betrag wie 75,00.";
   const schedule = field(formData, "payoutSchedule").slice(0, 120);
   if (schedule.length < 3) errors.payoutSchedule = "Bitte einen Termin angeben.";
+  const debtorName = field(formData, "payoutDebtorName").slice(0, 70);
+  const debtorIban = normalizeIban(field(formData, "payoutDebtorIban"));
+  const debtorBic = field(formData, "payoutDebtorBic").replace(/\s/g, "").toUpperCase();
+  if (debtorIban && !isValidIban(debtorIban)) errors.payoutDebtorIban = "Die IBAN hat eine falsche Prüfziffer oder Länge.";
+  if (debtorBic && !/^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$/.test(debtorBic)) errors.payoutDebtorBic = "Eine BIC hat 8 oder 11 Zeichen.";
   if (Object.keys(errors).length) return { ok: false, fieldErrors: errors };
+  await setSetting("payout_debtor_name", debtorName);
+  await setSetting("payout_debtor_iban", debtorIban);
+  await setSetting("payout_debtor_bic", debtorBic);
   await setSetting("payout_schedule", schedule);
   await setSetting("commission_percent", String(commission));
   await setSetting("shipping_flat_cents", String(flat));

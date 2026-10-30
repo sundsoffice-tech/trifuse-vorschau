@@ -1,5 +1,7 @@
 "use server";
 
+import { isValidIban, normalizeIban } from "@/lib/iban";
+
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
@@ -29,6 +31,8 @@ export async function adminCreateVendorAction(_prev: ActionState, formData: Form
 
 export async function adminUpdateVendorAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdmin();
+  const ibanInput = normalizeIban(field(formData, "payoutIban"));
+  if (ibanInput && !isValidIban(ibanInput)) return { ok: false, fieldErrors: { payoutIban: "Die IBAN stimmt so nicht (Prüfziffer oder Länge)." }, message: "Bitte die IBAN prüfen." };
   const id = field(formData, "vendorId");
   const statusRaw = field(formData, "status");
   const status: VendorStatus = statusRaw === "ACTIVE" || statusRaw === "PAUSED" ? statusRaw : "PENDING";
@@ -50,7 +54,7 @@ export async function adminUpdateVendorAction(_prev: ActionState, formData: Form
       phone: field(formData, "phone"),
       payoutNote: field(formData, "payoutNote").slice(0, 1000),
       payoutHolder: field(formData, "payoutHolder"),
-      payoutIban: field(formData, "payoutIban").replace(/\s+/g, "").toUpperCase(),
+      payoutIban: normalizeIban(field(formData, "payoutIban")),
     },
   });
   if (status === "PAUSED") await db.session.deleteMany({ where: { user: { vendorId: id } } });

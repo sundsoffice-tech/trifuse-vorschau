@@ -277,18 +277,20 @@ model WebhookEvent {
 }
 
 model Payout {
-  id         String       @id @default(cuid())
-  vendorId   String
-  vendor     Vendor       @relation(fields: [vendorId], references: [id])
-  status     PayoutStatus @default(DRAFT)
-  totalCents Int
-  itemCount  Int
-  reference  String       @default("")
-  note       String       @default("")
-  items      OrderItem[]
-  reversals  Reversal[]
-  createdAt  DateTime     @default(now())
-  paidAt     DateTime?
+  id             String       @id @default(cuid())
+  vendorId       String
+  vendor         Vendor       @relation(fields: [vendorId], references: [id])
+  status         PayoutStatus @default(DRAFT)
+  totalCents     Int
+  itemCount      Int
+  reference      String       @default("")
+  note           String       @default("")
+  // Wann der Entwurf in eine SEPA-Sammeldatei geschrieben wurde (Schutz vor doppelter Überweisung)
+  sepaExportedAt DateTime?
+  items          OrderItem[]
+  reversals      Reversal[]
+  createdAt      DateTime     @default(now())
+  paidAt         DateTime?
 }
 
 model Setting {

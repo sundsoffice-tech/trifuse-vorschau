@@ -1,5 +1,7 @@
 "use server";
 
+import { isValidIban, normalizeIban } from "@/lib/iban";
+
 import { field, isValidEmail, type ActionState } from "@/lib/form";
 import { createVendorApplication } from "./service";
 import { BRAND } from "@/lib/brand";
@@ -35,8 +37,8 @@ export async function updateVendorProfileAction(_prev: ActionState, formData: Fo
   const user = await requireVendorUser();
   const name = field(formData, "name");
   if (name.length < 2) return { ok: false, fieldErrors: { name: "Bitte den Namen angeben." } };
-  const iban = field(formData, "payoutIban").replace(/\s+/g, "").toUpperCase();
-  if (iban && !/^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/.test(iban)) return { ok: false, fieldErrors: { payoutIban: "Das sieht nicht nach einer IBAN aus (Länderkennung, zwei Ziffern, dann 11 bis 30 Zeichen)." } };
+  const iban = normalizeIban(field(formData, "payoutIban"));
+  if (iban && !isValidIban(iban)) return { ok: false, fieldErrors: { payoutIban: "Die IBAN stimmt so nicht (Prüfziffer oder Länge). Bitte noch einmal mit der Bankkarte vergleichen." } };
   const logo = formData.get("logo");
   let logoPath: string | undefined;
   if (logo instanceof File && logo.size > 0) {

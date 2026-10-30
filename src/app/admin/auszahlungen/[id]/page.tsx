@@ -8,6 +8,7 @@ import { Alert } from "@/components/ui/alert";
 import { PrintButton } from "@/components/ui/print-button";
 import { formatIban } from "@/lib/text";
 import { reversalReasonText } from "@/modules/orders/texts";
+import { payoutReference } from "@/modules/payouts/texts";
 
 export default async function AdminPayoutDetail({ params }: { params: Promise<{ id: string }> }) {
   const payout = await getPayoutWithItems((await params).id);
@@ -18,8 +19,7 @@ export default async function AdminPayoutDetail({ params }: { params: Promise<{ 
   const reversalNet = payout.reversals.reduce((s, r) => s + r.vendorNetCents, 0);
   const settledOnly = payout.status === "PAID" && payout.totalCents === 0;
   const hasBank = Boolean(payout.vendor.payoutIban);
-  const monat = payout.createdAt.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
-  const zweck = `Auszahlung ${monat}, ${payout.vendor.name}`;
+  const zweck = payoutReference(payout.createdAt, payout.vendor.name);
   return (
     <div className="space-y-6 max-w-4xl">
       <div className="print:hidden">
