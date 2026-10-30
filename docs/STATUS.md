@@ -52,6 +52,10 @@ Historie ohne Bezug zur statischen Vorschau auf `main`. Ein eigenes Repo `trifus
   Warenkorb und in der API, Formular mit Live-Vorschau. `npm run db:fresh` setzt die lokale Datenbank samt
   Demo-Daten neu auf (nur SQLite, nie Produktion).
 
+- **Bilder (30.10.2026):** Upload erzeugt WebP in 320/640/1280 px plus Master bis 2000 px, `Picture`-Komponente mit
+  srcset überall, API liefert die Varianten. Gemessen im Smoke-Test: 2400 × 1800 JPEG mit 3 MB wird zu 3 KB
+  Kartenbild. Ältere Uploads mit Endung bleiben lesbar.
+
 ## Offen, nach Dringlichkeit
 
 1. Auf sunds-hub ausrollen: `bash ops/sunds-hub/ausrollen.sh` vom PC (Anleitung `ops/sunds-hub/README.md`), DNS bei Strato setzen.

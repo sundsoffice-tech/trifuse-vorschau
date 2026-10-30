@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
-import { imageUrl } from "@/modules/media/url";
+import { imageSrc } from "@/modules/media/url";
 import { formatCents } from "@/lib/money";
 import { adminProductStatusAction } from "@/modules/catalog/admin-actions";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -36,7 +36,7 @@ export default async function AdminProducts({ searchParams }: { searchParams: Pr
           <li key={p.id} className="flex flex-wrap items-center gap-4 p-3">
             <Link href={`/admin/produkte/${p.id}`} className="w-14 h-14 rounded-md border border-line bg-surface-2 overflow-hidden shrink-0 img-surface">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={imageUrl(p.images[0]?.path)} alt="" className="w-full h-full object-cover" />
+              <img src={imageSrc(p.images[0]?.path)} alt="" className="w-full h-full object-cover" />
             </Link>
             <div className="flex-1 min-w-[200px]">
               <Link href={`/admin/produkte/${p.id}`} className="font-semibold">{p.title}</Link>

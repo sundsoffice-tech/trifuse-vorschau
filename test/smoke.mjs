@@ -7,6 +7,8 @@ import { mkdir } from "node:fs/promises";
 // Playwright kann global installiert sein (NODE_PATH); createRequire findet es auch dann.
 const require = createRequire(import.meta.url);
 const { chromium } = require("playwright");
+const sharp = require("sharp");
+let probe = null; // Testfoto, in Abschnitt 3 erzeugt, in Abschnitt 4 gegen die Varianten gemessen
 
 const base = (process.argv[2] ?? "http://localhost:3000").replace(/\/$/, "");
 const out = new URL("./ergebnisse/", import.meta.url).pathname;
@@ -114,6 +116,9 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   await page.fill("#price", "7,50");
   await page.fill("#stock", "5");
   await page.selectOption("#categoryId", { index: 1 });
+  // Ein großes Handyfoto (2400 x 1800 JPEG) hochladen; der Server macht daraus WebP in festen Breiten.
+  probe = await sharp({ create: { width: 2400, height: 1800, channels: 3, noise: { type: "gaussian", mean: 140, sigma: 40 } } }).jpeg({ quality: 92 }).toBuffer(); // Rauschen wie ein echtes Foto, sonst wäre die Größe kein Maßstab
+  await page.setInputFiles("#images", { name: "handyfoto.jpg", mimeType: "image/jpeg", buffer: probe });
   await page.getByRole("button", { name: /zur Freigabe schicken/ }).click();
   await page.waitForURL(/\/portal\/produkte\/(?!neu)[a-z0-9]+/);
   check((await page.textContent("body"))?.includes("Wartet auf Freigabe") ?? false, "Händlerprodukt wartet auf Freigabe");
@@ -141,6 +146,18 @@ let newProductTitle = `Smoke-Produkt ${Date.now().toString(36)}`;
   await page.waitForLoadState("networkidle");
   await page.goto(base + "/produkte?q=" + encodeURIComponent(newProductTitle));
   check((await page.textContent("body"))?.includes(newProductTitle) ?? false, "Freigegebenes Produkt ist im Shop sichtbar");
+  {
+    const api = await (await fetch(base + "/api/v1/products?q=" + encodeURIComponent(newProductTitle))).json();
+    const v = api.items?.[0]?.imageVariants ?? {};
+    check(typeof v.w320 === "string" && v.w320.endsWith("-w320.webp") && typeof v.master === "string", `Bild liegt in Größen vor: ${Object.keys(v).join(", ")}`);
+    const res = await fetch(base + v.w320);
+    const buf = Buffer.from(await res.arrayBuffer());
+    const meta = await sharp(buf).metadata();
+    check(res.headers.get("content-type") === "image/webp" && meta.width === 320 && meta.height === 240, `Kartenbild ist WebP ${meta.width}x${meta.height}, ${Math.round(buf.length / 1024)} KB (Original ${Math.round(probe.length / 1024)} KB)`);
+    check(buf.length < probe.length / 10, "Kartenbild ist mindestens zehnmal kleiner als das Original");
+    const master = await sharp(Buffer.from(await (await fetch(base + v.master)).arrayBuffer())).metadata();
+    check(master.width === 2000 && master.height === 1500, `Master auf 2000 px begrenzt (${master.width}x${master.height})`);
+  }
   await page.goto(base + "/admin/auszahlungen");
   await shoot(page, "admin-auszahlungen");
   // Der Macher des gekauften Produkts hat je nach Vorlauf einen positiven Saldo (Auszahlung) oder einen

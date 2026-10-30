@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireVendorUser } from "@/modules/auth/session";
 import { db } from "@/lib/db";
-import { imageUrl } from "@/modules/media/url";
+import { imageSrc } from "@/modules/media/url";
 import { formatCents } from "@/lib/money";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { Empty } from "@/components/ui/empty";
@@ -28,7 +28,7 @@ export default async function PortalProducts() {
               <Link href={`/portal/produkte/${p.id}`} className="flex items-center gap-4 p-3 hover:bg-surface-2">
                 <div className="w-14 h-14 rounded-md border border-line bg-surface-2 overflow-hidden shrink-0 img-surface">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={imageUrl(p.images[0]?.path)} alt="" className="w-full h-full object-cover" />
+                  <img src={imageSrc(p.images[0]?.path)} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold truncate">{p.title}</p>

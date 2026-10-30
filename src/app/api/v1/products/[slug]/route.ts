@@ -1,5 +1,5 @@
 import { getActiveProductBySlug } from "@/modules/catalog/queries";
-import { imageUrl } from "@/modules/media/url";
+import { imageUrl, imageVariants } from "@/modules/media/url";
 
 export async function GET(_req: Request, ctx: { params: Promise<{ slug: string }> }) {
   const product = await getActiveProductBySlug((await ctx.params).slug);
@@ -15,7 +15,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ slug: string }
     stock: product.stock,
     sku: product.sku,
     shippingBy: product.shippingBy,
-    images: product.images.map((i) => ({ url: imageUrl(i.path), alt: i.alt })),
+    images: product.images.map((i) => ({ url: imageUrl(i.path), alt: i.alt, variants: imageVariants(i.path) })),
     vendor: { id: product.vendor.id, name: product.vendor.name, slug: product.vendor.slug },
     category: product.category ? { id: product.category.id, name: product.category.name, slug: product.category.slug } : null,
   });

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ProductCard as ProductCardData } from "@/modules/catalog/queries";
-import { imageUrl } from "@/modules/media/url";
+import { Picture } from "./picture";
 import { makerShareCents } from "@/lib/share";
 import { basePrice } from "@/lib/grundpreis";
 import { Price, MakerShare } from "./price";
@@ -12,8 +12,7 @@ export function ProductCard({ product, headingLevel = "h3" }: { product: Product
   return (
     <article className="flex flex-col">
       <Link href={`/produkt/${product.slug}`} className="block aspect-square bg-surface-2 overflow-hidden rounded-md border border-line img-surface relative">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={imageUrl(img?.path)} alt={img?.alt || product.title} loading="lazy" className={`w-full h-full object-cover ${soldOut ? "opacity-60" : ""}`} />
+        <Picture path={img?.path} alt={img?.alt || product.title} sizes="(min-width: 1280px) 280px, (min-width: 768px) 33vw, 50vw" className={`w-full h-full object-cover ${soldOut ? "opacity-60" : ""}`} />
         {soldOut ? <span className="badge badge-muted absolute left-2 top-2">Ausverkauft</span> : product.stock <= 3 ? <span className="badge badge-warn absolute left-2 top-2">Nur noch {product.stock}</span> : null}
       </Link>
       <div className="pt-3 flex flex-col gap-1">

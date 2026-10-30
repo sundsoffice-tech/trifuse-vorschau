@@ -1,5 +1,5 @@
 import { listActiveProducts } from "@/modules/catalog/queries";
-import { imageUrl } from "@/modules/media/url";
+import { imageUrl, imageVariants } from "@/modules/media/url";
 import { basePrice } from "@/lib/grundpreis";
 
 /** Öffentliche, lesende Katalog-API (headless): /api/v1/products?q=&kategorie=&händler=&seite= */
@@ -27,6 +27,7 @@ export async function GET(req: Request) {
       currency: p.currency,
       stock: p.stock,
       image: imageUrl(p.images[0]?.path),
+      imageVariants: imageVariants(p.images[0]?.path),
       vendor: p.vendor,
       category: p.category,
       url: `/produkt/${p.slug}`,

@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
       },
     },
   },
-  serverExternalPackages: ["@prisma/client", "prisma"],
+  serverExternalPackages: ["@prisma/client", "prisma", "sharp"],
   outputFileTracingExcludes: { "*": ["./data/**"] },
   experimental: {
     serverActions: {

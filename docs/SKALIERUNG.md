@@ -14,7 +14,10 @@ Instanz. Was dafür schon eingebaut ist:
 - Datenmodell datenbankneutral, Indizes auf den Hauptabfragen (`Product(vendorId,status)`,
   `Product(categoryId,status)`, `OrderItem(vendorId,payoutId)`, `OrderItem(orderId)`).
 - Geld in Cent, Provision je Position eingefroren: Auszahlungen bleiben auch bei Änderungen am Satz korrekt.
-- Zahlung und Bildablage hinter Schnittstellen.
+- Zahlung, Bildablage und Mailversand hinter Schnittstellen; Mails laufen über einen Postausgang in der
+  Datenbank, den mehrere Instanzen gefahrlos gemeinsam abarbeiten (Beanspruchen per Statuswechsel).
+- Bilder werden beim Hochladen auf feste Breiten verkleinert (WebP); die Auslieferung ist ein Dateizugriff
+  mit einem Jahr Cache, kein Rechnen je Aufruf.
 - Bestellnummer mit Retry bei Kollision, Bezahlt-Markierung idempotent (Webhook und Rückleitung können beide
   zuschlagen).
 - Listen paginiert (Shop) oder begrenzt (Admin: 200 Zeilen).

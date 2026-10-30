@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getCartView } from "@/modules/cart/service";
 import { changeCartQuantityAction, removeCartItemAction } from "@/modules/cart/actions";
-import { imageUrl } from "@/modules/media/url";
+import { imageSrc } from "@/modules/media/url";
 import { formatCents } from "@/lib/money";
 import { formatBasePrice } from "@/lib/grundpreis";
 import { makerShareCents } from "@/lib/share";
@@ -33,7 +33,7 @@ export default async function CartPage() {
             <li key={item.id} className="p-4 flex gap-4">
               <Link href={`/produkt/${item.slug}`} className="w-20 h-20 md:w-24 md:h-24 rounded-md border border-line bg-surface-2 overflow-hidden shrink-0 img-surface">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={imageUrl(item.image)} alt="" className="w-full h-full object-cover" />
+                <img src={imageSrc(item.image)} alt="" className="w-full h-full object-cover" />
               </Link>
               <div className="flex-1 min-w-0">
                 <Link href={`/produkt/${item.slug}`} className="font-semibold">{item.title}</Link>

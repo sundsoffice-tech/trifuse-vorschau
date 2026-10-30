@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { imageUrl } from "@/modules/media/url";
+import { imageSrc } from "@/modules/media/url";
 
 type Vendor = { slug: string; name: string; description: string; logoPath: string | null; city: string };
 
@@ -9,7 +9,7 @@ export function MakerRow({ vendor, productCount, full = false }: { vendor: Vendo
       <div className="w-16 h-16 rounded-md bg-surface-2 overflow-hidden shrink-0 img-surface">
         {vendor.logoPath ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={imageUrl(vendor.logoPath)} alt="" className="w-full h-full object-cover" />
+          <img src={imageSrc(vendor.logoPath)} alt="" className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center font-display text-2xl text-ink-3" aria-hidden="true">{vendor.name.slice(0, 1)}</div>
         )}

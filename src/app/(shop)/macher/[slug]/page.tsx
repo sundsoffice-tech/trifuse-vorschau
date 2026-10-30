@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getActiveVendorBySlug, listActiveProducts } from "@/modules/catalog/queries";
-import { imageUrl } from "@/modules/media/url";
+import { imageSrc } from "@/modules/media/url";
 import { ProductCard } from "@/components/shop/product-card";
 import { Pagination } from "@/components/ui/pagination";
 
@@ -23,7 +23,7 @@ export default async function VendorPage({ params, searchParams }: { params: Pro
         {vendor.logoPath ? (
           <div className="w-20 h-20 rounded-md bg-surface-2 overflow-hidden shrink-0 border border-line img-surface">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imageUrl(vendor.logoPath)} alt="" className="w-full h-full object-cover" />
+            <img src={imageSrc(vendor.logoPath)} alt="" className="w-full h-full object-cover" />
           </div>
         ) : null}
         <div>

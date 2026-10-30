@@ -1,5 +1,5 @@
 import type { ProductImage } from "@prisma/client";
-import { imageUrl } from "@/modules/media/url";
+import { imageSrc } from "@/modules/media/url";
 import { ImagePicker } from "./image-picker";
 
 export function ProductImages({ images, productId, deleteAction, firstAction, uploadAction }: { images: ProductImage[]; productId: string; deleteAction: (fd: FormData) => Promise<void>; firstAction: (fd: FormData) => Promise<void>; uploadAction: (fd: FormData) => Promise<void> }) {
@@ -12,7 +12,7 @@ export function ProductImages({ images, productId, deleteAction, firstAction, up
             <li key={img.id} className="card overflow-hidden">
               <div className="aspect-square bg-surface-2 img-surface">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={imageUrl(img.path)} alt={img.alt} className="w-full h-full object-cover" />
+                <img src={imageSrc(img.path)} alt={img.alt} className="w-full h-full object-cover" />
               </div>
               <div className="p-2 flex flex-col gap-1">
                 {idx === 0 ? <span className="badge badge-accent self-start">Hauptbild</span> : (

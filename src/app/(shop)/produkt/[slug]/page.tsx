@@ -5,7 +5,7 @@ import { getActiveProductBySlug, listActiveProducts } from "@/modules/catalog/qu
 import { getAllSettings } from "@/lib/settings";
 import { formatCents } from "@/lib/money";
 import { makerShareCents } from "@/lib/share";
-import { imageUrl } from "@/modules/media/url";
+import { Picture } from "@/components/shop/picture";
 import { Price } from "@/components/shop/price";
 import { basePrice, formatAmount } from "@/lib/grundpreis";
 import { ProductCard } from "@/components/shop/product-card";
@@ -35,15 +35,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <div className="grid md:grid-cols-2 gap-8 lg:gap-14">
         <div>
           <div className="rounded-md border border-line overflow-hidden aspect-[4/3] md:aspect-square bg-surface-2 img-surface">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imageUrl(first?.path)} alt={first?.alt || product.title} className="w-full h-full object-cover" />
+            <Picture path={first?.path} alt={first?.alt || product.title} sizes="(min-width: 768px) 50vw, 100vw" width={1280} loading="eager" fetchPriority="high" className="w-full h-full object-cover" />
           </div>
           {rest.length ? (
             <div className="grid grid-cols-4 gap-2 mt-2">
               {rest.map((img) => (
                 <div key={img.id} className="rounded-md border border-line overflow-hidden aspect-square bg-surface-2 img-surface">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={imageUrl(img.path)} alt={img.alt || product.title} loading="lazy" className="w-full h-full object-cover" />
+                  <Picture path={img.path} alt={img.alt || product.title} sizes="(min-width: 768px) 12vw, 25vw" width={320} className="w-full h-full object-cover" />
                 </div>
               ))}
             </div>

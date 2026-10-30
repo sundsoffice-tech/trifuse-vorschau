@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { updateVendorProfileAction, changePasswordAction } from "@/modules/vendors/actions";
-import { imageUrl } from "@/modules/media/url";
+import { imageSrc } from "@/modules/media/url";
 import { BRAND } from "@/lib/brand";
 import { formatIban } from "@/lib/text";
 import { SubmitButton } from "@/components/ui/submit-button";
@@ -28,7 +28,7 @@ export function VendorSettingsForm({ vendor }: { vendor: VendorData }) {
           <div className="w-16 h-16 rounded-md border border-line bg-surface-2 overflow-hidden shrink-0 img-surface">
             {vendor.logoPath ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={imageUrl(vendor.logoPath)} alt="" className="w-full h-full object-cover" />
+              <img src={imageSrc(vendor.logoPath)} alt="" className="w-full h-full object-cover" />
             ) : null}
           </div>
           <div><span className="label">Foto von dir oder deiner Werkstatt (quadratisch)</span><ImagePicker name="logo" multiple={false} label="Foto auswählen" /></div>
